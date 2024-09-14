@@ -1,0 +1,29 @@
+$primary: #415be7;
+$gray-900: #263446;
+$gray-800: #565b5f;
+$gray-700: #80889e;
+$gray-600: #aeb3c1;
+$gray-500: #dbdde6;
+$gray-400: #e9eaed;
+$gray-300: #f3f4f7;
+
+$colors: (
+  "primary": $primary,
+  "gray-900": $gray-900,
+  "gray-800": $gray-800,
+  "gray-700": $gray-700,
+  "gray-600": $gray-600,
+  "gray-500": $gray-500,
+  "gray-400": $gray-400,
+  "gray-300": $gray-300,
+);
+
+$font-sizes: (
+  "xs": 0.75rem,
+  "sm": 0.875rem,
+  "base": 1rem,
+  "lg": 1.25rem,
+  "xl": 1.5rem,
+  "2xl": 1.75rem,
+  "3xl": 2rem,
+);
