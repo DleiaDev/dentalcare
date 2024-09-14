@@ -1,0 +1,36 @@
+.sidebar {
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  border-inline-end: 1px solid map-get($colors, "gray-300");
+
+  &__container {
+    padding: 1rem;
+  }
+
+  &__logo {
+    margin-bottom: 2rem;
+  }
+
+  &__current-clinic {
+    margin-bottom: 1.8rem;
+  }
+
+  &__dashboard-link {
+    margin-bottom: 1.5rem;
+  }
+
+  &__link-group {
+    margin-bottom: 1.5rem;
+    &--physical {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  &__link-divider {
+    height: 1px;
+    width: 100%;
+    background-color: map-get($colors, "gray-300");
+    margin-bottom: 0.5rem;
+  }
+}
