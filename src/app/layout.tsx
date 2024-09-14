@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
-import "./globals.css";
+import Sidebar from "@/components/Sidebar/Sidebar";
+import styles from "./layout.module.scss";
 
-const font = Manrope({ subsets: ["latin"], display: 'swap' });
+const font = Manrope({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,8 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={font.className}>
-        {children}
+      <body className={`${font.className} ${styles["layout"]}`}>
+        <Sidebar />
+        <main>{children}</main>
       </body>
     </html>
   );
