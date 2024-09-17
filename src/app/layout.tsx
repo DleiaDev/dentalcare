@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
+import Navbar from "@/components/Navbar/Navbar";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import "./tailwind.css";
 import styles from "./layout.module.scss";
@@ -20,7 +21,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${font.className} ${styles["layout"]}`}>
         <Sidebar />
-        <main>{children}</main>
+        <div>
+          <Navbar />
+          <main>{children}</main>
+        </div>
       </body>
     </html>
   );
