@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import Sidebar from "@/components/Sidebar/Sidebar";
+import "./tailwind.css";
 import styles from "./layout.module.scss";
 
 const font = Manrope({ subsets: ["latin"], display: "swap" });

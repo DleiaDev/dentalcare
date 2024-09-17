@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import NextLink, { LinkProps } from "next/link";
 import styles from "./Link.module.scss";
 import Svg from "@/components/Svg";
-import cn from "classnames";
+import clsx from "classnames";
 
 type Props = LinkProps & {
   title: string;
@@ -21,7 +21,7 @@ export default function Link(props: Props) {
   const pathname = usePathname();
   const isActive = pathname === linkProps.href;
 
-  const className = cn(styles["link"], linkProps.className, {
+  const className = clsx(styles["link"], linkProps.className, {
     [styles["link--active"]]: isActive,
   });
 

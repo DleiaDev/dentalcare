@@ -1,7 +1,6 @@
 import HospitalIcon from "@/icons/hospital.svg";
 import styles from "./CurrentClinic.module.scss";
-import Image from "next/image";
-import cn from "classnames";
+import clsx from "clsx";
 
 type Props = {
   className?: string;
@@ -9,7 +8,7 @@ type Props = {
 
 export default function CurrentClinic({ className }: Props) {
   return (
-    <div className={cn([styles["current-clinic"], className])}>
+    <div className={clsx([styles["current-clinic"], className])}>
       <HospitalIcon />
       {/* <Image src={HospitalIcon} alt="Clinic" /> */}
       <div className={styles["current-clinic__text-container"]}>
