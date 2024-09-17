@@ -2,7 +2,7 @@
   height: 100svh;
   display: flex;
   flex-direction: column;
-  border-inline-end: 1px solid map-get($colors, "gray-300");
+  border-inline-end: 1px solid map-get($colors, "gray-400");
 
   &__container {
     padding: 1rem;
@@ -30,7 +30,7 @@
   &__link-divider {
     height: 1px;
     width: 100%;
-    background-color: map-get($colors, "gray-300");
+    background-color: map-get($colors, "gray-400");
     margin-bottom: 0.5rem;
   }
 }
