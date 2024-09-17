@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import NextLink, { LinkProps } from "next/link";
 import styles from "./Link.module.scss";
 import Svg from "@/components/Svg";
-import clsx from "classnames";
+import clsx from "clsx";
 
 type Props = LinkProps & {
   title: string;
