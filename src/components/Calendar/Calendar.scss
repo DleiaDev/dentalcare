@@ -1,0 +1,91 @@
+$slotWidth: 25rem;
+
+.rbc-calendar {
+  .rbc-time-view {
+    border: none;
+    border-top: 1px solid #ddd;
+  }
+
+  // Cells
+  .rbc-time-content {
+    flex: 1 1 auto;
+    height: 0px;
+    border-block-start: 1px solid var(--border);
+  }
+  .rbc-today {
+    @apply bg-accent;
+  }
+  .rbc-day-slot {
+    // min-width: $slotWidth;
+    // background-color: unset;
+  }
+  .rbc-time-slot {
+    min-height: 2.1rem;
+    &--gutter {
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+    }
+    .rbc-label {
+      padding: 0;
+    }
+  }
+
+  // Events (appointments)
+  .rbc-event {
+    padding: 0.2rem;
+    border: none;
+    background: unset;
+    &-label {
+      display: none;
+    }
+  }
+
+  // Resources (doctors)
+  .rbc-row-resource {
+    padding: 1rem;
+  }
+
+  // Header
+  .rbc-header {
+    padding: 0;
+    border-bottom: none;
+  }
+  .rbc-allday-cell {
+    display: none;
+  }
+
+  // Week only
+  &--work_week {
+    // Column widths
+    .rbc-time-column:not(.rbc-time-gutter),
+    .rbc-time-header-cell .rbc-header {
+      min-width: 180px;
+    }
+
+    // Days of the week
+    .rbc-time-header-cell .rbc-header {
+      // Fix border alignment, don't know why this fixes it
+      border-left: none;
+      border-right: 1px solid #ddd;
+      .rbc-button-link {
+        @apply font-normal w-full hover:bg-accent transition-colors;
+      }
+    }
+  }
+
+  // Day only
+  &--day {
+    // Cells
+    .rbc-day-slot {
+      min-width: $slotWidth;
+      background-color: unset;
+    }
+
+    // Resources (doctors)
+    .rbc-row-resource {
+      min-width: $slotWidth;
+      border-bottom: none !important;
+    }
+  }
+}
