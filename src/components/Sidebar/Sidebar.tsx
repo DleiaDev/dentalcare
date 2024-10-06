@@ -6,7 +6,7 @@ import styles from "./Sidebar.module.scss";
 
 export default function Sidebar() {
   return (
-    <div className={styles["sidebar"]}>
+    <div className="h-svh overflow-auto flex flex-col border-e border-solid border-gray-400 bg-gray-200">
       <div className={styles["sidebar__container"]}>
         {/* Logo */}
         <Logo />
@@ -31,6 +31,7 @@ export default function Sidebar() {
               title: "Reservations",
               href: "/reservations",
               svg: {
+                type: "gray",
                 name: "calendar-check",
               },
             },
