@@ -1,5 +1,6 @@
 .layout {
   margin: 0;
   display: grid;
-  grid-template-columns: minmax(15rem, 1fr) 5fr;
+  overflow: hidden;
+  grid-template-columns: minmax(20rem, 1fr) 6fr;
 }
