@@ -14,12 +14,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PropsWithChildren } from "react";
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<{
+  triggerClassName?: string;
+}>;
 
-export default function Dropdown({ children }: Props) {
+export default function Dropdown({ children, triggerClassName }: Props) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
+      <DropdownMenuTrigger className={triggerClassName}>
+        {children}
+      </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
