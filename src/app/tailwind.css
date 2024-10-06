@@ -4,8 +4,10 @@
 
 @layer base {
   :root {
+    /* Primary */
     --primary: #415be7;
 
+    /* Gray */
     --gray-900: #263446;
     --gray-800: #565b5f;
     --gray-700: #80889e;
@@ -13,19 +15,38 @@
     --gray-500: #dbdde6;
     --gray-400: #e9eaed;
     --gray-300: #f3f4f7;
+    --gray-200: #f9fafb;
 
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* Appointments */
+    --appointment-finished-bg: #f1f7ec;
+    --appointment-finished-icon-bg: #6dac42;
+    --appointment-finished-treatment-type-border: #c3e1b0;
+    --appointment-upcoming-bg: #e9f5fc;
+    --appointment-upcoming-icon-bg: #4ca3e5;
+    --appointment-upcoming-treatment-type-border: #a2cff0;
+    --appointment-finished-not-paid-bg: #fcebf1;
+    --appointment-finished-not-paid-icon-bg: #e65889;
+    --appointment-finished-not-paid-treatment-type-border: #e65889;
+    --appointment-status-finished-bg: #46b988;
+    --appointment-status-encounter-bg: #f0c75e;
+    --appointment-status-registered-bg: #a0a0a0;
+
+    /* Foreground, background */
+    --background: #ffffff;
+    --foreground: var(--gray-900);
+
+    /* Muted */
+    --muted: #f5f6fa;
+    --muted-foreground: var(--gray-600);
+
+    /* Tailwind (to be defined) */
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
     --accent: 0 0% 96.1%;
     --accent-foreground: 0 0% 9%;
     --destructive: 0 84.2% 60.2%;
@@ -41,30 +62,7 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    /* Probably won't exist */
   }
 }
 

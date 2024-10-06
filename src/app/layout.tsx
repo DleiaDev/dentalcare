@@ -19,11 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${font.className} ${styles["layout"]}`}>
+      <body className={`${font.className} ${styles["layout"]} overflow-hidden`}>
         <Sidebar />
-        <div>
+        <div className="flex flex-col overflow-hidden">
           <Navbar />
-          <main>{children}</main>
+          <main className="flex-1">{children}</main>
         </div>
       </body>
     </html>

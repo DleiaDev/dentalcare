@@ -10,8 +10,12 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        // Primary
         primary: "var(--primary)",
+
+        // Gray
         gray: {
+          200: "var(--gray-200)",
           300: "var(--gray-300)",
           400: "var(--gray-400)",
           500: "var(--gray-500)",
@@ -20,8 +24,29 @@ module.exports = {
           800: "var(--gray-800)",
           900: "var(--gray-900)",
         },
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+
+        // Appointment
+        appointment: {
+          "finished-bg": "var(--appointment-finished-bg)",
+          "finished-icon-bg": "var(--appointment-finished-icon-bg)",
+          "finished-treatment-type-border":
+            "var(--appointment-finished-treatment-type-border)",
+          "upcoming-bg": "var(--appointment-upcoming-bg)",
+          "upcoming-icon-bg": "var(--appointment-upcoming-icon-bg)",
+          "upcoming-treatment-type-border":
+            "var(--appointment-upcoming-treatment-type-border)",
+          "finished-not-paid-bg": "var(--appointment-finished-not-paid-bg)",
+          "finished-not-paid-icon-bg":
+            "var(--appointment-finished-not-paid-icon-bg)",
+          "finished-not-paid-treatment-type-border":
+            "var(--appointment-finished-not-paid-treatment-type-border)",
+          "status-finished-bg": "var(--appointment-status-finished-bg)",
+          "status-encounter-bg": "var(--appointment-status-encounter-bg)",
+          "status-registered-bg": "var(--appointment-status-registered-bg)",
+        },
+
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -31,7 +56,7 @@ module.exports = {
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "var(--primary)",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -39,8 +64,8 @@ module.exports = {
           foreground: "hsl(var(--secondary-foreground))",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
