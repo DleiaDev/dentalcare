@@ -13,9 +13,9 @@ const colorMap = {
     gradient1: ["#E1E4ED", "#CED3E0"],
   },
   flat: {
-    top: "#9DA5BA",
-    checkmark: "#8A93AA",
-    gradient1: ["#E1E4ED", "#CED3E0"],
+    top: "currentColor",
+    checkmark: "white",
+    gradient1: ["currentColor", "currentColor"],
   },
 };
 
