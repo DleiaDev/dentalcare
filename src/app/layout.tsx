@@ -3,7 +3,6 @@ import { Manrope } from "next/font/google";
 import Navbar from "@/components/Navbar/Navbar";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import "./tailwind.css";
-import styles from "./layout.module.scss";
 
 const font = Manrope({ subsets: ["latin"], display: "swap" });
 
@@ -19,9 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${font.className} ${styles["layout"]} overflow-hidden`}>
-        <Sidebar />
-        <div className="flex flex-col overflow-hidden">
+      <body
+        className={`${font.className} m-0 overflow-hidden xl:grid xl:grid-cols-[minmax(20rem,1fr)_6fr]`}
+      >
+        <Sidebar className="absolute left-0 top-0 z-10 xl:relative" />
+        <div className="h-svh flex flex-col overflow-hidden xl:h-auto">
           <Navbar />
           <main className="flex-1">{children}</main>
         </div>
