@@ -1,4 +1,5 @@
 $slotWidth: 25rem;
+$gutterWidth: 6.5rem;
 
 .rbc-calendar {
   .rbc-time-view {
@@ -15,20 +16,30 @@ $slotWidth: 25rem;
   .rbc-today {
     @apply bg-accent;
   }
-  .rbc-day-slot {
-    // min-width: $slotWidth;
-    // background-color: unset;
-  }
   .rbc-time-slot {
     min-height: 2.1rem;
     &--gutter {
-      padding: 0 2rem;
+      width: $gutterWidth;
       display: flex;
       align-items: center;
+      justify-content: center;
     }
     .rbc-label {
       padding: 0;
     }
+  }
+
+  // Prevent header jumping by setting gutter header width
+  .rbc-time-header-gutter {
+    width: calc($gutterWidth + 1px) !important;
+    min-width: calc($gutterWidth + 1px) !important;
+    max-width: calc($gutterWidth + 1px) !important;
+  }
+
+  // Prevent gutter showing over sidebar on smaller screens
+  .rbc-time-header-gutter,
+  .rbc-time-gutter {
+    z-index: 0;
   }
 
   // Events (appointments)
