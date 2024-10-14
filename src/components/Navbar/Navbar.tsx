@@ -11,6 +11,7 @@ import ProfileCard from "@/components/ProfileCard";
 const pageNameMap = {
   "/dashboard": "Dashboard",
   "/reservations": "Reservations",
+  "/staff": "Staff",
 } as const;
 
 type PagePath = keyof typeof pageNameMap;

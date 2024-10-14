@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${font.className} m-0 overflow-hidden flex`}>
         <Sidebar className="absolute left-0 top-0 z-10 xl:relative" />
-        <div className="h-svh flex flex-col overflow-hidden xl:h-auto">
+        <div className="flex-1 h-svh flex flex-col overflow-hidden xl:h-auto">
           <Navbar />
           <main className="flex-1">{children}</main>
         </div>
