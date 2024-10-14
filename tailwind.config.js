@@ -13,6 +13,9 @@ module.exports = {
         // Primary
         primary: "var(--primary)",
 
+        // Highlight
+        highlight: "var(--highlight)",
+
         // Gray
         gray: {
           200: "var(--gray-200)",
