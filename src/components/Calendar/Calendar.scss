@@ -28,6 +28,16 @@ $gutterWidth: 6.5rem;
       padding: 0;
     }
   }
+  .rbc-slot-selection {
+    background-color: var(--highlight);
+    opacity: 0.5;
+    span {
+      display: block;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+  }
 
   // Prevent header jumping by setting gutter header width
   .rbc-time-header-gutter {

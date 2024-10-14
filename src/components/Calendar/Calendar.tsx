@@ -10,6 +10,7 @@ import {
   EventProps,
   NavigateAction,
   ResourceHeaderProps,
+  SlotInfo,
   ToolbarProps,
   View,
 } from "react-big-calendar";
@@ -462,6 +463,10 @@ export default function Calendar() {
     };
   }, []);
 
+  const onSelectSlot = (slotInfo: SlotInfo) => {
+    console.log(slotInfo);
+  };
+
   const CalendarMain = BigCalendar<Appointment, Doctor>;
 
   return (
@@ -482,8 +487,10 @@ export default function Calendar() {
       onView={onView}
       date={date}
       onNavigate={onNavigate}
+      onSelectSlot={onSelectSlot}
       min={min}
       max={max}
+      selectable
     />
   );
 }
