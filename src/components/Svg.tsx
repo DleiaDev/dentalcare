@@ -6,6 +6,19 @@ import {
   SVGProps,
   useId,
 } from "react";
+import DashboardIcon from "@/icons/Dashboard";
+import CalendarCheckIcon from "@/icons/CalendarCheck";
+import UserIcon from "@/icons/User";
+import StethoscopeIcon from "@/icons/Stethoscope";
+import UsersIcon from "@/icons/Users";
+import MoneyIcon from "@/icons/Money";
+import ChartIcon from "@/icons/Chart";
+import InvoiceIcon from "@/icons/Invoice";
+import CreditCardIcon from "@/icons/CreditCard";
+import BottleIcon from "@/icons/Bottle";
+import HospitalBedIcon from "@/icons/HospitalBed";
+import DoughnutChartIcon from "@/icons/DoughnutChart";
+import CustomerSupportIcon from "@/icons/CustomerSupport";
 
 // Svg component props
 export type SvgComponentProps = {
@@ -13,23 +26,28 @@ export type SvgComponentProps = {
   id: ReturnType<typeof useId>;
 } & SVGProps<SVGElement>;
 
-type LazyComponent = LazyExoticComponent<ComponentType<SvgComponentProps>>;
+type SvgComponent = ComponentType<SvgComponentProps>;
+type LazySvgComponent = LazyExoticComponent<SvgComponent>;
 
 // Map
-const svgMap: Record<string, LazyComponent> = {
-  dashboard: lazy(() => import("@/icons/Dashboard")),
-  "calendar-check": lazy(() => import("@/icons/CalendarCheck")),
-  user: lazy(() => import("@/icons/User")),
-  stethoscope: lazy(() => import("@/icons/Stethoscope")),
-  users: lazy(() => import("@/icons/Users")),
-  money: lazy(() => import("@/icons/Money")),
-  chart: lazy(() => import("@/icons/Chart")),
-  invoice: lazy(() => import("@/icons/Invoice")),
-  "credit-card": lazy(() => import("@/icons/CreditCard")),
-  bottle: lazy(() => import("@/icons/Bottle")),
-  "hospital-bed": lazy(() => import("@/icons/HospitalBed")),
-  "doughnut-chart": lazy(() => import("@/icons/DoughnutChart")),
-  "customer-support": lazy(() => import("@/icons/CustomerSupport")),
+const svgMap: Record<string, SvgComponent | LazySvgComponent> = {
+  // Layout icons
+  dashboard: DashboardIcon,
+  "calendar-check": CalendarCheckIcon,
+  user: UserIcon,
+  stethoscope: StethoscopeIcon,
+  users: UsersIcon,
+  money: MoneyIcon,
+  chart: ChartIcon,
+  invoice: InvoiceIcon,
+  "credit-card": CreditCardIcon,
+  bottle: BottleIcon,
+  "hospital-bed": HospitalBedIcon,
+  "doughnut-chart": DoughnutChartIcon,
+  "customer-support": CustomerSupportIcon,
+
+  // Lazy icons
+  // "random-icon": lazy(() => import("@/icons/RandomIcon")),
 };
 
 // Props
