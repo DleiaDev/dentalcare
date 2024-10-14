@@ -23,7 +23,7 @@ export default function Search() {
   const [isOpened, setIsOpened] = useState(false);
 
   return (
-    <Command className="rounded-lg border shadow-md md:min-w-[450px]">
+    <Command className="rounded-lg border shadow-md xl:min-w-[450px]">
       <CommandInput placeholder="Type a command or search..." />
       {isOpened && (
         <CommandList>
