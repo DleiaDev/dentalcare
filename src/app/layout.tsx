@@ -18,9 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${font.className} m-0 overflow-hidden xl:grid xl:grid-cols-[minmax(20rem,1fr)_6fr]`}
-      >
+      <body className={`${font.className} m-0 overflow-hidden flex`}>
         <Sidebar className="absolute left-0 top-0 z-10 xl:relative" />
         <div className="h-svh flex flex-col overflow-hidden xl:h-auto">
           <Navbar />
