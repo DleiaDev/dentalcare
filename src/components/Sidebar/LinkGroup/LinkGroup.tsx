@@ -1,20 +1,18 @@
-import React from "react";
+import React, { ReactElement, ReactNode } from "react";
 import Link from "../Link/Link";
 import styles from "./LinkGroup.module.scss";
 
 type Props = {
-  title: string;
-  links: React.ComponentProps<typeof Link>[];
+  title?: string | false;
+  links: ReactElement<HTMLUListElement>;
   className?: string;
 };
 
 export default function LinkGroup({ title, links, className }: Props) {
   return (
     <div className={className}>
-      <span className={styles["link-group__title"]}>{title}</span>
-      {links.map((link, index) => (
-        <Link key={link.title} {...link} />
-      ))}
+      {title && <span className={styles["link-group__title"]}>{title}</span>}
+      {links}
     </div>
   );
 }

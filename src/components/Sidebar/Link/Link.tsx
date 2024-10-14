@@ -8,7 +8,7 @@ import Svg from "@/components/Svg";
 import clsx from "clsx";
 
 type Props = LinkProps & {
-  title: string;
+  title?: string | false;
   svg: ComponentProps<typeof Svg>;
   className?: string;
 };
@@ -35,7 +35,7 @@ export default function Link(props: Props) {
       onMouseLeave={() => setHover(false)}
     >
       <Svg className={styles["link__icon"]} {...svgProps} type={svgType} />
-      <span className={styles["link__text"]}>{title}</span>
+      {title && <span className={styles["link__text"]}>{title}</span>}
     </NextLink>
   );
 }
