@@ -430,10 +430,12 @@ function Toolbar({ view, date, onNavigate, ...props }: ToolbarProps) {
 }
 
 const components: Components<Appointment, Doctor> = {
+  // @ts-expect-error
   timeSlotWrapper: TimeSlotWrapper,
   resourceHeader: ResourceHeader,
   event: AppointmentComponent,
   timeGutterHeader: TimeGutterHeader,
+  // @ts-expect-error
   toolbar: Toolbar,
 };
 
