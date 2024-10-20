@@ -10,11 +10,10 @@ RUN npm install -g pnpm@$PNPM_VERSION
 
 # Install node modules
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 # Copy application code
 COPY . .
-# COPY next.config.mjs ./next.config.mjs
 
 EXPOSE 3000
 
