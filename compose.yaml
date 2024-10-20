@@ -1,0 +1,22 @@
+services:
+  # Next
+  next:
+    build:
+      context: .
+      dockerfile: ./docker/dev/next.Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+    depends_on:
+      - db
+
+  # Postgres
+  db:
+    image: postgres
+    env_file:
+      - path: .env.local
+      - path: .env.development
+    ports:
+      - 5432:5432
