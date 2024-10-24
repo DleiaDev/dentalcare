@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
+
   sassOptions: {
     prependData: "@import './src/app/variables.module.scss';",
   },
