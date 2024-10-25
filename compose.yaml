@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/dev/next/next.Dockerfile
+    environment:
+      POSTGRES_HOST: postgres:5432
     ports:
       - 3000:3000
     develop:
