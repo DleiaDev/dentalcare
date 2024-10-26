@@ -1,5 +1,6 @@
 import {
   ComponentType,
+  FC,
   forwardRef,
   lazy,
   LazyExoticComponent,
@@ -8,6 +9,7 @@ import {
 } from "react";
 import DashboardIcon from "@/icons/Dashboard";
 import CalendarCheckIcon from "@/icons/CalendarCheck";
+import CalendarCheck2Icon from "@/icons/calendar-check-2.svg";
 import UserIcon from "@/icons/User";
 import StethoscopeIcon from "@/icons/Stethoscope";
 import UsersIcon from "@/icons/Users";
@@ -26,7 +28,7 @@ export type SvgComponentProps = {
   id: ReturnType<typeof useId>;
 } & SVGProps<SVGElement>;
 
-type SvgComponent = ComponentType<SvgComponentProps>;
+type SvgComponent = ComponentType<SvgComponentProps> | FC<SVGProps<SVGElement>>;
 type LazySvgComponent = LazyExoticComponent<SvgComponent>;
 
 // Map
@@ -34,6 +36,7 @@ const svgMap: Record<string, SvgComponent | LazySvgComponent> = {
   // Layout icons
   dashboard: DashboardIcon,
   "calendar-check": CalendarCheckIcon,
+  "calendar-check-2": CalendarCheck2Icon,
   user: UserIcon,
   stethoscope: StethoscopeIcon,
   users: UsersIcon,

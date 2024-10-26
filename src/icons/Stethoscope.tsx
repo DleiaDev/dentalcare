@@ -11,8 +11,8 @@ const colorMap = {
     earFrame: ["#E3E5EF", "#CBD2DE"],
   },
   flat: {
-    tubing: ["#C4CDE8", "#717E9E"],
-    earFrame: ["#E3E5EF", "#CBD2DE"],
+    tubing: ["currentColor", "currentColor"],
+    earFrame: ["currentColor", "currentColor"],
   },
 };
 

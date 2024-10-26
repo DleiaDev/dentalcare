@@ -106,7 +106,7 @@ export default function Sidebar({ className }: Props) {
                 {
                   title: !collapsed && "Treatments",
                   href: "/treatments",
-                  svg: { name: "stethoscope" },
+                  svg: { name: "stethoscope", type: "gray" },
                 },
                 {
                   title: !collapsed && "Staff",

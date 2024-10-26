@@ -26,7 +26,7 @@ import {
 } from "@radix-ui/react-icons";
 import { cn, getAmPmTime, getWeekOfMonth } from "@/lib/utils";
 import DollarSign from "@/icons/dollar-sign.svg";
-import CalendarCheck2 from "@/icons/calendar-check-2.svg";
+import Count from "@/components/Count";
 import Button from "@/components/Button";
 import Separator from "../ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
@@ -376,16 +376,7 @@ function Toolbar({ view, date, onNavigate, ...props }: ToolbarProps) {
   return (
     <div className="@container">
       <div className="grid grid-cols-2 grid-rows-2 gap-y-7 p-7 @7xl:flex @7xl:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="bg-gray-300 rounded-lg p-1">
-            <CalendarCheck2
-              name="calendar-check-2"
-              className="text-gray-700 w-6 h-6"
-            />
-          </div>
-          <div className="font-bold text-3xl">16</div>
-          <div className="text-gray-600 font-semibold">total appointments</div>
-        </div>
+        <Count count={23} text="total appointment(s)" icon="calendar-check-2" />
         <div className="col-start-1 col-end-3 row-start-1 justify-center flex items-center">
           <Button
             className="me-3"
