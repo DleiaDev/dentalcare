@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "./Link/Link";
 import LinkGroup from "./LinkGroup/LinkGroup";
 import HospitalIcon from "@/icons/hospital.svg";
 import LogoSvg from "@/icons/logo.svg";
@@ -23,19 +22,21 @@ export default function Sidebar({ className }: Props) {
     setCollapsed(true);
   }, [pathname]);
 
+  // TODO: aria-hidden="true" to all immediate children of <body> when overlay is present
+
   return (
     <>
       <div className="min-w-[97px] xl:hidden"></div>
       <div
         className={cn(
-          "absolute w-screen h-svh bg-black opacity-40 z-10 xl:hidden",
+          "fixed inset-0 w-screen h-svh bg-black opacity-40 xl:hidden",
           collapsed && "hidden",
         )}
         onClick={() => setCollapsed(true)}
       ></div>
       <div
         className={cn(
-          "border-e border-solid border-gray-400 bg-gray-200 max-w-80 absolute left-0 top-0 z-10 xl:relative",
+          "border-e border-solid border-gray-400 bg-gray-200 max-w-80 absolute left-0 top-0 xl:relative",
           className,
           !collapsed && "w-4/5",
         )}
