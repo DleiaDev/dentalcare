@@ -1,5 +1,6 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from "tailwindcss";
+
+export default {
   darkMode: ["class"],
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
@@ -10,9 +11,6 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
-        // Primary
-        primary: "var(--primary)",
-
         // Highlight
         highlight: "var(--highlight)",
 
@@ -27,6 +25,9 @@ module.exports = {
           800: "var(--gray-800)",
           900: "var(--gray-900)",
         },
+
+        // Success
+        success: "var(--success)",
 
         // Appointment
         appointment: {
@@ -96,4 +97,4 @@ module.exports = {
     require("tailwindcss-animate"),
     require("@tailwindcss/container-queries"),
   ],
-};
+} satisfies Config;
