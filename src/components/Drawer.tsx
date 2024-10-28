@@ -30,7 +30,7 @@ export default function VaulDrawer({ trigger, title, body }: Props) {
                 {title}
               </Drawer.Title>
               <Drawer.Close>
-                <Cross1Icon className="w-4 h-4" />
+                <Cross1Icon className="w-5 h-5" />
               </Drawer.Close>
             </div>
             <VisuallyHidden.Root>
