@@ -5,7 +5,7 @@ import Button from "@/components/Button";
 import Drawer from "@/components/Drawer";
 import Steps from "@/components/Steps";
 import {
-  CalendarIcon,
+  CalendarClockIcon,
   CalendarX2Icon,
   StethoscopeIcon,
   UserPenIcon,
@@ -35,7 +35,7 @@ export default function Header() {
                     title: "Assigned Services",
                   },
                   {
-                    icon: CalendarIcon,
+                    icon: CalendarClockIcon,
                     title: "Working Hours",
                   },
                   {
