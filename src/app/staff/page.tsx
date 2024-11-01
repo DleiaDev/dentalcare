@@ -1,4 +1,4 @@
-import Employees from "@/components/Employees/Employees";
+import Employees from "@/components/Models/Employees/Employees";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/Tabs";
 
 export default function Page() {
