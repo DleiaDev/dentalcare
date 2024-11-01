@@ -13,9 +13,9 @@ const colorMap = {
     background: ["#E2E4ED", "#D1D6E2"],
   },
   flat: {
-    head: ["#A6AEC1", "#8E97AD"],
-    body: ["#939BB0", "#79839C"],
-    background: ["#E2E4ED", "#D1D6E2"],
+    head: ["currentColor", "currentColor"],
+    body: ["currentColor", "currentColor"],
+    background: ["white", "white"],
   },
 };
 

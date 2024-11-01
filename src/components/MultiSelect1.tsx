@@ -68,10 +68,11 @@ export default function MultiSelect1({
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          intent="outlined"
+          color="black"
           role="combobox"
           className={cn(
-            "w-52 justify-between text-md font-semibold",
+            "border-border shadow-none w-52 justify-between text-md font-semibold",
             triggerClassName,
           )}
         >

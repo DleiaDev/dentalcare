@@ -42,8 +42,8 @@ export default function Sidebar({ className }: Props) {
         )}
       >
         <Button
-          variant="ghost"
-          className="bg-white border border-border text-gray-700 w-9 h-9 p-0 rounded-full absolute top-5 -right-4 shadow"
+          color="white"
+          className="border border-border w-9 h-9 p-0 rounded-full absolute top-5 -right-4"
           onClick={() => setCollapsed(!collapsed)}
         >
           {collapsed ? (
@@ -102,7 +102,7 @@ export default function Sidebar({ className }: Props) {
                 {
                   title: !collapsed && "Patients",
                   href: "/patients",
-                  svg: { name: "user" },
+                  svg: { type: "gray", name: "user" },
                 },
                 {
                   title: !collapsed && "Treatments",
