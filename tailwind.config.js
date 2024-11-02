@@ -1,7 +1,5 @@
-import type { Config } from "tailwindcss";
-
-export default {
-  darkMode: ["class"],
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
@@ -77,11 +75,16 @@ export default {
           foreground: "var(--accent-foreground)",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "var(--destructive)",
+          light: "var(--destructive-light)",
+          foreground: "var(--destructive-foreground)",
         },
+        input: {
+          DEFAULT: "var(--input)",
+          invalid: "var(--error-field)",
+        },
+        error: "var(--error)",
         border: "var(--border)",
-        input: "var(--input)",
         ring: "hsl(var(--ring))",
         chart: {
           1: "hsl(var(--chart-1))",
@@ -97,4 +100,4 @@ export default {
     require("tailwindcss-animate"),
     require("@tailwindcss/container-queries"),
   ],
-} satisfies Config;
+};
