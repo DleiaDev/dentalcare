@@ -4,12 +4,17 @@ import { cn } from "@/lib/utils";
 
 export type Props = {
   className?: string;
+  fallback?: boolean;
   imageProps: Omit<ImageProps, "src"> & {
     src?: string;
   };
 };
 
-export default function Avatar({ className, imageProps }: Props) {
+export default function Avatar({
+  className,
+  imageProps,
+  fallback = true,
+}: Props) {
   return (
     <AvatarMain className={cn(className)}>
       <AvatarImage asChild src={imageProps.src}>
@@ -17,7 +22,7 @@ export default function Avatar({ className, imageProps }: Props) {
           <Image {...imageProps} src={imageProps.src} alt={imageProps.alt} />
         )}
       </AvatarImage>
-      <AvatarFallback>MI</AvatarFallback>
+      {fallback && <AvatarFallback>MI</AvatarFallback>}
     </AvatarMain>
   );
 }

@@ -10,6 +10,7 @@ type Step = {
 type Props = {
   steps: Step[];
   activeIndex: number;
+  className?: string;
 };
 
 function StepComponent({
@@ -70,15 +71,15 @@ function StepComponent({
   );
 }
 
-export default function Steps(props: Props) {
+export default function Steps({ steps, activeIndex, className }: Props) {
   return (
-    <div className="flex justify-around">
-      {props.steps.map((step, index) => (
+    <div className={cn("flex justify-around", className)}>
+      {steps.map((step, index) => (
         <StepComponent
           key={step.title}
           step={step}
           index={index}
-          activeIndex={props.activeIndex}
+          activeIndex={activeIndex}
         />
       ))}
     </div>

@@ -25,7 +25,7 @@ export default function VaulDrawer({ trigger, title, body }: Props) {
           }
         >
           <div className="bg-background h-full w-full grow flex flex-col rounded-[16px]">
-            <div className="flex items-center justify-between p-5 border-b border-b-border">
+            <div className="flex items-center justify-between py-5 px-9 border-b border-b-border">
               <Drawer.Title className="font-semibold text-lg">
                 {title}
               </Drawer.Title>
@@ -36,7 +36,7 @@ export default function VaulDrawer({ trigger, title, body }: Props) {
             <VisuallyHidden.Root>
               <Drawer.Description>{title}</Drawer.Description>
             </VisuallyHidden.Root>
-            <div className="p-5">{body}</div>
+            <div className="flex-1 py-5 px-9">{body}</div>
           </div>
         </Drawer.Content>
       </Drawer.Portal>
