@@ -11,7 +11,8 @@ type Props = {
   //
 };
 
-const MAXIMUM_SIZE = 5 * 1000000;
+const MAXIMUM_MB = 5;
+const MAXIMUM_SIZE = MAXIMUM_MB * 1000000;
 
 export default function Step1({}: Props) {
   const schema = z.object({
@@ -38,7 +39,7 @@ export default function Step1({}: Props) {
         if (file.size > MAXIMUM_SIZE)
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "File is too large",
+            message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
           });
       }),
   });

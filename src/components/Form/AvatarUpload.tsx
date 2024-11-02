@@ -92,7 +92,7 @@ export default function AvatarUpload({ name }: Props) {
         </div>
       </div>
       {typeof errorMessage === "string" && (
-        <ErrorMessage>{errorMessage}</ErrorMessage>
+        <ErrorMessage className="mt-2">{errorMessage}</ErrorMessage>
       )}
     </div>
   );
