@@ -58,7 +58,7 @@ module.exports = {
           foreground: "var(--popover-foreground)",
         },
         primary: {
-          DEFAULT: "var(--primary)",
+          DEFAULT: "hsl(var(--primary))",
           foreground: "var(--primary-foreground)",
           light: "var(--primary-light)",
         },
@@ -83,7 +83,7 @@ module.exports = {
           DEFAULT: "var(--input)",
           invalid: "var(--error-field)",
         },
-        error: "var(--error)",
+        error: "hsl(var(--error))",
         border: "var(--border)",
         ring: "hsl(var(--ring))",
         chart: {
