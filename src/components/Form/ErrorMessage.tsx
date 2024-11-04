@@ -6,9 +6,9 @@ type Props = {
   className?: string;
 };
 
-export default function Errors({ children, className }: Props) {
+export default function ErrorMessage({ children, className }: Props) {
   return (
-    <div className={cn("font-semibold text-error text-sm", className)}>
+    <div className={cn("font-semibold text-error text-sm mt-2", className)}>
       {children}
     </div>
   );

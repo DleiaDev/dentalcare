@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   name: string;
+  className?: string;
 };
 
-export default function AvatarUpload({ name }: Props) {
+export default function AvatarUpload({ name, className }: Props) {
   const inputEl = useRef<HTMLInputElement | null>();
   const {
     register,
@@ -39,7 +40,13 @@ export default function AvatarUpload({ name }: Props) {
   const errorMessage = errors[name]?.message;
 
   return (
-    <div className={cn("rounded-2xl p-5", errorMessage && "bg-input-invalid")}>
+    <div
+      className={cn(
+        "rounded-2xl p-5 mb-5",
+        errorMessage && "bg-input-invalid",
+        className,
+      )}
+    >
       <div className="flex gap-6">
         {previewSrc ? (
           <img
@@ -92,7 +99,7 @@ export default function AvatarUpload({ name }: Props) {
         </div>
       </div>
       {typeof errorMessage === "string" && (
-        <ErrorMessage className="mt-2">{errorMessage}</ErrorMessage>
+        <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
     </div>
   );
