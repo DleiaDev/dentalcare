@@ -1,10 +1,7 @@
-"use client";
-
 import { z } from "zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import AvatarUpload from "@/components/Form/AvatarUpload";
-import Button from "@/components/Button";
 import RadioGroup from "@/components/Form/RadioGroup";
 import { EmploymentTypeEnum } from "@/zod/utils/employmentType";
 import TextInput from "@/components/Form/TextInput";
@@ -14,65 +11,70 @@ import { isPossiblePhoneNumber } from "react-phone-number-input";
 import EmailInput from "@/components/Form/EmailInput";
 import TextArea from "@/components/Form/TextArea";
 
-type Props = {
-  //
-};
-
 const MAXIMUM_MB = 5;
 const MAXIMUM_SIZE = MAXIMUM_MB * 1000000;
 
-export default function Step1({}: Props) {
-  const schema = z.object({
-    avatar: z
-      .instanceof(FileList)
-      .optional()
-      .superRefine((fileList, ctx) => {
-        if (!fileList || fileList?.length < 1) return z.NEVER;
-        if (fileList.length > 1) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "File list contains more then 1 file",
-          });
-          return z.NEVER;
-        }
-        const [file] = fileList;
-        if (file.size > MAXIMUM_SIZE)
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
-          });
-      }),
-    employmentType: EmploymentTypeEnum,
-    name: z
-      .string()
-      .min(1, { message: "Name is required" })
-      .min(2, { message: "Name must contain at least 2 characters" }),
-    profession: z.string({ message: "Profession is required" }),
-    phone: z
-      .string({ message: "Phone is required" })
-      .refine((val) => isPossiblePhoneNumber(val), {
-        message: "Invalid phone number",
-      }),
-    email: z.string().min(1, { message: "Email is required" }).email(),
-    address: z.string().min(1, { message: "Address is required" }),
-  });
+// Zod schema
+const schema =
+  typeof window === "undefined"
+    ? null
+    : z.object({
+        avatar: z
+          .instanceof(FileList)
+          .optional()
+          .superRefine((fileList, ctx) => {
+            if (!fileList || fileList?.length < 1) return z.NEVER;
+            if (fileList.length > 1) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "File list contains more then 1 file",
+              });
+              return z.NEVER;
+            }
+            const [file] = fileList;
+            if (file.size > MAXIMUM_SIZE)
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
+              });
+          }),
+        employmentType: EmploymentTypeEnum,
+        name: z
+          .string()
+          .min(1, { message: "Name is required" })
+          .min(2, { message: "Name must contain at least 2 characters" }),
+        profession: z.string({ message: "Profession is required" }),
+        phone: z
+          .string({ message: "Phone is required" })
+          .refine((val) => isPossiblePhoneNumber(val), {
+            message: "Invalid phone number",
+          }),
+        email: z.string().min(1, { message: "Email is required" }).email(),
+        address: z.string().min(1, { message: "Address is required" }),
+      });
 
-  const methods = useForm({
+// Types
+type ZodSchema = Exclude<typeof schema, null>;
+export type Schema = z.infer<ZodSchema>;
+
+// Props
+type Props = {
+  onFinish: (form: Schema) => void;
+};
+
+export default function Step1({ onFinish }: Props) {
+  const methods = useForm<Schema>({
     mode: "onChange",
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as ZodSchema),
     defaultValues: {
       employmentType: "FULL_TIME",
     },
   });
 
-  const onSubmit = methods.handleSubmit(
-    (data) => {
-      console.log(data);
-    },
-    (errors) => {
-      console.log(errors);
-    },
-  );
+  const onSubmit = methods.handleSubmit((data) => {
+    data.avatar = data.avatar?.length === 1 ? data.avatar : undefined;
+    onFinish(data);
+  });
 
   return (
     <FormProvider {...methods}>
@@ -237,7 +239,6 @@ export default function Step1({}: Props) {
         <PhoneInput name="phone" label="Phone" />
         <EmailInput name="email" label="Email" />
         <TextArea name="address" label="Address" rows={4} />
-        <Button type="submit">Next</Button>
       </form>
     </FormProvider>
   );

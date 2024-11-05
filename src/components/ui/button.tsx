@@ -21,13 +21,14 @@ const buttonVariants = cva(
         destructive:
           "border-destructive bg-destructive text-destructive hover:destructive-light",
         white: "border-white bg-white text-gray-700 hover:bg-gray-300",
-        black: "border-gray-900 bg-gray-900 text-gray-900 hover:bg-gray-200",
+        black: "border-gray-900 bg-gray-900 text-gray-900 hover:bg-gray-300",
       },
       size: {
-        sm: "h-8 rounded-md px-3 text-xs",
+        sm: "h-8 px-3 text-xs",
         base: "h-9 px-4 py-2 text-base",
-        lg: "h-10 rounded-md px-8 text-base",
         icon: "h-9 w-9 text-base",
+        lg: "h-10 px-8 text-base",
+        xl: "h-11 px-12 text-base",
       },
       disabled: {
         true: "cursor-not-allowed",
