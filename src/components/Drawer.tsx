@@ -36,7 +36,7 @@ export default function VaulDrawer({ trigger, title, body }: Props) {
             <VisuallyHidden.Root>
               <Drawer.Description>{title}</Drawer.Description>
             </VisuallyHidden.Root>
-            <div className="flex-1 py-5 px-9">{body}</div>
+            <div className="flex-1 py-5 px-9 overflow-auto">{body}</div>
           </div>
         </Drawer.Content>
       </Drawer.Portal>
