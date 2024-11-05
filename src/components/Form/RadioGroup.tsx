@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { Controller, useFormContext } from "react-hook-form";
 import Label from "./Label";
+import ErrorMessage from "./ErrorMessage";
 
 type Option = {
   label: string;
@@ -15,8 +16,12 @@ type Props = {
 };
 
 export default function RadioGroup({ name, label, options }: Props) {
-  const { watch, control } = useFormContext();
-  const value = watch(name);
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
+  const errorMessage = errors[name]?.message;
+  console.log(errorMessage);
 
   return (
     <div className="mb-7">
@@ -26,7 +31,6 @@ export default function RadioGroup({ name, label, options }: Props) {
         control={control}
         render={({ field }) => (
           <RadioGroupPrimitive.Root
-            defaultValue={value}
             aria-label={label}
             className="flex gap-6 flex-wrap"
             value={field.value}
@@ -39,7 +43,8 @@ export default function RadioGroup({ name, label, options }: Props) {
                 htmlFor={option.label}
                 className={cn(
                   "h-12 flex items-center gap-3 border border-border rounded-lg px-3 min-w-40 flex-1 cursor-pointer transition-colors hover:border-primary",
-                  value === option.value && "border-primary",
+                  errorMessage && "border-error",
+                  field.value === option.value && "border-primary",
                 )}
               >
                 <RadioGroupPrimitive.Item
@@ -57,6 +62,9 @@ export default function RadioGroup({ name, label, options }: Props) {
           </RadioGroupPrimitive.Root>
         )}
       />
+      {typeof errorMessage === "string" && (
+        <ErrorMessage>{errorMessage}</ErrorMessage>
+      )}
     </div>
   );
 }

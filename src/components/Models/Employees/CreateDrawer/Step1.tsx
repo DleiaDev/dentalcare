@@ -67,9 +67,6 @@ export default function Step1({ formId, onFinish }: Props) {
   const methods = useForm<Schema>({
     mode: "onChange",
     resolver: zodResolver(schema as ZodSchema),
-    defaultValues: {
-      employmentType: "FULL_TIME",
-    },
   });
 
   const onSubmit = methods.handleSubmit((data) => {
