@@ -1,0 +1,60 @@
+model Employee {
+  id             String         @id @default(dbgenerated("uuid_generate_v4()"))
+  name           String
+  profession     String
+  email          String
+  phone          String
+  address        String
+  employmentType EmploymentType
+  WorkingDays    WorkingDay[]
+  DaysOff        DaysOff[]
+  Treatments     Treatment[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model DaysOff {
+  id         String   @id @default(dbgenerated("uuid_generate_v4()"))
+  name       String
+  Employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+  startDate  DateTime
+  endDate    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model WorkingDay {
+  id         String     @id @default(dbgenerated("uuid_generate_v4()"))
+  Employee   Employee   @relation(fields: [employeeId], references: [id])
+  employeeId String
+  dayOfWeek  DayOfWeek
+  timeSlots  TimeSlot[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model TimeSlot {
+  id           String     @id @default(dbgenerated("uuid_generate_v4()"))
+  WorkingDay   WorkingDay @relation(fields: [workingDayId], references: [id])
+  workingDayId String
+  startTime    DateTime
+  endTime      DateTime
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+}

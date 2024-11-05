@@ -1,0 +1,15 @@
+model Treatment {
+  id               String         @id @default(dbgenerated("uuid_generate_v4()"))
+  employee         Employee[]
+  TreatmentGroup   TreatmentGroup @relation(fields: [treatmentGroupId], references: [id])
+  treatmentGroupId String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model TreatmentGroup {
+  id         String      @id @default(dbgenerated("uuid_generate_v4()"))
+  treatments Treatment[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
