@@ -8,7 +8,11 @@ import Button from "@/components/Button";
 import RadioGroup from "@/components/Form/RadioGroup";
 import { EmploymentTypeEnum } from "@/zod/utils/employmentType";
 import TextInput from "@/components/Form/TextInput";
+import PhoneInput from "@/components/Form/PhoneInput";
 import Select from "@/components/Form/Select";
+import { isPossiblePhoneNumber } from "react-phone-number-input";
+import EmailInput from "@/components/Form/EmailInput";
+import TextArea from "@/components/Form/TextArea";
 
 type Props = {
   //
@@ -39,8 +43,18 @@ export default function Step1({}: Props) {
           });
       }),
     employmentType: EmploymentTypeEnum,
-    name: z.string().min(2),
-    profession: z.string(),
+    name: z
+      .string()
+      .min(1, { message: "Name is required" })
+      .min(2, { message: "Name must contain at least 2 characters" }),
+    profession: z.string({ message: "Profession is required" }),
+    phone: z
+      .string({ message: "Phone is required" })
+      .refine((val) => isPossiblePhoneNumber(val), {
+        message: "Invalid phone number",
+      }),
+    email: z.string().min(1, { message: "Email is required" }).email(),
+    address: z.string().min(1, { message: "Address is required" }),
   });
 
   const methods = useForm({
@@ -76,7 +90,6 @@ export default function Step1({}: Props) {
         <Select
           name="profession"
           label="Profession"
-          placeholder="Select a profession"
           groups={[
             {
               label: "Clinical roles",
@@ -221,6 +234,9 @@ export default function Step1({}: Props) {
             },
           ]}
         />
+        <PhoneInput name="phone" label="Phone" />
+        <EmailInput name="email" label="Email" />
+        <TextArea name="address" label="Address" rows={4} />
         <Button type="submit">Next</Button>
       </form>
     </FormProvider>

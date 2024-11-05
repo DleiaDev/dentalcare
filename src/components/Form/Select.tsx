@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import Label from "./Label";
 import { Controller, useFormContext } from "react-hook-form";
 import { Fragment } from "react";
+import ErrorMessage from "./ErrorMessage";
 
 type Option = {
   label: string;
@@ -26,7 +27,7 @@ type Group = {
 type Props = {
   name: string;
   label: string;
-  placeholder: string;
+  placeholder?: string;
   className?: string;
 } & (
   | {
@@ -65,42 +66,46 @@ export default function Select({
   } = useFormContext();
   const errorMessage = errors[name]?.message;
   return (
-    <Controller
-      name={name}
-      control={control}
-      render={({ field }) => (
-        <SelectRoot value={field.value} onValueChange={field.onChange}>
-          <Label>{label}</Label>
-          <SelectTrigger
-            className={cn(
-              "mb-7",
-              errorMessage
-                ? "border-error ring-error/20"
-                : "data-[state=open]:border-primary focus:border-primary ring-primary/20 ",
-              className,
-            )}
-          >
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {groups ? (
-              groups.map((group, i) => (
-                <Fragment key={group.label}>
-                  <SelectGroup>
-                    <SelectLabel className="p-3 text-muted-foreground">
-                      {group.label}
-                    </SelectLabel>
-                    <Options options={group.options} />
-                  </SelectGroup>
-                  {groups[i + 1] && <SelectSeparator />}
-                </Fragment>
-              ))
-            ) : (
-              <Options options={options} />
-            )}
-          </SelectContent>
-        </SelectRoot>
+    <div className="mb-7">
+      <Label>{label}</Label>
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => (
+          <SelectRoot value={field.value} onValueChange={field.onChange}>
+            <SelectTrigger
+              className={cn(
+                errorMessage
+                  ? "border-error ring-error/20"
+                  : "data-[state=open]:border-primary focus:border-primary ring-primary/20 ",
+                className,
+              )}
+            >
+              <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+              {groups ? (
+                groups.map((group, i) => (
+                  <Fragment key={group.label}>
+                    <SelectGroup>
+                      <SelectLabel className="p-3 text-muted-foreground">
+                        {group.label}
+                      </SelectLabel>
+                      <Options options={group.options} />
+                    </SelectGroup>
+                    {groups[i + 1] && <SelectSeparator />}
+                  </Fragment>
+                ))
+              ) : (
+                <Options options={options} />
+              )}
+            </SelectContent>
+          </SelectRoot>
+        )}
+      />
+      {typeof errorMessage === "string" && (
+        <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
-    />
+    </div>
   );
 }
