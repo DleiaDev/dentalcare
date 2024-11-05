@@ -59,10 +59,11 @@ export type Schema = z.infer<ZodSchema>;
 
 // Props
 type Props = {
+  formId?: string;
   onFinish: (form: Schema) => void;
 };
 
-export default function Step1({ onFinish }: Props) {
+export default function Step1({ formId, onFinish }: Props) {
   const methods = useForm<Schema>({
     mode: "onChange",
     resolver: zodResolver(schema as ZodSchema),
@@ -78,7 +79,7 @@ export default function Step1({ onFinish }: Props) {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={onSubmit}>
+      <form id={formId} onSubmit={onSubmit}>
         <AvatarUpload name="avatar" />
         <RadioGroup
           name="employmentType"

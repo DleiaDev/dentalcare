@@ -9,9 +9,14 @@ type Props = {
   trigger: ReactNode;
   title: String;
   body: ReactNode;
+  footer?: ReactNode;
 };
 
-export default function VaulDrawer({ trigger, title, body }: Props) {
+export function DrawerClose({ children }: { children: ReactNode }) {
+  return <Drawer.Close asChild>{children}</Drawer.Close>;
+}
+
+export default function VaulDrawer({ trigger, title, body, footer }: Props) {
   return (
     <Drawer.Root direction="right">
       <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>
@@ -37,6 +42,9 @@ export default function VaulDrawer({ trigger, title, body }: Props) {
               <Drawer.Description>{title}</Drawer.Description>
             </VisuallyHidden.Root>
             <div className="flex-1 py-5 px-9 overflow-auto">{body}</div>
+            {footer && (
+              <div className="py-5 px-9 border-t border-t-border">{footer}</div>
+            )}
           </div>
         </Drawer.Content>
       </Drawer.Portal>
