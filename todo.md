@@ -1,0 +1,2 @@
+- Develop clinic's settings
+- Employee's working hours must not extend clinic's working hours
