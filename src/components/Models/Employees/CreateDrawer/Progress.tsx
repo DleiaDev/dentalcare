@@ -7,15 +7,15 @@ import {
 } from "lucide-react";
 
 type Props = {
-  currentStep: number;
+  step: number;
   className?: string;
 };
 
-export default function Progress({ currentStep, className }: Props) {
+export default function Progress({ step, className }: Props) {
   return (
     <Steps
       className={className}
-      activeIndex={currentStep}
+      activeIndex={step - 1}
       steps={[
         {
           icon: UserPenIcon,

@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ["class"],
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
@@ -9,10 +10,7 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
-        // Highlight
         highlight: "var(--highlight)",
-
-        // Gray
         gray: {
           200: "var(--gray-200)",
           300: "var(--gray-300)",
@@ -23,11 +21,7 @@ module.exports = {
           800: "var(--gray-800)",
           900: "var(--gray-900)",
         },
-
-        // Success
         success: "var(--success)",
-
-        // Appointment
         appointment: {
           "finished-bg": "var(--appointment-finished-bg)",
           "finished-icon-bg": "var(--appointment-finished-icon-bg)",
@@ -46,7 +40,6 @@ module.exports = {
           "status-encounter-bg": "var(--appointment-status-encounter-bg)",
           "status-registered-bg": "var(--appointment-status-registered-bg)",
         },
-
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: {
@@ -93,6 +86,28 @@ module.exports = {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))",
         },
+      },
+      keyframes: {
+        "accordion-down": {
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
   },

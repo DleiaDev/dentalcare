@@ -21,7 +21,6 @@ export default function RadioGroup({ name, label, options }: Props) {
     formState: { errors },
   } = useFormContext();
   const errorMessage = errors[name]?.message;
-  console.log(errorMessage);
 
   return (
     <div className="mb-7">

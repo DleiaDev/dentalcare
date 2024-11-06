@@ -60,13 +60,15 @@ export type Schema = z.infer<ZodSchema>;
 // Props
 type Props = {
   formId?: string;
+  data?: Schema;
   onFinish: (form: Schema) => void;
 };
 
-export default function Step1({ formId, onFinish }: Props) {
+export default function Step1({ formId, data, onFinish }: Props) {
   const methods = useForm<Schema>({
     mode: "onChange",
     resolver: zodResolver(schema as ZodSchema),
+    defaultValues: data,
   });
 
   const onSubmit = methods.handleSubmit((data) => {
@@ -76,7 +78,11 @@ export default function Step1({ formId, onFinish }: Props) {
 
   return (
     <FormProvider {...methods}>
-      <form id={formId} onSubmit={onSubmit}>
+      <form
+        id={formId}
+        onSubmit={onSubmit}
+        className="animate-in fade-in duration-500"
+      >
         <AvatarUpload name="avatar" />
         <RadioGroup
           name="employmentType"
