@@ -30,3 +30,12 @@ export function getWeekOfMonth(date: Date) {
   // if (exact || week < 2 + index) return week;
   // return week === weeksInMonth ? index + 5 : week;
 }
+
+export function formatTime(type: "12" | "24", time: string) {
+  const d = new Date("1970-01-01 " + time);
+  return d.toLocaleTimeString("en-US", {
+    hourCycle: `h${type}`,
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
