@@ -5,14 +5,14 @@ import { Treatment, TreatmentSchema } from "./Treatment";
 
 export type TreatmentGroup = {
   id: string;
-  treatments: Treatment[];
+  Treatments: Treatment[];
   createdAt: Date;
   updatedAt: Date;
 };
 
 export const TreatmentGroupSchema: z.ZodType<TreatmentGroup> = z.object({
   id: z.string().uuid(),
-  treatments: z.array(TreatmentSchema),
+  Treatments: z.lazy(() => z.array(TreatmentSchema)),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

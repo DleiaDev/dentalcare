@@ -6,7 +6,7 @@ import { TreatmentGroup, TreatmentGroupSchema } from "./TreatmentGroup";
 
 export type Treatment = {
   id: string;
-  employee: Employee[];
+  Employees: Employee[];
   treatmentGroupId: string;
   TreatmentGroup: TreatmentGroup;
   createdAt: Date;
@@ -15,7 +15,7 @@ export type Treatment = {
 
 export const TreatmentSchema: z.ZodType<Treatment> = z.object({
   id: z.string().uuid(),
-  employee: z.array(EmployeeSchema),
+  Employees: z.lazy(() => z.array(EmployeeSchema)),
   treatmentGroupId: z.string().uuid(),
   TreatmentGroup: z.lazy(() => TreatmentGroupSchema),
   createdAt: z.date(),
