@@ -57,8 +57,8 @@
     --destructive-light: #ea6290;
     --destructive-foreground: var(--primary-foreground);
     --error: 3 79% 56%;
-    --error-field: #ffe9e8;
     --input: var(--gray-400);
+    --input-invalid: #ffe9e8;
     --border: var(--gray-400);
     --ring: 0 0% 3.9%;
     --chart-1: 12 76% 61%;

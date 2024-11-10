@@ -74,7 +74,7 @@ module.exports = {
         },
         input: {
           DEFAULT: "var(--input)",
-          invalid: "var(--error-field)",
+          invalid: "var(--input-invalid)",
         },
         error: "hsl(var(--error))",
         border: "var(--border)",
