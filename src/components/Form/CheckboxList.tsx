@@ -4,7 +4,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import Checkbox from "./Checkbox";
+import BooleanInput from "./BooleanInput";
 import { useFormContext } from "react-hook-form";
 
 type Props = {
@@ -62,7 +62,7 @@ export default function CheckboxList({ title, name, checkboxes }: Props) {
         </AccordionTrigger>
         <AccordionContent>
           {checkboxes.map((checkbox) => (
-            <Checkbox
+            <BooleanInput
               key={checkbox.label}
               name={(checkbox.name ?? name) as string}
               label={checkbox.label}
