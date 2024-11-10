@@ -29,9 +29,9 @@ export const EmployeeSchema: z.ZodType<Employee> = z.object({
   phone: z.string(),
   address: z.string(),
   employmentType: EmploymentTypeEnum,
-  WorkingDays: z.array(WorkingDaySchema),
-  DaysOff: z.array(DaysOffSchema),
-  Treatments: z.array(z.lazy(() => TreatmentSchema)),
+  WorkingDays: z.lazy(() => z.array(WorkingDaySchema)),
+  DaysOff: z.lazy(() => z.array(DaysOffSchema)),
+  Treatments: z.lazy(() => z.array(TreatmentSchema)),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
