@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 export const DayOfWeekEnum = z.enum([
-  "MONDAY",
-  "TUESDAY",
-  "WEDNESDAY",
-  "THURSDAY",
-  "FRIDAY",
-  "SATURDAY",
-  "SUNDAY",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
 ]);
 
 export type DayOfWeek = z.infer<typeof DayOfWeekEnum>;
