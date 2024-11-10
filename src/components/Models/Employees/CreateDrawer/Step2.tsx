@@ -85,16 +85,16 @@ const schema = z.object({
   services: z.number().array(),
 });
 
-export type Schema = z.infer<typeof schema>;
+export type Data = z.infer<typeof schema>;
 
 type Props = {
   formId?: string;
-  data?: Schema;
-  onFinish: (form: Schema) => void;
+  data?: Data;
+  onFinish: (form: Data) => void;
 };
 
 export default function Step2({ formId, data, onFinish }: Props) {
-  const methods = useForm<Schema>({
+  const methods = useForm<Data>({
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: data ?? { services: [] },

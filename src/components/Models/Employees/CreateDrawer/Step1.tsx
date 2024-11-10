@@ -55,17 +55,17 @@ const schema =
 
 // Types
 type ZodSchema = Exclude<typeof schema, null>;
-export type Schema = z.infer<ZodSchema>;
+export type Data = z.infer<ZodSchema>;
 
 // Props
 type Props = {
   formId?: string;
-  data?: Schema;
-  onFinish: (form: Schema) => void;
+  data?: Data;
+  onFinish: (form: Data) => void;
 };
 
 export default function Step1({ formId, data, onFinish }: Props) {
-  const methods = useForm<Schema>({
+  const methods = useForm<Data>({
     mode: "onChange",
     resolver: zodResolver(schema as ZodSchema),
     defaultValues: data,
