@@ -3,7 +3,7 @@ import { Employee, EmployeeSchema } from "./Employee";
 
 // ------- Model -------
 
-export type DaysOff = {
+export type DayOff = {
   id: string;
   name: string;
   employeeId: string;
@@ -14,7 +14,7 @@ export type DaysOff = {
   updatedAt: Date;
 };
 
-export const DaysOffSchema: z.ZodType<DaysOff> = z.object({
+export const DayOffSchema: z.ZodType<DayOff> = z.object({
   id: z.string().uuid(),
   name: z.string(),
   employeeId: z.string().uuid(),
@@ -27,12 +27,12 @@ export const DaysOffSchema: z.ZodType<DaysOff> = z.object({
 
 // ------- Input -------
 
-export type CreateDaysOffInput = Omit<
-  DaysOff,
+export type CreateDayOffInput = Omit<
+  DayOff,
   "id" | "createdAt" | "updatedAt" | "Employee"
 >;
 
-export const CreateDaysOffInputSchema = z.object({
+export const CreateDayOffInputSchema = z.object({
   name: z.string(),
   employeeId: z.string().uuid(),
   startDate: z.date(),

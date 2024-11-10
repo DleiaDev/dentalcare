@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DaysOff, DaysOffSchema } from "./DaysOff";
+import { DayOff, DayOffSchema } from "./DayOff";
 import { Treatment, TreatmentSchema } from "./Treatment";
 import { WorkingDay, WorkingDaySchema } from "./WorkingDay";
 import { EmploymentType, EmploymentTypeEnum } from "./utils/employmentType";
@@ -15,7 +15,7 @@ export type Employee = {
   address: string;
   employmentType: EmploymentType;
   WorkingDays: WorkingDay[];
-  DaysOff: DaysOff[];
+  DayOff: DayOff[];
   Treatments: Treatment[];
   createdAt: Date;
   updatedAt: Date;
@@ -30,7 +30,7 @@ export const EmployeeSchema: z.ZodType<Employee> = z.object({
   address: z.string(),
   employmentType: EmploymentTypeEnum,
   WorkingDays: z.lazy(() => z.array(WorkingDaySchema)),
-  DaysOff: z.lazy(() => z.array(DaysOffSchema)),
+  DayOff: z.lazy(() => z.array(DayOffSchema)),
   Treatments: z.lazy(() => z.array(TreatmentSchema)),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -40,7 +40,7 @@ export const EmployeeSchema: z.ZodType<Employee> = z.object({
 
 export type CreateEmployeeInput = Omit<
   Employee,
-  "id" | "createdAt" | "updatedAt" | "WorkingDays" | "DaysOff" | "Treatments"
+  "id" | "createdAt" | "updatedAt" | "WorkingDays" | "DayOff" | "Treatments"
 >;
 
 export const CreateEmployeeInputSchema = z.object({
