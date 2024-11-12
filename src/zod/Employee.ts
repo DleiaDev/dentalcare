@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { HolidaySchema } from "./Holiday";
 import { DayOff, DayOffSchema } from "./DayOff";
 import { Treatment, TreatmentSchema } from "./Treatment";
 import { WorkingDay, WorkingDaySchema } from "./WorkingDay";
@@ -30,6 +31,7 @@ export const EmployeeSchema: z.ZodType<Employee> = z.object({
   address: z.string(),
   employmentType: EmploymentTypeEnum,
   WorkingDays: z.lazy(() => z.array(WorkingDaySchema)),
+  Holidays: z.lazy(() => z.array(HolidaySchema)),
   DayOff: z.lazy(() => z.array(DayOffSchema)),
   Treatments: z.lazy(() => z.array(TreatmentSchema)),
   createdAt: z.date(),
