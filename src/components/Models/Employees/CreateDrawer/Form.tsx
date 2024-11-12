@@ -17,7 +17,7 @@ type Props = {
   onStepFinish: (step: Step, data: Step1Data | Step2Data | Step3Data) => void;
 };
 
-const clinicSettings = {
+const clinic = {
   timeFormat: "24",
   WorkingDays: [
     {
@@ -76,6 +76,20 @@ const clinicSettings = {
       ],
     },
   ],
+  Holidays: [
+    {
+      id: "3eb62419-6ef8-4e7e-920c-daaec0f7db7e",
+      name: "New Year Holiday",
+      startDate: "2024-01-01",
+      endDate: "2024-02-02",
+    },
+    {
+      id: "c492050a-0a04-41ec-89a8-f7e257b4f094",
+      name: "Christmas",
+      startDate: "2024-01-07",
+      endDate: "2024-02-07",
+    },
+  ],
 };
 
 export default function Create({ formId, step, data, onStepFinish }: Props) {
@@ -100,11 +114,18 @@ export default function Create({ formId, step, data, onStepFinish }: Props) {
         <Step3
           formId={formId}
           data={data.step3}
-          clinicSettings={clinicSettings}
+          clinic={clinic}
           onFinish={(data) => onStepFinish(3, data)}
         />
       )}
-      {step === 4 && <Step4 />}
+      {step === 4 && (
+        <Step4
+          formId={formId}
+          data={data.step4}
+          clinic={clinic}
+          onFinish={(data) => console.log(data)}
+        />
+      )}
     </div>
   );
 }

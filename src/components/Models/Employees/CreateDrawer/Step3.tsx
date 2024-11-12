@@ -12,7 +12,7 @@ import {
   CreateWorkingDayInputSchema,
   WorkingDay,
 } from "@/zod/WorkingDay";
-import { ClinicSettings } from "@/zod/ClinicSettings";
+import { Clinic } from "@/zod/Clinic";
 import { DayOfWeek, DayOfWeekEnum } from "@/zod/utils/dayOfWeek";
 import BooleanInput from "@/components/Form/BooleanInput";
 import TimeInput from "@/components/Form/TimeInput";
@@ -29,7 +29,7 @@ export type Data = CreateWorkingDayInput;
 type Props = {
   formId?: string;
   data?: Data;
-  clinicSettings: ClinicSettings;
+  clinic: Clinic;
   onFinish: (data: Data) => void;
 };
 
@@ -157,22 +157,14 @@ export function Switch({
   );
 }
 
-export default function Step3({
-  formId,
-  data,
-  clinicSettings,
-  onFinish,
-}: Props) {
-  const schema = useMemo(
-    () => CreateWorkingDayInputSchema(clinicSettings),
-    [clinicSettings],
-  );
+export default function Step3({ formId, data, clinic, onFinish }: Props) {
+  const schema = useMemo(() => CreateWorkingDayInputSchema(clinic), [clinic]);
 
   const methods = useForm<Data>({
     mode: "onChange",
     resolver: zodResolver(schema),
     defaultValues: data ?? {
-      WorkingDays: clinicSettings.WorkingDays,
+      WorkingDays: clinic.WorkingDays,
     },
   });
 
@@ -194,7 +186,7 @@ export default function Step3({
 
   const handleCheckedChange = (checked: boolean, day: DayOfWeek) => {
     if (checked === true) {
-      const clinicSettingWorkingDay = clinicSettings.WorkingDays.find(
+      const clinicSettingWorkingDay = clinic.WorkingDays.find(
         (workingDay) => workingDay.dayOfWeek === day,
       ) as WorkingDay;
       append({
@@ -215,7 +207,7 @@ export default function Step3({
     );
     if (index === -1) return;
     const field = fields[index];
-    const clinicWorkingDay = clinicSettings.WorkingDays.find(
+    const clinicWorkingDay = clinic.WorkingDays.find(
       (workingDay) => workingDay.dayOfWeek === day,
     );
     if (!clinicWorkingDay) throw new Error("Clinic working day not found");
@@ -247,7 +239,7 @@ export default function Step3({
     {} as Record<DayOfWeek, number>,
   );
 
-  const dayToClinicWorking = clinicSettings.WorkingDays.reduce(
+  const dayToClinicWorking = clinic.WorkingDays.reduce(
     (acc, workingDay) => {
       acc[workingDay.dayOfWeek] = true;
       return acc;

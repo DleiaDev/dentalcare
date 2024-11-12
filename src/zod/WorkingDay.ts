@@ -6,7 +6,7 @@ import {
   TimeSlotSchema,
 } from "./TimeSlot";
 import { DayOfWeek, DayOfWeekEnum } from "./utils/dayOfWeek";
-import { ClinicSettings } from "./ClinicSettings";
+import { Clinic } from "./Clinic";
 import { formatTime } from "@/lib/utils";
 
 // ------- Model -------
@@ -35,8 +35,8 @@ export const WorkingDaySchema: z.ZodType<WorkingDay> = z.object({
 export type CreateWorkingDayInput = z.infer<
   ReturnType<typeof CreateWorkingDayInputSchema>
 >;
-export const CreateWorkingDayInputSchema = (clinicSettings: ClinicSettings) => {
-  const dayToStartAndEndTime = clinicSettings.WorkingDays.reduce(
+export const CreateWorkingDayInputSchema = (clinic: Clinic) => {
+  const dayToStartAndEndTime = clinic.WorkingDays.reduce(
     (acc, workingDay) => {
       const startTime = workingDay.TimeSlots[0].startTime;
       const endTime =
@@ -65,7 +65,7 @@ export const CreateWorkingDayInputSchema = (clinicSettings: ClinicSettings) => {
         if (employeeStartTime < clinicStartTime) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `Start time can't be earlier then clinic's start time (${formatTime(clinicSettings.timeFormat, clinicStartTime)})`,
+            message: `Start time can't be earlier then clinic's start time (${formatTime(clinic.timeFormat, clinicStartTime)})`,
             path: ["TimeSlots", 0, "startTime"],
             fatal: true,
           });
@@ -74,7 +74,7 @@ export const CreateWorkingDayInputSchema = (clinicSettings: ClinicSettings) => {
         if (clinicEndTime < employeeEndTime) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `End time can't be later then clinic's end time (${formatTime(clinicSettings.timeFormat, clinicEndTime)})`,
+            message: `End time can't be later then clinic's end time (${formatTime(clinic.timeFormat, clinicEndTime)})`,
             path: ["TimeSlots", workingDay.TimeSlots.length - 1, "endTime"],
             fatal: true,
           });
