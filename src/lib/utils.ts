@@ -31,11 +31,23 @@ export function getWeekOfMonth(date: Date) {
   // return week === weeksInMonth ? index + 5 : week;
 }
 
+export function formatDate(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  }).format(date);
+}
+
 export function formatTime(type: "12" | "24", time: string) {
   const d = new Date("1970-01-01 " + time);
-  return d.toLocaleTimeString("en-US", {
+  return d.toLocaleTimeString("en", {
     hourCycle: `h${type}`,
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+export function areEqualDates(date1: Date, date2: Date) {
+  return date1.getTime() === date2.getTime();
 }

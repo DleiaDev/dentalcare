@@ -1,92 +1,201 @@
-import {
-  ComponentProps,
-  createContext,
-  ReactNode,
-  useContext,
-  useState,
-} from "react";
-import { Drawer } from "vaul";
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import React, { createContext, ReactNode, useContext, useState } from "react";
+import ReactModal from "react-modal";
 import { Cross1Icon } from "@radix-ui/react-icons";
+import { cn } from "@/lib/utils";
+import Button from "./Button";
 
-// Props
-type Props = ComponentProps<typeof Drawer.Root> & {
-  trigger: ReactNode;
+ReactModal.setAppElement("#drawers-container");
+
+type Props = {
   title: String;
-  body: ReactNode;
+  trigger: ReactNode;
+  content: ReactNode;
   footer?: ReactNode;
 };
 
-// Context
-type Context = { close: () => void };
-const DrawerContext = createContext<Context | null>(null);
-export const useDrawerContext = () => {
-  const currentDrawerContext = useContext(DrawerContext);
+type TriggerProps = {
+  onClick: () => void;
+};
 
-  if (!currentDrawerContext) {
+// Drawer context
+type DrawerContext = {
+  close: () => void;
+};
+const DrawerContext = createContext<DrawerContext | null>(null);
+export const useDrawerContext = () => {
+  const drawerContext = useContext(DrawerContext);
+  if (!drawerContext)
     throw new Error(
       "useDrawerContext has to be used within <DrawerContext.Provider>",
     );
-  }
-
-  return currentDrawerContext;
+  return drawerContext;
 };
 
-export default function VaulDrawer({
+// Level context
+const LevelContext = createContext(0);
+
+// Total opened context
+const TotalOpenedContext = createContext<{
+  totalOpened: number;
+  setTotalOpened: (setFunc: (totalOpened: number) => number) => void;
+}>({
+  totalOpened: 0,
+  setTotalOpened: () => {},
+});
+
+// Opening level context
+const OpeningLevelContext = createContext<{
+  openingLevel?: number;
+  setOpeningLevel: (openingLevel?: number) => void;
+}>({
+  openingLevel: 0,
+  setOpeningLevel: () => {},
+});
+
+// Closing level context
+const ClosingLevelContext = createContext<{
+  closingLevel?: number;
+  setClosingLevel: (closingLevel?: number) => void;
+}>({
+  closingLevel: 0,
+  setClosingLevel: () => {},
+});
+
+const Providers = ({ children }: { children: ReactNode }) => {
+  const [totalOpened, setTotalOpened] = useState(0);
+  const [openingLevel, setOpeningLevel] = useState<number | undefined>();
+  const [closingLevel, setClosingLevel] = useState<number | undefined>();
+  return (
+    <TotalOpenedContext.Provider value={{ totalOpened, setTotalOpened }}>
+      <OpeningLevelContext.Provider value={{ openingLevel, setOpeningLevel }}>
+        <ClosingLevelContext.Provider value={{ closingLevel, setClosingLevel }}>
+          {children}
+        </ClosingLevelContext.Provider>
+      </OpeningLevelContext.Provider>
+    </TotalOpenedContext.Provider>
+  );
+};
+
+const Component = ({
   trigger,
   title,
-  body,
+  content,
   footer,
-  ...props
-}: Props) {
+  level,
+}: Props & { level: number }) => {
+  const { openingLevel, setOpeningLevel } = useContext(OpeningLevelContext);
+  const { closingLevel, setClosingLevel } = useContext(ClosingLevelContext);
+  const { totalOpened, setTotalOpened } = useContext(TotalOpenedContext);
+
   const [isOpen, setIsOpen] = useState(false);
 
-  const context = {
-    close: () => setIsOpen(false),
+  function openModal() {
+    setIsOpen(true);
+    setOpeningLevel(level);
+    setClosingLevel(undefined);
+    setTotalOpened((totalOpened) => totalOpened + 1);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+    setOpeningLevel(undefined);
+    setClosingLevel(level);
+    setTotalOpened((totalOpened) => totalOpened - 1);
+  }
+
+  let animationName = undefined;
+  const isOpening = openingLevel === level;
+  const isClosing = closingLevel === level;
+  if (isOpening && level === 0) animationName = "modal-first-open";
+  else if (isOpening && level > 0) animationName = "modal-nested-open";
+  else if (isClosing && level === 0) animationName = "modal-first-close";
+  else if (isClosing && level > 0) animationName = "modal-nested-close";
+
+  let translateXPercentage = 0;
+  if (level === 0 && totalOpened === 1) translateXPercentage = 0;
+  else if (level < totalOpened - 1)
+    translateXPercentage = (totalOpened - level - 1) * 75;
+  else if (level === totalOpened - 1) translateXPercentage = -26;
+
+  const animation = `${animationName} 500ms cubic-bezier(0.32,0.72,0,1)`;
+  const transform = `translateX(${translateXPercentage}%)`;
+
+  if (React.Children.count(trigger) > 1)
+    throw new Error("Only one child trigger is allowed");
+
+  let triggerComponent = undefined;
+  if (React.isValidElement<TriggerProps>(trigger))
+    triggerComponent = React.cloneElement(trigger, { onClick: openModal });
+
+  const drawerContext = {
+    close: closeModal,
   };
 
   return (
-    <DrawerContext.Provider value={context}>
-      <Drawer.Root
-        direction="right"
-        {...props}
-        open={isOpen}
-        onOpenChange={setIsOpen}
+    <DrawerContext.Provider value={drawerContext}>
+      {triggerComponent}
+      <ReactModal
+        isOpen={isOpen}
+        onRequestClose={closeModal}
+        closeTimeoutMS={500}
+        overlayClassName={{
+          base: cn(
+            "fixed top-0 left-0 w-full max-w-full h-full max-h-full animate-modal-overlay-open",
+            level > 0 && "!bg-transparent",
+          ),
+          afterOpen: "",
+          beforeClose: "!animate-modal-overlay-exit",
+        }}
+        className={{
+          base: cn(
+            "absolute h-[95%] w-2/3 max-w-[50rem] right-4 top-0 bottom-0 my-auto rounded-xl bg-background",
+          ),
+          beforeClose: "",
+          afterOpen: "",
+        }}
+        style={{
+          content: {
+            transform,
+            animation,
+            transition:
+              "transform 500ms cubic-bezier(0.32,0.72,0,1), opacity 500ms cubic-bezier(0.32,0.72,0,1)",
+          },
+        }}
       >
-        <Drawer.Trigger asChild>{trigger}</Drawer.Trigger>
-        <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-          <Drawer.Content
-            className="right-4 top-8 bottom-8 fixed z-10 outline-none w-2/3 max-w-[50rem] flex"
-            // The gap between the edge of the screen and the drawer is 8px in this case.
-            style={
-              {
-                "--initial-transform": "calc(100% + 8px)",
-              } as React.CSSProperties
-            }
-          >
-            <div className="bg-background h-full w-full grow flex flex-col rounded-[16px]">
-              <div className="flex items-center justify-between py-5 px-9 border-b border-b-border">
-                <Drawer.Title className="font-semibold text-lg">
-                  {title}
-                </Drawer.Title>
-                <Drawer.Close>
-                  <Cross1Icon className="w-5 h-5" />
-                </Drawer.Close>
-              </div>
-              <VisuallyHidden.Root>
-                <Drawer.Description>{title}</Drawer.Description>
-              </VisuallyHidden.Root>
-              <div className="flex-1 py-5 px-9 overflow-auto">{body}</div>
-              {footer && (
-                <div className="py-5 px-9 border-t border-t-border">
-                  {footer}
-                </div>
-              )}
-            </div>
-          </Drawer.Content>
-        </Drawer.Portal>
-      </Drawer.Root>
+        <div className="h-full flex flex-col">
+          {/* Title */}
+          <div className="flex items-center justify-between py-5 px-9 border-b border-b-border">
+            <div className="font-semibold text-lg">{title}</div>
+            <Button intent="text" autoFocus onClick={closeModal}>
+              <Cross1Icon className="w-5 h-5" />
+            </Button>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 py-5 px-9 overflow-auto">{content}</div>
+
+          {/* Footer */}
+          {footer && (
+            <div className="py-5 px-9 border-t border-t-border">{footer}</div>
+          )}
+        </div>
+      </ReactModal>
     </DrawerContext.Provider>
+  );
+};
+
+export default function Modal(props: Props) {
+  const level = useContext(LevelContext);
+
+  return (
+    <LevelContext.Provider value={level + 1}>
+      {level === 0 ? (
+        <Providers>
+          <Component {...props} level={level} />
+        </Providers>
+      ) : (
+        <Component {...props} level={level} />
+      )}
+    </LevelContext.Provider>
   );
 }

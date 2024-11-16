@@ -21,6 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${font.className} m-0 overflow-hidden flex`}>
         <ReactQueryProvider>
+          <div id="drawers-container"></div>
           <Sidebar className="absolute left-0 top-0 xl:relative" />
           <div className="flex-1 h-svh flex flex-col overflow-hidden xl:h-auto">
             <Navbar />

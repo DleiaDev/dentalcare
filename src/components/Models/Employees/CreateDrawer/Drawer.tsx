@@ -1,5 +1,5 @@
 import Button from "@/components/Button";
-import DrawerBase, { useDrawerContext } from "@/components/Drawer";
+import Drawer, { useDrawerContext } from "@/components/Drawer";
 import Form from "./Form";
 import { ComponentProps, useState } from "react";
 
@@ -14,10 +14,10 @@ function Footer({
   step: FormProps["step"];
   goBackward: () => void;
 }) {
-  const context = useDrawerContext();
+  const { close } = useDrawerContext();
   return (
     <div className="flex justify-end gap-6">
-      <Button intent="ghost" color="black" size="xl" onClick={context.close}>
+      <Button intent="ghost" color="black" size="xl" onClick={close}>
         Cancel
       </Button>
       <Button
@@ -35,10 +35,10 @@ function Footer({
   );
 }
 
-export default function Drawer({}) {
+export default function CreateDrawer({}) {
   const formId = "employee-create-form";
 
-  const [currentStep, setCurrentStep] = useState<FormProps["step"]>(1);
+  const [currentStep, setCurrentStep] = useState<FormProps["step"]>(4);
   const [data, setData] = useState<FormProps["data"]>({});
 
   function goForward() {
@@ -55,10 +55,10 @@ export default function Drawer({}) {
   };
 
   return (
-    <DrawerBase
+    <Drawer
       trigger={<Button>Add Doctor</Button>}
       title="Add new doctor staff"
-      body={
+      content={
         <Form
           formId={formId}
           step={currentStep}

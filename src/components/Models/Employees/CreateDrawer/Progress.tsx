@@ -31,7 +31,7 @@ export default function Progress({ step, className }: Props) {
         },
         {
           icon: CalendarX2Icon,
-          title: "Days Off",
+          title: "Holidays and Absences",
         },
       ]}
     />

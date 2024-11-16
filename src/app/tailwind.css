@@ -78,3 +78,43 @@
     @apply text-gray-900;
   }
 }
+
+@keyframes modal-first-open {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes modal-first-close {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes modal-nested-open {
+  from {
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-26%);
+  }
+}
+
+@keyframes modal-nested-close {
+  from {
+    opacity: 1;
+    transform: translateX(-26%);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+}

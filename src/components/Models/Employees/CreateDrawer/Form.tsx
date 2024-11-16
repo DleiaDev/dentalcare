@@ -80,14 +80,14 @@ const clinic = {
     {
       id: "3eb62419-6ef8-4e7e-920c-daaec0f7db7e",
       name: "New Year Holiday",
-      startDate: "2024-01-01",
-      endDate: "2024-02-02",
+      startDate: new Date("2024-01-01"),
+      endDate: new Date("2024-01-02"),
     },
     {
       id: "c492050a-0a04-41ec-89a8-f7e257b4f094",
       name: "Christmas",
-      startDate: "2024-01-07",
-      endDate: "2024-02-07",
+      startDate: new Date("2024-01-07"),
+      endDate: new Date("2024-01-07"),
     },
   ],
 };
