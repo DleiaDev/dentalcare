@@ -11,6 +11,9 @@ export type Absence = {
   Entity: Employee | Clinic;
   createdAt: Date;
   updatedAt: Date;
+
+  // Front-end
+  text: string;
 };
 
 export const AbsenceSchema: z.ZodType<Absence> = z.object({
@@ -22,6 +25,9 @@ export const AbsenceSchema: z.ZodType<Absence> = z.object({
   Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema)),
   createdAt: z.date(),
   updatedAt: z.date(),
+
+  // Front-end
+  text: z.string(),
 });
 
 export type CreateAbsenceInput = z.infer<typeof CreateAbsenceInputSchema>;

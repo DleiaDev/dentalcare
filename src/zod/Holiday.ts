@@ -13,6 +13,9 @@ export type Holiday = {
   Entity: Employee | Clinic;
   createdAt: Date;
   updatedAt: Date;
+
+  // Front end
+  text: string;
 };
 
 export const HolidaySchema: z.ZodType<Holiday> = z.object({
@@ -26,6 +29,9 @@ export const HolidaySchema: z.ZodType<Holiday> = z.object({
   Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema)),
   createdAt: z.date(),
   updatedAt: z.date(),
+
+  // Front end
+  text: z.string(),
 });
 
 export const CreateHolidayInputSchema = z.object({
