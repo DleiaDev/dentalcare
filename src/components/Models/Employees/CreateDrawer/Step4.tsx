@@ -13,19 +13,21 @@ type Props = {
 };
 
 export default function Step4({ clinic }: Props) {
+  const entries = [...clinic.Holidays, ...clinic.Absences];
   return (
     <div>
       <div className="flex flex-col gap-4 mb-4">
-        {clinic.Holidays.map((holiday) => (
+        {entries.map((entry) => (
           <div
-            key={holiday.id}
-            className="h-20 border border-border px-5 rounded-xl flex flex-col justify-center"
+            key={entry.id}
+            className="border border-border px-5 py-3 rounded-xl flex flex-col justify-center"
           >
-            <div className="font-medium">{holiday.name}</div>
-            <div className="text-gray-600">
-              {areEqualDates(holiday.startDate, holiday.endDate)
-                ? formatDate(holiday.startDate)
-                : `${formatDate(holiday.startDate)} - ${formatDate(holiday.endDate)}`}
+            <div>
+              <div className="font-medium">{entry.name}</div>
+              <div className="text-gray-600">{entry.text}</div>
+              <div className="bg-gray-600 text-white rounded-lg text-sm py-0.5 px-3 mt-2 inline-block font-medium">
+                Clinic
+              </div>
             </div>
           </div>
         ))}
