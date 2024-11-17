@@ -8,7 +8,7 @@ export type Absence = {
   rrule: string;
   entityId: string;
   entityType: "Employee" | "Clinic";
-  Entity: Employee | Clinic;
+  Entity?: Employee | Clinic;
   createdAt: Date;
   updatedAt: Date;
 
@@ -22,7 +22,7 @@ export const AbsenceSchema: z.ZodType<Absence> = z.object({
   rrule: z.string(),
   entityId: z.string().uuid(),
   entityType: z.enum(["Employee", "Clinic"]),
-  Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema)),
+  Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema).or(z.undefined())),
   createdAt: z.date(),
   updatedAt: z.date(),
 

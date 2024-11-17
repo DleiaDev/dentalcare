@@ -10,7 +10,7 @@ export type Holiday = {
   endDate: Date;
   entityId: string;
   entityType: "Employee" | "Clinic";
-  Entity: Employee | Clinic;
+  Entity?: Employee | Clinic;
   createdAt: Date;
   updatedAt: Date;
 
@@ -26,7 +26,7 @@ export const HolidaySchema: z.ZodType<Holiday> = z.object({
   endDate: z.date(),
   entityId: z.string().uuid(),
   entityType: z.enum(["Employee", "Clinic"]),
-  Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema)),
+  Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema).or(z.undefined())),
   createdAt: z.date(),
   updatedAt: z.date(),
 
