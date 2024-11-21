@@ -18,6 +18,7 @@ type Props = {
 };
 
 const clinic = {
+  countryCode: "US",
   timeFormat: "24",
   WorkingDays: [
     {
