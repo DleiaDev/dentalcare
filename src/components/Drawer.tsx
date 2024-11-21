@@ -7,10 +7,12 @@ import Button from "./Button";
 ReactModal.setAppElement("#drawers-container");
 
 type Props = {
-  title: String;
+  title: ReactNode;
   trigger: ReactNode;
   content: ReactNode;
   footer?: ReactNode;
+  titleClassName?: string;
+  titleContainerClassName?: string;
 };
 
 type TriggerProps = {
@@ -82,6 +84,8 @@ const Component = ({
   content,
   footer,
   level,
+  titleClassName,
+  titleContainerClassName,
 }: Props & { level: number }) => {
   const { openingLevel, setOpeningLevel } = useContext(OpeningLevelContext);
   const { closingLevel, setClosingLevel } = useContext(ClosingLevelContext);
@@ -164,8 +168,15 @@ const Component = ({
       >
         <div className="h-full flex flex-col">
           {/* Title */}
-          <div className="flex items-center justify-between py-5 px-9 border-b border-b-border">
-            <div className="font-semibold text-lg">{title}</div>
+          <div
+            className={cn(
+              "flex items-center justify-between py-5 px-9 border-b border-b-border",
+              titleContainerClassName,
+            )}
+          >
+            <div className={cn("font-semibold text-lg", titleClassName)}>
+              {title}
+            </div>
             <Button intent="text" autoFocus onClick={closeModal}>
               <Cross1Icon className="w-5 h-5" />
             </Button>

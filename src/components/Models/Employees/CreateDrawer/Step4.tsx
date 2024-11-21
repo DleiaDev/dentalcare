@@ -1,7 +1,14 @@
-import Button from "@/components/Button";
-import { areEqualDates, formatDate } from "@/lib/utils";
+import { useState } from "react";
 import { Clinic } from "@/zod/Clinic";
+import Button from "@/components/Button";
 import Drawer from "@/components/Drawer";
+import { Tabs, TabsList, TabsTrigger } from "@/components/Tabs";
+import HolidayForm, {
+  Data as HolidayFormData,
+} from "@/components/Models/Holidays/Form";
+import AbsenceForm, {
+  Data as AbsenceFormData,
+} from "@/components/Models/Absences/Form";
 
 export type Data = {};
 
@@ -13,7 +20,18 @@ type Props = {
 };
 
 export default function Step4({ clinic }: Props) {
+  const [tab, setTab] = useState("Holiday");
+
   const entries = [...clinic.Holidays, ...clinic.Absences];
+
+  const onHolidaysFinish = (data: HolidayFormData) => {
+    console.log(data);
+  };
+
+  const onAbsencesFinish = (data: AbsenceFormData) => {
+    console.log(data);
+  };
+
   return (
     <div>
       <div className="flex flex-col gap-4 mb-4">
@@ -34,12 +52,27 @@ export default function Step4({ clinic }: Props) {
       </div>
 
       <Drawer
-        trigger={<Button>Add holiday</Button>}
-        title="Add holiday"
+        trigger={<Button>Add holidays or absences</Button>}
+        title={
+          <Tabs value={tab} onValueChange={setTab}>
+            <TabsList className="border-b border-b-border">
+              <TabsTrigger value="Holiday" className="flex-1">
+                Add Holiday
+              </TabsTrigger>
+              <TabsTrigger value="Absence" className="flex-1">
+                Add Absence
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        }
+        titleClassName="flex-1"
+        titleContainerClassName="pb-0 gap-10"
         content={
-          <div>
-            <div>Hello</div>
-          </div>
+          tab === "Holiday" ? (
+            <HolidayForm clinic={clinic} onFinish={onHolidaysFinish} />
+          ) : tab === "Absence" ? (
+            <AbsenceForm onFinish={onAbsencesFinish} />
+          ) : null
         }
       />
     </div>
