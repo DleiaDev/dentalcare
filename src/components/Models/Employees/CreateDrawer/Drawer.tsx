@@ -1,39 +1,10 @@
 import Button from "@/components/Button";
-import Drawer, { useDrawerContext } from "@/components/Drawer";
+import Drawer from "@/components/Drawer";
+import DrawerFooter from "@/components/DrawerFooter";
 import Form from "./Form";
 import { ComponentProps, useState } from "react";
 
 type FormProps = ComponentProps<typeof Form>;
-
-function Footer({
-  formId,
-  step,
-  goBackward,
-}: {
-  formId: string;
-  step: FormProps["step"];
-  goBackward: () => void;
-}) {
-  const { close } = useDrawerContext();
-  return (
-    <div className="flex justify-end gap-6">
-      <Button intent="ghost" color="black" size="xl" onClick={close}>
-        Cancel
-      </Button>
-      <Button
-        intent="outlined"
-        size="xl"
-        disabled={step === 1}
-        onClick={goBackward}
-      >
-        Back
-      </Button>
-      <Button form={formId} size="xl" type="submit" disabled={step === 4}>
-        Next
-      </Button>
-    </div>
-  );
-}
 
 export default function CreateDrawer({}) {
   const formId = "employee-create-form";
@@ -67,7 +38,12 @@ export default function CreateDrawer({}) {
         />
       }
       footer={
-        <Footer formId={formId} step={currentStep} goBackward={goBackward} />
+        <DrawerFooter
+          formId={formId}
+          nextButtonDisabled={currentStep === 4}
+          backButtonDisabled={currentStep === 1}
+          goBackward={goBackward}
+        />
       }
     />
   );
