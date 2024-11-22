@@ -1,8 +1,8 @@
-import ReactQueryProvider from "@/lib/providers/ReactQueryProvider";
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import Navbar from "@/components/Navbar/Navbar";
 import Sidebar from "@/components/Sidebar/Sidebar";
+import { TRPCProvider } from "@/trpc/client";
 import "./tailwind.css";
 
 const font = Manrope({ subsets: ["latin"], display: "swap" });
@@ -20,14 +20,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${font.className} m-0 overflow-hidden flex`}>
-        <ReactQueryProvider>
+        <TRPCProvider>
           <div id="drawers-container"></div>
           <Sidebar className="absolute left-0 top-0 xl:relative" />
           <div className="flex-1 h-svh flex flex-col overflow-hidden xl:h-auto">
             <Navbar />
             <main className="flex-1">{children}</main>
           </div>
-        </ReactQueryProvider>
+        </TRPCProvider>
       </body>
     </html>
   );
