@@ -170,9 +170,7 @@ export default function Step3({ formId, data, clinic, onFinish }: Props) {
 
   const errors = methods.formState.errors?.WorkingDays;
 
-  const handleSubmit = methods.handleSubmit(onFinish, (errors) => {
-    console.log(errors);
-  });
+  const handleSubmit = methods.handleSubmit(onFinish);
 
   const { append, remove, update, fields } = useFieldArray({
     control: methods.control,
