@@ -64,6 +64,11 @@ const buttonVariants = cva(
         className: "hover:bg-accent",
       },
       {
+        intent: "ghost",
+        color: "destructive",
+        className: "hover:bg-error/10",
+      },
+      {
         intent: "text",
         className: "h-auto w-auto p-0 bg-transparent hover:bg-transparent",
       },
