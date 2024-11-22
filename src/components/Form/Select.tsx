@@ -1,3 +1,4 @@
+import get from "lodash.get";
 import {
   Select as SelectRoot,
   SelectContent,
@@ -8,15 +9,19 @@ import {
   SelectLabel,
   SelectSeparator,
 } from "@/components/ui/select";
+import Tooltip from "@/components/Tooltip";
 import { cn } from "@/lib/utils";
 import Label from "./Label";
 import { Controller, useFormContext } from "react-hook-form";
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 import ErrorMessage from "./ErrorMessage";
 
 type Option = {
-  label: string;
+  label: ReactNode;
   value: string;
+  description?: string;
+  disabled?: boolean;
+  disabledReason?: string;
 };
 
 type Group = {
@@ -26,9 +31,14 @@ type Group = {
 
 type Props = {
   name: string;
-  label: string;
+  label?: string;
   placeholder?: string;
   className?: string;
+  containerClassName?: string;
+  isFetching?: boolean;
+  fetchingFailed?: boolean;
+  onValueChange?: (value: Option["value"]) => void;
+  selectedValueFormat?: (selectedOption: Option) => ReactNode;
 } & (
   | {
       groups: Group[];
@@ -40,14 +50,68 @@ type Props = {
     }
 );
 
+type SelectValueFormattedProps = {
+  value: Option["value"];
+  placeholder: Props["placeholder"];
+  selectedValueFormat?: Props["selectedValueFormat"];
+  options?: Option[];
+  groups?: Group[];
+};
+
+function SelectValueFormatted({
+  options,
+  groups,
+  value,
+  placeholder,
+  selectedValueFormat,
+}: SelectValueFormattedProps) {
+  let selectedOption;
+  if (options) {
+    selectedOption = options.find((option) => option.value === value);
+  } else if (groups) {
+    // TODO:
+  }
+
+  let result;
+  if (selectedOption) {
+    if (selectedValueFormat) result = selectedValueFormat(selectedOption);
+    else
+      result = (
+        <div className="flex gap-2 items-center">
+          {selectedOption.label}
+          {selectedOption.description && (
+            <div className="text-sm text-gray-700">
+              ({selectedOption.description})
+            </div>
+          )}
+        </div>
+      );
+  }
+
+  return <SelectValue placeholder={placeholder}>{result}</SelectValue>;
+}
+
 function Options({ options }: { options: Option[] }) {
+  const selectItemComponent = (option: Option) => (
+    <SelectItem value={option.value} disabled={option.disabled}>
+      {option.label}
+      {option.description && (
+        <div className="text-sm text-gray-700">{option.description}</div>
+      )}
+    </SelectItem>
+  );
+
   return (
     <>
-      {options.map((option) => (
-        <SelectItem key={option.value} value={option.value}>
-          {option.label}
-        </SelectItem>
-      ))}
+      {options.map((option) =>
+        option.disabled && option.disabledReason ? (
+          <Tooltip key={option.value} content={option.disabledReason}>
+            <div>{selectItemComponent(option)}</div>
+          </Tooltip>
+        ) : (
+          <div key={option.value}>{selectItemComponent(option)}</div>
+        ),
+      )}
     </>
   );
 }
@@ -59,29 +123,62 @@ export default function Select({
   groups,
   options,
   className,
+  containerClassName,
+  isFetching,
+  fetchingFailed,
+  onValueChange,
+  selectedValueFormat,
 }: Props) {
   const {
     control,
     formState: { errors },
   } = useFormContext();
-  const errorMessage = errors[name]?.message;
+
+  const errorMessage = get(errors, name)?.message;
+
+  const handleValueChange = (
+    value: Option["value"],
+    onFieldChange: (value: Option["value"]) => void,
+  ) => {
+    onFieldChange(value);
+    if (onValueChange) onValueChange(value);
+  };
+
   return (
-    <div className="mb-7">
-      <Label>{label}</Label>
+    <div className={cn("mb-7", containerClassName)}>
+      {label && <Label>{label}</Label>}
       <Controller
         name={name}
         control={control}
         render={({ field }) => (
-          <SelectRoot value={field.value} onValueChange={field.onChange}>
+          <SelectRoot
+            value={field.value}
+            onValueChange={(value) => handleValueChange(value, field.onChange)}
+            disabled={isFetching || fetchingFailed}
+          >
             <SelectTrigger
               className={cn(
                 errorMessage
                   ? "border-error ring-error/20"
-                  : "data-[state=open]:border-primary focus:border-primary ring-primary/20 ",
+                  : fetchingFailed
+                    ? "border-error bg-input-invalid"
+                    : "data-[state=open]:border-primary focus:border-primary ring-primary/20 ",
                 className,
               )}
             >
-              <SelectValue placeholder={placeholder} />
+              {isFetching ? (
+                <div>Loading...</div>
+              ) : fetchingFailed ? (
+                <div>An error occurred during loading</div>
+              ) : (
+                <SelectValueFormatted
+                  options={options}
+                  groups={groups}
+                  value={field.value}
+                  placeholder={placeholder}
+                  selectedValueFormat={selectedValueFormat}
+                />
+              )}
             </SelectTrigger>
             <SelectContent>
               {groups ? (
