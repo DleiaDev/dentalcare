@@ -91,8 +91,8 @@ function SelectValueFormatted({
   return <SelectValue placeholder={placeholder}>{result}</SelectValue>;
 }
 
-function Options({ options }: { options: Option[] }) {
-  const selectItemComponent = (option: Option) => (
+function OptionComponent({ option }: { option: Option }) {
+  return (
     <SelectItem value={option.value} disabled={option.disabled}>
       {option.label}
       {option.description && (
@@ -100,16 +100,22 @@ function Options({ options }: { options: Option[] }) {
       )}
     </SelectItem>
   );
+}
 
+function Options({ options }: { options: Option[] }) {
   return (
     <>
       {options.map((option) =>
         option.disabled && option.disabledReason ? (
           <Tooltip key={option.value} content={option.disabledReason}>
-            <div>{selectItemComponent(option)}</div>
+            <div>
+              <OptionComponent option={option} />
+            </div>
           </Tooltip>
         ) : (
-          <div key={option.value}>{selectItemComponent(option)}</div>
+          <div key={option.value}>
+            <OptionComponent option={option} />
+          </div>
         ),
       )}
     </>
