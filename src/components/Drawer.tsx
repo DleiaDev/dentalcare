@@ -1,4 +1,12 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, {
+  createContext,
+  ElementRef,
+  forwardRef,
+  ReactNode,
+  useContext,
+  useImperativeHandle,
+  useState,
+} from "react";
 import ReactModal from "react-modal";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
@@ -78,135 +86,152 @@ const Providers = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const Component = ({
-  trigger,
-  title,
-  content,
-  footer,
-  level,
-  titleClassName,
-  titleContainerClassName,
-}: Props & { level: number }) => {
-  const { openingLevel, setOpeningLevel } = useContext(OpeningLevelContext);
-  const { closingLevel, setClosingLevel } = useContext(ClosingLevelContext);
-  const { totalOpened, setTotalOpened } = useContext(TotalOpenedContext);
-
-  const [isOpen, setIsOpen] = useState(false);
-
-  function openModal() {
-    setIsOpen(true);
-    setOpeningLevel(level);
-    setClosingLevel(undefined);
-    setTotalOpened((totalOpened) => totalOpened + 1);
-  }
-
-  function closeModal() {
-    setIsOpen(false);
-    setOpeningLevel(undefined);
-    setClosingLevel(level);
-    setTotalOpened((totalOpened) => totalOpened - 1);
-  }
-
-  let animationName = undefined;
-  const isOpening = openingLevel === level;
-  const isClosing = closingLevel === level;
-  if (isOpening && level === 0) animationName = "modal-first-open";
-  else if (isOpening && level > 0) animationName = "modal-nested-open";
-  else if (isClosing && level === 0) animationName = "modal-first-close";
-  else if (isClosing && level > 0) animationName = "modal-nested-close";
-
-  let translateXPercentage = 0;
-  if (level === 0 && totalOpened === 1) translateXPercentage = 0;
-  else if (level < totalOpened - 1)
-    translateXPercentage = (totalOpened - level - 1) * 75;
-  else if (level === totalOpened - 1) translateXPercentage = -26;
-
-  const animation = `${animationName} 500ms cubic-bezier(0.32,0.72,0,1)`;
-  const transform = `translateX(${translateXPercentage}%)`;
-
-  if (React.Children.count(trigger) > 1)
-    throw new Error("Only one child trigger is allowed");
-
-  let triggerComponent = undefined;
-  if (React.isValidElement<TriggerProps>(trigger))
-    triggerComponent = React.cloneElement(trigger, { onClick: openModal });
-
-  const drawerContext = {
-    close: closeModal,
-  };
-
-  return (
-    <DrawerContext.Provider value={drawerContext}>
-      {triggerComponent}
-      <ReactModal
-        isOpen={isOpen}
-        onRequestClose={closeModal}
-        closeTimeoutMS={500}
-        overlayClassName={{
-          base: cn(
-            "fixed top-0 left-0 w-full max-w-full h-full max-h-full animate-modal-overlay-open",
-            level > 0 && "!bg-transparent",
-          ),
-          afterOpen: "",
-          beforeClose: "!animate-modal-overlay-exit",
-        }}
-        className={{
-          base: cn(
-            "absolute h-[95%] w-2/3 max-w-[50rem] right-4 top-0 bottom-0 my-auto rounded-xl bg-background",
-          ),
-          beforeClose: "",
-          afterOpen: "",
-        }}
-        style={{
-          content: {
-            transform,
-            animation,
-            transition:
-              "transform 500ms cubic-bezier(0.32,0.72,0,1), opacity 500ms cubic-bezier(0.32,0.72,0,1)",
-          },
-        }}
-      >
-        <div className="h-full flex flex-col">
-          {/* Title */}
-          <div
-            className={cn(
-              "flex items-center justify-between py-5 px-9 border-b border-b-border",
-              titleContainerClassName,
-            )}
-          >
-            <div className={cn("font-semibold text-lg", titleClassName)}>
-              {title}
-            </div>
-            <Button intent="text" autoFocus onClick={closeModal}>
-              <Cross1Icon className="w-5 h-5" />
-            </Button>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 py-5 px-9 overflow-auto">{content}</div>
-
-          {/* Footer */}
-          {footer && (
-            <div className="py-5 px-9 border-t border-t-border">{footer}</div>
-          )}
-        </div>
-      </ReactModal>
-    </DrawerContext.Provider>
-  );
+export type Ref = {
+  closeModal: () => void;
 };
 
-export default function Modal(props: Props) {
+const Component = forwardRef<Ref, Props & { level: number }>(
+  (
+    {
+      trigger,
+      title,
+      content,
+      footer,
+      level,
+      titleClassName,
+      titleContainerClassName,
+    },
+    ref,
+  ) => {
+    const { openingLevel, setOpeningLevel } = useContext(OpeningLevelContext);
+    const { closingLevel, setClosingLevel } = useContext(ClosingLevelContext);
+    const { totalOpened, setTotalOpened } = useContext(TotalOpenedContext);
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    function openModal() {
+      setIsOpen(true);
+      setOpeningLevel(level);
+      setClosingLevel(undefined);
+      setTotalOpened((totalOpened) => totalOpened + 1);
+    }
+
+    function closeModal() {
+      setIsOpen(false);
+      setOpeningLevel(undefined);
+      setClosingLevel(level);
+      setTotalOpened((totalOpened) => totalOpened - 1);
+    }
+
+    useImperativeHandle(ref, () => ({
+      closeModal,
+    }));
+
+    let animationName = undefined;
+    const isOpening = openingLevel === level;
+    const isClosing = closingLevel === level;
+    if (isOpening && level === 0) animationName = "modal-first-open";
+    else if (isOpening && level > 0) animationName = "modal-nested-open";
+    else if (isClosing && level === 0) animationName = "modal-first-close";
+    else if (isClosing && level > 0) animationName = "modal-nested-close";
+
+    let translateXPercentage = 0;
+    if (level === 0 && totalOpened === 1) translateXPercentage = 0;
+    else if (level < totalOpened - 1)
+      translateXPercentage = (totalOpened - level - 1) * 75;
+    else if (level === totalOpened - 1) translateXPercentage = -26;
+
+    const animation = `${animationName} 500ms cubic-bezier(0.32,0.72,0,1)`;
+    const transform = `translateX(${translateXPercentage}%)`;
+
+    if (React.Children.count(trigger) > 1)
+      throw new Error("Only one child trigger is allowed");
+
+    let triggerComponent = undefined;
+    if (React.isValidElement<TriggerProps>(trigger))
+      triggerComponent = React.cloneElement(trigger, { onClick: openModal });
+
+    const drawerContext = {
+      close: closeModal,
+    };
+
+    return (
+      <DrawerContext.Provider value={drawerContext}>
+        {triggerComponent}
+        <ReactModal
+          isOpen={isOpen}
+          onRequestClose={closeModal}
+          closeTimeoutMS={500}
+          overlayClassName={{
+            base: cn(
+              "fixed top-0 left-0 w-full max-w-full h-full max-h-full animate-modal-overlay-open",
+              level > 0 && "!bg-transparent",
+            ),
+            afterOpen: "",
+            beforeClose: "!animate-modal-overlay-exit",
+          }}
+          className={{
+            base: cn(
+              "absolute h-[95%] w-2/3 max-w-[50rem] right-4 top-0 bottom-0 my-auto rounded-xl bg-background",
+            ),
+            beforeClose: "",
+            afterOpen: "",
+          }}
+          style={{
+            content: {
+              transform,
+              animation,
+              transition:
+                "transform 500ms cubic-bezier(0.32,0.72,0,1), opacity 500ms cubic-bezier(0.32,0.72,0,1)",
+            },
+          }}
+        >
+          <div className="h-full flex flex-col">
+            {/* Title */}
+            <div
+              className={cn(
+                "flex items-center justify-between py-5 px-9 border-b border-b-border",
+                titleContainerClassName,
+              )}
+            >
+              <div className={cn("font-semibold text-lg", titleClassName)}>
+                {title}
+              </div>
+              <Button intent="text" autoFocus onClick={closeModal}>
+                <Cross1Icon className="w-5 h-5" />
+              </Button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 py-5 px-9 overflow-auto">{content}</div>
+
+            {/* Footer */}
+            {footer && (
+              <div className="py-5 px-9 border-t border-t-border">{footer}</div>
+            )}
+          </div>
+        </ReactModal>
+      </DrawerContext.Provider>
+    );
+  },
+);
+Component.displayName = "Component";
+
+const Drawer = forwardRef<ElementRef<typeof Component>, Props>((props, ref) => {
   const level = useContext(LevelContext);
 
   return (
     <LevelContext.Provider value={level + 1}>
       {level === 0 ? (
         <Providers>
-          <Component {...props} level={level} />
+          <Component {...props} ref={ref} level={level} />
         </Providers>
       ) : (
-        <Component {...props} level={level} />
+        <Component {...props} ref={ref} level={level} />
       )}
     </LevelContext.Provider>
   );
-}
+});
+Drawer.displayName = "Drawer";
+
+export default Drawer;
