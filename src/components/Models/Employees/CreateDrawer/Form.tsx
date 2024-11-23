@@ -2,7 +2,7 @@ import Progress from "./Progress";
 import Step1, { Data as Step1Data } from "./Step1";
 import Step2, { Data as Step2Data } from "./Step2";
 import Step3, { Data as Step3Data } from "./Step3";
-import Step4 from "./Step4";
+import Step4, { Data as Step4Data } from "./Step4";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -13,6 +13,7 @@ type Props = {
     step1?: Step1Data;
     step2?: Step2Data;
     step3?: Step3Data;
+    step4?: Step4Data;
   };
   onStepFinish: (step: Step, data: Step1Data | Step2Data | Step3Data) => void;
 };
@@ -80,9 +81,10 @@ const clinic = {
   Holidays: [
     {
       id: "3eb62419-6ef8-4e7e-920c-daaec0f7db7e",
-      name: "New Year Holiday",
+      name: "New Year's Day",
       startDate: new Date("2024-01-01"),
       endDate: new Date("2024-01-02"),
+      entityType: "Clinic",
       text: "January 01, 2024 - January 02, 2024",
     },
     {
@@ -90,6 +92,7 @@ const clinic = {
       name: "Christmas",
       startDate: new Date("2024-01-07"),
       endDate: new Date("2024-01-07"),
+      entityType: "Clinic",
       text: "January 07, 2024",
     },
   ],

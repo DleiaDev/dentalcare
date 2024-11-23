@@ -1,6 +1,28 @@
 import { z } from "zod";
-import Holidays from "date-holidays";
+import Holidays, { HolidaysTypes } from "date-holidays";
 import { publicProcedure, router } from "../trpc";
+
+function deduplicateHolidays(holidays: HolidaysTypes.Holiday[]) {
+  // Create a map to store unique holidays
+  const uniqueHolidaysMap = new Map<string, any>();
+
+  // Process each holiday
+  for (const holiday of holidays) {
+    const { name, end } = holiday;
+
+    // If holiday doesn't exist in map, add it
+    if (!uniqueHolidaysMap.has(name)) {
+      uniqueHolidaysMap.set(name, { ...holiday });
+    } else {
+      // Update the existing holiday with the latest end date
+      const existingHoliday = uniqueHolidaysMap.get(name);
+      existingHoliday.end = end;
+    }
+  }
+
+  // Convert map back to array and sort if needed
+  return Array.from(uniqueHolidaysMap.values());
+}
 
 export const holidaysRouter = router({
   // Get all countries
@@ -26,6 +48,6 @@ export const holidaysRouter = router({
       const year = new Date().getFullYear();
       hd.init(input.countryCode);
       const holidays = hd.getHolidays(year, "en");
-      return holidays;
+      return deduplicateHolidays(holidays);
     }),
 });

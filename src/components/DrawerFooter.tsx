@@ -3,15 +3,19 @@ import Button from "@/components/Button";
 
 type Props = {
   formId: string;
-  nextButtonDisabled: boolean;
-  backButtonDisabled: boolean;
-  goBackward: () => void;
+  nextButtonText?: string;
+  nextButtonDisabled?: boolean;
+  backButtonDisabled?: boolean;
+  showBackButton?: boolean;
+  goBackward?: () => void;
 };
 
 export default function Footer({
   formId,
+  nextButtonText = "Next",
   nextButtonDisabled,
   backButtonDisabled,
+  showBackButton = true,
   goBackward,
 }: Props) {
   const { close } = useDrawerContext();
@@ -20,21 +24,23 @@ export default function Footer({
       <Button intent="ghost" color="black" size="xl" onClick={close}>
         Cancel
       </Button>
-      <Button
-        intent="outlined"
-        size="xl"
-        disabled={backButtonDisabled}
-        onClick={goBackward}
-      >
-        Back
-      </Button>
+      {showBackButton && (
+        <Button
+          intent="outlined"
+          size="xl"
+          disabled={backButtonDisabled}
+          onClick={goBackward}
+        >
+          Back
+        </Button>
+      )}
       <Button
         form={formId}
         size="xl"
         type="submit"
         disabled={nextButtonDisabled}
       >
-        Next
+        {nextButtonText}
       </Button>
     </div>
   );
