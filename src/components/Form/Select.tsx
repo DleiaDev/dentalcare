@@ -30,7 +30,6 @@ type Group = {
 };
 
 type Props = {
-  name: string;
   label?: string;
   placeholder?: string;
   className?: string;
@@ -41,14 +40,24 @@ type Props = {
   selectedValueFormat?: (selectedOption: Option) => ReactNode;
 } & (
   | {
-      groups: Group[];
-      options?: never;
+      name: string;
+      value?: never;
     }
   | {
-      groups?: never;
-      options: Option[];
+      name?: never;
+      value: Option["value"];
     }
-);
+) &
+  (
+    | {
+        groups: Group[];
+        options?: never;
+      }
+    | {
+        groups?: never;
+        options: Option[];
+      }
+  );
 
 type SelectValueFormattedProps = {
   value: Option["value"];
@@ -122,8 +131,9 @@ function Options({ options }: { options: Option[] }) {
   );
 }
 
-export default function Select({
-  name,
+function UIComponent({
+  value,
+  errorMessage,
   label,
   placeholder,
   groups,
@@ -134,7 +144,73 @@ export default function Select({
   fetchingFailed,
   onValueChange,
   selectedValueFormat,
-}: Props) {
+}: Omit<Props, "name"> & { value: Option["value"]; errorMessage?: string }) {
+  const handleValueChange = (value: Option["value"]) => {
+    if (onValueChange) onValueChange(value);
+  };
+
+  return (
+    <div className={cn("mb-7", containerClassName)}>
+      {label && <Label>{label}</Label>}
+      <SelectRoot
+        value={value}
+        onValueChange={handleValueChange}
+        disabled={isFetching || fetchingFailed}
+      >
+        <SelectTrigger
+          className={cn(
+            errorMessage
+              ? "border-error ring-error/20"
+              : fetchingFailed
+                ? "border-error bg-input-invalid"
+                : "data-[state=open]:border-primary focus:border-primary ring-primary/20 ",
+            className,
+          )}
+        >
+          {isFetching ? (
+            <div>Loading...</div>
+          ) : fetchingFailed ? (
+            <div>An error occurred during loading</div>
+          ) : (
+            <SelectValueFormatted
+              options={options}
+              groups={groups}
+              value={value}
+              placeholder={placeholder}
+              selectedValueFormat={selectedValueFormat}
+            />
+          )}
+        </SelectTrigger>
+        <SelectContent>
+          {groups ? (
+            groups.map((group, i) => (
+              <Fragment key={group.label}>
+                <SelectGroup>
+                  <SelectLabel className="p-3 text-muted-foreground">
+                    {group.label}
+                  </SelectLabel>
+                  <Options options={group.options} />
+                </SelectGroup>
+                {groups[i + 1] && <SelectSeparator />}
+              </Fragment>
+            ))
+          ) : options ? (
+            <Options options={options} />
+          ) : null}
+        </SelectContent>
+      </SelectRoot>
+      {typeof errorMessage === "string" && (
+        <ErrorMessage>{errorMessage}</ErrorMessage>
+      )}
+    </div>
+  );
+}
+
+function FormWrapper({
+  name,
+  onValueChange,
+  ...props
+}: Props & { name: string }) {
   const {
     control,
     formState: { errors },
@@ -151,64 +227,27 @@ export default function Select({
   };
 
   return (
-    <div className={cn("mb-7", containerClassName)}>
-      {label && <Label>{label}</Label>}
-      <Controller
-        name={name}
-        control={control}
-        render={({ field }) => (
-          <SelectRoot
-            value={field.value}
-            onValueChange={(value) => handleValueChange(value, field.onChange)}
-            disabled={isFetching || fetchingFailed}
-          >
-            <SelectTrigger
-              className={cn(
-                errorMessage
-                  ? "border-error ring-error/20"
-                  : fetchingFailed
-                    ? "border-error bg-input-invalid"
-                    : "data-[state=open]:border-primary focus:border-primary ring-primary/20 ",
-                className,
-              )}
-            >
-              {isFetching ? (
-                <div>Loading...</div>
-              ) : fetchingFailed ? (
-                <div>An error occurred during loading</div>
-              ) : (
-                <SelectValueFormatted
-                  options={options}
-                  groups={groups}
-                  value={field.value}
-                  placeholder={placeholder}
-                  selectedValueFormat={selectedValueFormat}
-                />
-              )}
-            </SelectTrigger>
-            <SelectContent>
-              {groups ? (
-                groups.map((group, i) => (
-                  <Fragment key={group.label}>
-                    <SelectGroup>
-                      <SelectLabel className="p-3 text-muted-foreground">
-                        {group.label}
-                      </SelectLabel>
-                      <Options options={group.options} />
-                    </SelectGroup>
-                    {groups[i + 1] && <SelectSeparator />}
-                  </Fragment>
-                ))
-              ) : (
-                <Options options={options} />
-              )}
-            </SelectContent>
-          </SelectRoot>
-        )}
-      />
-      {typeof errorMessage === "string" && (
-        <ErrorMessage>{errorMessage}</ErrorMessage>
+    <Controller
+      name={name}
+      control={control}
+      render={({ field }) => (
+        <UIComponent
+          {...props}
+          value={field.value}
+          onValueChange={(value) => handleValueChange(value, field.onChange)}
+          errorMessage={
+            typeof errorMessage === "string" ? errorMessage : undefined
+          }
+        />
       )}
-    </div>
+    />
   );
+}
+
+export default function Select({ name, value, ...props }: Props) {
+  if (name !== undefined && value === undefined) {
+    return <FormWrapper {...props} name={name} />;
+  } else if (name === undefined && typeof value === "string") {
+    return <UIComponent {...props} value={value} />;
+  }
 }
