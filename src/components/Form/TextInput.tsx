@@ -6,11 +6,12 @@ import { useFormContext } from "react-hook-form";
 
 type Props = InputHTMLAttributes<HTMLInputElement> & {
   name: string;
-  label: string;
+  label?: string;
+  containerClassName?: string;
 };
 
 const TextInput = forwardRef<HTMLInputElement, Props>(
-  ({ className, name, label, ...props }, ref) => {
+  ({ className, name, label, containerClassName, ...props }, ref) => {
     const {
       register,
       formState: { errors },
@@ -19,8 +20,8 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
     const errorMessage = errors[name]?.message;
 
     return (
-      <div className="mb-7">
-        <Label htmlFor={name}>{label}</Label>
+      <div className={cn("mb-7", containerClassName)}>
+        {label && <Label htmlFor={name}>{label}</Label>}
         <input
           id={name}
           type="text"
