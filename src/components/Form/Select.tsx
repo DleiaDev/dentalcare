@@ -18,7 +18,7 @@ import ErrorMessage from "./ErrorMessage";
 
 type Option = {
   label: ReactNode;
-  value: string;
+  value: string | number;
   description?: string;
   disabled?: boolean;
   disabledReason?: string;
@@ -52,6 +52,20 @@ type SelectValueFormattedProps = {
   groups?: Group[];
 };
 
+function getSelectedOption(
+  value: Option["value"],
+  options?: Option[],
+  groups?: Group[],
+) {
+  let selectedOption;
+  if (options) {
+    selectedOption = options.find((option) => option.value == value);
+  } else if (groups) {
+    // TODO:
+  }
+  return selectedOption as Option;
+}
+
 function SelectValueFormatted({
   options,
   groups,
@@ -59,12 +73,7 @@ function SelectValueFormatted({
   placeholder,
   selectedValueFormat,
 }: SelectValueFormattedProps) {
-  let selectedOption;
-  if (options) {
-    selectedOption = options.find((option) => option.value === value);
-  } else if (groups) {
-    // TODO:
-  }
+  const selectedOption = getSelectedOption(value, options, groups);
 
   let result;
   if (selectedOption) {
@@ -87,7 +96,7 @@ function SelectValueFormatted({
 
 function OptionComponent({ option }: { option: Option }) {
   return (
-    <SelectItem value={option.value} disabled={option.disabled}>
+    <SelectItem value={`${option.value}`} disabled={option.disabled}>
       {option.label}
       {option.description && (
         <div className="text-sm text-gray-700">{option.description}</div>
@@ -117,6 +126,7 @@ function Options({ options }: { options: Option[] }) {
 }
 
 function UIComponent({
+  name,
   value,
   errorMessage,
   label,
@@ -129,24 +139,26 @@ function UIComponent({
   fetchingFailed,
   onValueChange,
   selectedValueFormat,
-}: Omit<Props, "name"> & {
+}: Props & {
   value: Option["value"];
   errorMessage?: string;
   onValueChange: Exclude<Props["onValueChange"], undefined>;
 }) {
   const handleValueChange = (value: Option["value"]) => {
-    if (onValueChange) onValueChange(value);
+    const selectedOption = getSelectedOption(value, options, groups);
+    if (onValueChange) onValueChange(selectedOption.value);
   };
 
   return (
     <div className={cn("mb-7", containerClassName)}>
-      {label && <Label>{label}</Label>}
+      {label && <Label htmlFor={name}>{label}</Label>}
       <SelectRoot
-        value={value}
+        value={`${value}`}
         onValueChange={handleValueChange}
         disabled={isFetching || fetchingFailed}
       >
         <SelectTrigger
+          id={name}
           className={cn(
             errorMessage
               ? "border-error ring-error/20"
@@ -222,6 +234,7 @@ function FormWrapper({
       render={({ field }) => (
         <UIComponent
           {...props}
+          name={name}
           value={field.value}
           onValueChange={(value) => handleValueChange(value, field.onChange)}
           errorMessage={
