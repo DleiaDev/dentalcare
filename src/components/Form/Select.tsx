@@ -30,6 +30,8 @@ type Group = {
 };
 
 type Props = {
+  name?: string;
+  value?: Option["value"];
   label?: string;
   placeholder?: string;
   className?: string;
@@ -38,26 +40,9 @@ type Props = {
   fetchingFailed?: boolean;
   onValueChange?: (value: Option["value"]) => void;
   selectedValueFormat?: (selectedOption: Option) => ReactNode;
-} & (
-  | {
-      name: string;
-      value?: never;
-    }
-  | {
-      name?: never;
-      value: Option["value"];
-    }
-) &
-  (
-    | {
-        groups: Group[];
-        options?: never;
-      }
-    | {
-        groups?: never;
-        options: Option[];
-      }
-  );
+  groups?: Group[];
+  options?: Option[];
+};
 
 type SelectValueFormattedProps = {
   value: Option["value"];
@@ -144,7 +129,11 @@ function UIComponent({
   fetchingFailed,
   onValueChange,
   selectedValueFormat,
-}: Omit<Props, "name"> & { value: Option["value"]; errorMessage?: string }) {
+}: Omit<Props, "name"> & {
+  value: Option["value"];
+  errorMessage?: string;
+  onValueChange: Exclude<Props["onValueChange"], undefined>;
+}) {
   const handleValueChange = (value: Option["value"]) => {
     if (onValueChange) onValueChange(value);
   };
@@ -244,10 +233,21 @@ function FormWrapper({
   );
 }
 
-export default function Select({ name, value, ...props }: Props) {
+export default function Select({
+  name,
+  value,
+  onValueChange,
+  ...props
+}: Props) {
   if (name !== undefined && value === undefined) {
-    return <FormWrapper {...props} name={name} />;
-  } else if (name === undefined && typeof value === "string") {
-    return <UIComponent {...props} value={value} />;
+    return <FormWrapper {...props} name={name} onValueChange={onValueChange} />;
+  } else if (
+    name === undefined &&
+    value !== undefined &&
+    onValueChange !== undefined
+  ) {
+    return (
+      <UIComponent {...props} value={value} onValueChange={onValueChange} />
+    );
   }
 }
