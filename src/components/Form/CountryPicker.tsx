@@ -6,6 +6,7 @@ import { ComponentProps } from "react";
 type Props = Pick<
   ComponentProps<typeof Select>,
   | "name"
+  | "value"
   | "className"
   | "containerClassName"
   | "label"
@@ -15,6 +16,7 @@ type Props = Pick<
 
 export default function CountryPicker({
   name,
+  value,
   className,
   containerClassName,
   onValueChange,
@@ -30,6 +32,7 @@ export default function CountryPicker({
   return (
     <Select
       name={name}
+      value={value}
       className={className}
       containerClassName={containerClassName}
       isFetching={isFetching}
