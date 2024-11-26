@@ -11,3 +11,15 @@ export const DayOfWeekEnum = z.enum([
 ]);
 
 export type DayOfWeek = z.infer<typeof DayOfWeekEnum>;
+
+export const DayOfWeekShortEnum = z.enum([
+  "MO",
+  "TU",
+  "WE",
+  "TH",
+  "FR",
+  "SA",
+  "SU",
+]);
+
+export type DayOfWeekShort = z.infer<typeof DayOfWeekShortEnum>;
