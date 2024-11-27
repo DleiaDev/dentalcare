@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+export const DaysOfWeek = [
+  { long: "Monday", short: "MO" },
+  { long: "Tuesday", short: "TU" },
+  { long: "Wednesday", short: "WE" },
+  { long: "Thursday", short: "TH" },
+  { long: "Friday", short: "FR" },
+  { long: "Saturday", short: "SA" },
+  { long: "Sunday", short: "SU" },
+];
+
 export const DayOfWeekEnum = z.enum([
   "Monday",
   "Tuesday",
