@@ -33,7 +33,7 @@ export const AbsenceSchema: z.ZodType<Absence> = z.object({
 
 // Absence form schema
 export const CreateAbsenceFormSchema = z.object({
-  id: z.string(),
+  key: z.string(),
   name: z.string(),
   entityType: z.enum(["Employee", "Clinic"]),
   dtstart: z.string(),
@@ -53,7 +53,7 @@ export const CreateAbsenceFormSchema = z.object({
 });
 
 export type CreateAbsenceFormData = {
-  id: string;
+  key: string;
   name: string;
   entityType: Absence["entityType"];
   dtstart: string;

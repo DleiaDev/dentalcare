@@ -10,7 +10,7 @@ import HolidayForm, {
 import { Tabs, TabsList, TabsTrigger } from "@/components/Tabs";
 import { cn } from "@/lib/utils";
 import { Clinic } from "@/zod/Clinic";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, XIcon } from "lucide-react";
 import { useRef, useState } from "react";
 
 export type Data = {
@@ -27,7 +27,7 @@ type Props = {
 export default function Step4({ data, formId, clinic, onFinish }: Props) {
   const DrawerRef = useRef<Ref>(null);
   const [tab, setTab] = useState("Absence");
-  const [holidayData, setHolidayData] = useState<HolidayFormData>(
+  const [holidayInputs, setHolidayInputs] = useState<HolidayFormData>(
     data?.holidays ?? [],
   );
   const [absenceInputs, setAbsenceInputs] = useState<AbsenceFormData[]>(
@@ -36,25 +36,29 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
 
   const entries = [
     ...clinic.Holidays.map((holiday) => ({
+      type: "Holiday",
       key: holiday.id,
       name: holiday.name,
       text: holiday.text,
       entityType: holiday.entityType,
     })),
     ...clinic.Absences.map((absence) => ({
+      type: "Absence",
       key: absence.id,
       name: absence.name,
       text: absence.text,
       entityType: absence.entityType,
     })),
-    ...holidayData.map((holidayInput) => ({
+    ...holidayInputs.map((holidayInput) => ({
+      type: "Holiday",
       key: holidayInput.key,
       name: holidayInput.name,
       text: holidayInput.text,
       entityType: holidayInput.entityType,
     })),
     ...absenceInputs.map((absenceInput) => ({
-      key: absenceInput.id,
+      type: "Absence",
+      key: absenceInput.key,
       name: absenceInput.name,
       text: "TODO",
       entityType: absenceInput.entityType,
@@ -62,7 +66,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
   ];
 
   const onHolidaysFinish = (holidays: HolidayFormData) => {
-    setHolidayData(holidays);
+    setHolidayInputs(holidays);
     DrawerRef.current?.closeModal();
   };
 
@@ -73,9 +77,21 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
 
   const handleSubmit = () => {
     const data = {
-      holidays: holidayData,
+      holidays: holidayInputs,
     };
     onFinish(data);
+  };
+
+  const deleteEntry = (entry: (typeof entries)[number]) => {
+    if (entry.type === "Holiday") {
+      setHolidayInputs(
+        holidayInputs.filter((holidayInput) => holidayInput.key !== entry.key),
+      );
+    } else if (entry.type === "Absence") {
+      setAbsenceInputs(
+        absenceInputs.filter((absenceInput) => absenceInput.key !== entry.key),
+      );
+    }
   };
 
   return (
@@ -86,7 +102,17 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
             key={index}
             className="border border-border px-5 py-3 rounded-xl flex flex-col justify-center"
           >
-            <div>
+            <div className="relative">
+              {entry.entityType === "Employee" && (
+                <Button
+                  intent="ghost"
+                  color="destructive"
+                  className="absolute -top-2 -right-4"
+                  onClick={() => deleteEntry(entry)}
+                >
+                  <XIcon />
+                </Button>
+              )}
               <div className="font-medium">{entry.name}</div>
               <div className="text-gray-600">{entry.text}</div>
               <div
@@ -132,7 +158,6 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
               <HolidayForm
                 formId="Holiday"
                 clinic={clinic}
-                data={holidayData.length ? holidayData : undefined}
                 className={cn(tab !== "Holiday" && "hidden")}
                 onFinish={onHolidaysFinish}
               />

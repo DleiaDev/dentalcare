@@ -169,6 +169,7 @@ export default function Form({
     e?.stopPropagation();
     return methods.handleSubmit((form) => {
       onFinish(transformFormToData(form));
+      methods.reset();
     })(e);
   };
 

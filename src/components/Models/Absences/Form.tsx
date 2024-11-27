@@ -96,7 +96,7 @@ export default function Form({
   const methods = useForm({
     resolver: zodResolver(CreateAbsenceFormSchema),
     defaultValues: data ?? {
-      id: new Date().getTime().toString(),
+      key: new Date().getTime().toString(),
       entityType: "Employee",
       dtstart: toDateInput(today),
       frequency: "Daily",
@@ -120,6 +120,7 @@ export default function Form({
     return methods.handleSubmit((form) => {
       const data = cleanDataBeforeSubmit(form);
       onFinish(data);
+      methods.reset();
     })(e);
   };
 
