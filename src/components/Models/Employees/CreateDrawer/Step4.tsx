@@ -26,9 +26,12 @@ type Props = {
 
 export default function Step4({ data, formId, clinic, onFinish }: Props) {
   const DrawerRef = useRef<Ref>(null);
-  const [tab, setTab] = useState("Holiday");
+  const [tab, setTab] = useState("Absence");
   const [holidayData, setHolidayData] = useState<HolidayFormData>(
     data?.holidays ?? [],
+  );
+  const [absenceInputs, setAbsenceInputs] = useState<AbsenceFormData[]>(
+    data?.absences ?? [],
   );
 
   const entries = [
@@ -50,6 +53,12 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
       text: holidayInput.text,
       entityType: holidayInput.entityType,
     })),
+    ...absenceInputs.map((absenceInput) => ({
+      key: absenceInput.id,
+      name: absenceInput.name,
+      text: "TODO",
+      entityType: absenceInput.entityType,
+    })),
   ];
 
   const onHolidaysFinish = (holidays: HolidayFormData) => {
@@ -57,8 +66,9 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
     DrawerRef.current?.closeModal();
   };
 
-  const onAbsencesFinish = (data: AbsenceFormData) => {
-    console.log(data);
+  const onAbsencesFinish = (absence: AbsenceFormData) => {
+    setAbsenceInputs([...absenceInputs, absence]);
+    DrawerRef.current?.closeModal();
   };
 
   const handleSubmit = () => {
