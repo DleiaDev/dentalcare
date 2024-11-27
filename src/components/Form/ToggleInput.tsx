@@ -17,6 +17,7 @@ type Props = {
   value?: Value;
   label?: string;
   options: Option[];
+  min?: number;
   containerClassName?: string;
   onPressedChange?: (value: Value) => void;
 };
@@ -26,6 +27,7 @@ function UIComponent({
   name,
   value,
   label,
+  min,
   containerClassName,
   errorMessage,
   onPressedChange,
@@ -38,6 +40,7 @@ function UIComponent({
     const newValue = [...value];
     const index = value.findIndex((v) => v === option.value);
     if (index === -1) newValue.push(option.value);
+    else if (min && value.length <= min) return;
     else newValue.splice(index, 1);
     onPressedChange(newValue);
   };
