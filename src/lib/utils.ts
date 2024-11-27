@@ -31,6 +31,10 @@ export function getWeekOfMonth(date: Date) {
   // return week === weeksInMonth ? index + 5 : week;
 }
 
+export function toDateInput(date: Date) {
+  return date.toISOString().split("T")[0];
+}
+
 export function formatDate(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
