@@ -31,6 +31,10 @@ export function getWeekOfMonth(date: Date) {
   // return week === weeksInMonth ? index + 5 : week;
 }
 
+export function capitalize(val: string) {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
+
 export function toDateInput(date: Date) {
   return date.toISOString().split("T")[0];
 }

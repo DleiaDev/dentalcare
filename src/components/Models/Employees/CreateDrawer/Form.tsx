@@ -15,7 +15,10 @@ type Props = {
     step3?: Step3Data;
     step4?: Step4Data;
   };
-  onStepFinish: (step: Step, data: Step1Data | Step2Data | Step3Data) => void;
+  onStepFinish: (
+    step: Step,
+    data: Step1Data | Step2Data | Step3Data | Step4Data,
+  ) => void;
 };
 
 const clinic = {
@@ -151,7 +154,7 @@ export default function Create({ formId, step, data, onStepFinish }: Props) {
           formId={formId}
           data={data.step4}
           clinic={clinic}
-          onFinish={(data) => console.log(data)}
+          onFinish={(data) => onStepFinish(4, data)}
         />
       )}
     </div>

@@ -2,7 +2,9 @@ import { z } from "zod";
 import Holidays, { HolidaysTypes } from "date-holidays";
 import { publicProcedure, router } from "../trpc";
 
-function deduplicateHolidays(holidays: HolidaysTypes.Holiday[]) {
+function deduplicateHolidays(
+  holidays: HolidaysTypes.Holiday[],
+): HolidaysTypes.Holiday[] {
   // Create a map to store unique holidays
   const uniqueHolidaysMap = new Map<string, any>();
 

@@ -10,8 +10,9 @@ import { DayOfWeekShortEnum, DaysOfWeek } from "@/zod/utils/dayOfWeek";
 import ToggleInput from "@/components/Form/ToggleInput";
 import RadioGroup from "@/components/Form/RadioGroup";
 import { Months } from "@/zod/utils/months";
-import { toDateInput } from "@/lib/utils";
+import { capitalize, toDateInput } from "@/lib/utils";
 import TextInput from "@/components/Form/TextInput";
+import { formDataToRRule } from "@/lib/rrule";
 
 export type Data = CreateAbsenceFormData;
 type Form = z.infer<typeof CreateAbsenceFormSchema>;
@@ -24,55 +25,75 @@ function Row({ children }: { children: ReactNode }) {
   return <div className="flex items-center gap-4 mb-7">{children}</div>;
 }
 
-function cleanDataBeforeSubmit(form: Form): Data {
-  const formData = { ...form };
+function transformDataBeforeSubmit(form: Form): Data {
+  const data = { ...form };
+
   // Frequency
-  if (formData.frequency === "Daily") {
-    delete formData.byDay;
-    delete formData.byDayNum;
-    delete formData.byDayOfWeek;
-    delete formData.byMonth;
-    delete formData.byMonthDay;
-  } else if (formData.frequency === "Weekly") {
-    delete formData.byDayNum;
-    delete formData.byDayOfWeek;
-    delete formData.byMonth;
-    delete formData.byMonthDay;
-  } else if (formData.frequency === "Monthly") {
-    delete formData.byMonth;
-  } else if (formData.frequency === "Yearly") {
-    delete formData.byDay;
-    delete formData.interval;
+  if (data.frequency === "Daily") {
+    delete data.weeklyByWeekday;
+    delete data.monthlyByDay_Nth;
+    delete data.monthlyByDay_Weekday;
+    delete data.monthlyByMonthday_Day;
+    delete data.yearlyByDay_Nth;
+    delete data.yearlyByDay_Weekday;
+    delete data.yearlyByDay_Month;
+    delete data.yearlyByMonthday_Day;
+    delete data.yearlyByMonthday_Month;
+  } else if (data.frequency === "Weekly") {
+    delete data.monthlyByDay_Nth;
+    delete data.monthlyByDay_Weekday;
+    delete data.monthlyByMonthday_Day;
+    delete data.yearlyByDay_Nth;
+    delete data.yearlyByDay_Weekday;
+    delete data.yearlyByDay_Month;
+    delete data.yearlyByMonthday_Day;
+    delete data.yearlyByMonthday_Month;
+  } else if (data.frequency === "Monthly") {
+    delete data.weeklyByWeekday;
+    delete data.yearlyByDay_Nth;
+    delete data.yearlyByDay_Weekday;
+    delete data.yearlyByDay_Month;
+    delete data.yearlyByMonthday_Day;
+    delete data.yearlyByMonthday_Month;
+  } else if (data.frequency === "Yearly") {
+    data.interval = 1;
+    delete data.weeklyByWeekday;
+    delete data.monthlyByDay_Weekday;
+    delete data.monthlyByDay_Nth;
+    delete data.monthlyByMonthday_Day;
   }
 
   // Radio
-  if (formData.frequency === "Monthly" && formData.by === "BYMONTHDAY") {
-    delete formData.byDayNum;
-    delete formData.byDayOfWeek;
-  } else if (formData.frequency === "Monthly" && formData.by === "BYDAY") {
-    delete formData.byMonthDay;
-  } else if (formData.frequency === "Yearly" && formData.by === "BYMONTHDAY") {
-    delete formData.byDayNum;
-    delete formData.byDayOfWeek;
-  } else if (formData.frequency === "Yearly" && formData.by === "BYDAY") {
-    delete formData.byMonthDay;
+  if (data.by === "BYMONTHDAY") {
+    delete data.monthlyByDay_Nth;
+    delete data.monthlyByDay_Weekday;
+    delete data.yearlyByDay_Nth;
+    delete data.yearlyByDay_Weekday;
+    delete data.yearlyByDay_Month;
+  } else if (data.by === "BYDAY") {
+    delete data.monthlyByMonthday_Day;
+    delete data.yearlyByMonthday_Day;
+    delete data.yearlyByMonthday_Month;
   }
 
   // End
-  if (formData.endType === "Never") {
-    delete formData.until;
-    delete formData.count;
-  } else if (formData.endType === "After") {
-    delete formData.until;
-  } else if (formData.endType === "On date") {
-    delete formData.count;
+  if (data.endType === "Never") {
+    delete data.until;
+    delete data.count;
+  } else if (data.endType === "After") {
+    delete data.until;
+  } else if (data.endType === "On date") {
+    delete data.count;
   }
 
   // Extra
-  delete formData.by;
-  delete formData.endType;
+  delete data.by;
+  delete data.endType;
 
-  return formData as Data;
+  return {
+    ...data,
+    text: capitalize(formDataToRRule(data).toText()),
+  };
 }
 
 type Props = {
@@ -92,36 +113,44 @@ export default function Form({
 }: Props) {
   const today = new Date();
   const plus1Month = new Date(today.setMonth(today.getMonth() + 1));
+  const defaultDay = today.getDate();
+  const defaultMonth = `${plus1Month.getMonth()}` as Form["yearlyByDay_Month"];
 
   const methods = useForm({
+    mode: "onChange",
     resolver: zodResolver(CreateAbsenceFormSchema),
     defaultValues: data ?? {
       key: new Date().getTime().toString(),
       entityType: "Employee",
       dtstart: toDateInput(today),
       frequency: "Daily",
-      byDayNum: "1",
-      byDay: ["MO"],
-      byMonthDay: today.getDate(),
-      byMonth: `${today.getMonth() + 1}` as Form["byMonth"],
-      byDayOfWeek: "MO",
+      weeklyByWeekday: ["MO"],
+      monthlyByDay_Nth: "1",
+      monthlyByDay_Weekday: "MO",
+      monthlyByMonthday_Day: defaultDay,
+      yearlyByDay_Nth: "1",
+      yearlyByDay_Weekday: "MO",
+      yearlyByDay_Month: defaultMonth,
+      yearlyByMonthday_Day: defaultDay,
+      yearlyByMonthday_Month: defaultMonth,
       interval: 1,
       count: 1,
       until: toDateInput(plus1Month),
       by: "BYMONTHDAY",
-      endType: "After",
+      endType: "Never",
       ...defaultValues,
     },
   });
 
+  const submit = methods.handleSubmit((form) => {
+    const data = transformDataBeforeSubmit(form);
+    onFinish(data);
+    methods.reset();
+  });
+
   const handleSubmit = (e?: BaseSyntheticEvent) => {
-    e?.preventDefault();
     e?.stopPropagation();
-    return methods.handleSubmit((form) => {
-      const data = cleanDataBeforeSubmit(form);
-      onFinish(data);
-      methods.reset();
-    })(e);
+    submit(e);
   };
 
   const frequency = methods.watch("frequency");
@@ -164,7 +193,7 @@ export default function Form({
           <Row>
             <Label>On</Label>
             <ToggleInput
-              name="byDay"
+              name="weeklyByWeekday"
               min={1}
               containerClassName="mb-0"
               options={DayOfWeekShortEnum.options.map((day) => ({
@@ -186,7 +215,7 @@ export default function Form({
               options={[{ label: "On day", value: "BYMONTHDAY" }]}
             />
             <Select
-              name="byMonthDay"
+              name="monthlyByMonthday_Day"
               containerClassName="mb-0"
               options={[...Array(31).keys()].map((dayNum) => ({
                 value: dayNum + 1,
@@ -208,7 +237,7 @@ export default function Form({
               options={[{ label: "On the", value: "BYDAY" }]}
             />
             <Select
-              name="byDayNum"
+              name="monthlyByDay_Nth"
               containerClassName="mb-0"
               options={[
                 { value: "1", label: "First" },
@@ -219,7 +248,7 @@ export default function Form({
               ]}
             />
             <Select
-              name="byDayOfWeek"
+              name="monthlyByDay_Weekday"
               containerClassName="mb-0"
               options={DaysOfWeek.map((dayOfWeek) => ({
                 value: dayOfWeek.short,
@@ -241,7 +270,7 @@ export default function Form({
               options={[{ label: "On", value: "BYMONTHDAY" }]}
             />
             <Select
-              name="byMonth"
+              name="yearlyByMonthday_Month"
               containerClassName="mb-0"
               options={Months.map((month) => ({
                 value: `${month.number}`,
@@ -249,7 +278,7 @@ export default function Form({
               }))}
             />
             <Select
-              name="byMonthDay"
+              name="yearlyByMonthday_Day"
               containerClassName="mb-0"
               options={[...Array(31).keys()].map((dayNum) => ({
                 value: dayNum + 1,
@@ -270,7 +299,7 @@ export default function Form({
               options={[{ label: "On the", value: "BYDAY" }]}
             />
             <Select
-              name="byDayNum"
+              name="yearlyByDay_Nth"
               containerClassName="mb-0"
               options={[
                 { value: "1", label: "First" },
@@ -281,7 +310,7 @@ export default function Form({
               ]}
             />
             <Select
-              name="byDayOfWeek"
+              name="yearlyByDay_Weekday"
               containerClassName="mb-0"
               options={DaysOfWeek.map((dayOfWeek) => ({
                 value: dayOfWeek.short,
@@ -290,7 +319,7 @@ export default function Form({
             />
             <div className="text-gray-700">of</div>
             <Select
-              name="byMonth"
+              name="yearlyByDay_Month"
               containerClassName="mb-0"
               options={Months.map((month) => ({
                 value: `${month.number}`,

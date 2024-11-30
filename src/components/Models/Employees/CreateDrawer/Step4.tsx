@@ -11,10 +11,11 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/Tabs";
 import { cn } from "@/lib/utils";
 import { Clinic } from "@/zod/Clinic";
 import { PlusIcon, XIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { BaseSyntheticEvent, useRef, useState } from "react";
 
 export type Data = {
   holidays: HolidayFormData;
+  absences: AbsenceFormData[];
 };
 
 type Props = {
@@ -60,7 +61,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
       type: "Absence",
       key: absenceInput.key,
       name: absenceInput.name,
-      text: "TODO",
+      text: absenceInput.text,
       entityType: absenceInput.entityType,
     })),
   ];
@@ -75,9 +76,12 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
     DrawerRef.current?.closeModal();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e?: BaseSyntheticEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     const data = {
       holidays: holidayInputs,
+      absences: absenceInputs,
     };
     onFinish(data);
   };

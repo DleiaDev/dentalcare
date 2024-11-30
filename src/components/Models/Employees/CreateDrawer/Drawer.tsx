@@ -20,9 +20,14 @@ export default function CreateDrawer({}) {
     if (currentStep > 1) setCurrentStep((currentStep - 1) as FormProps["step"]);
   }
 
+  function finish() {
+    console.log(data);
+  }
+
   const handleStepFinish: FormProps["onStepFinish"] = (step, stepData) => {
     setData({ ...data, [`step${step}`]: stepData });
-    goForward();
+    if (currentStep < 4) goForward();
+    else finish();
   };
 
   return (
@@ -40,7 +45,7 @@ export default function CreateDrawer({}) {
       footer={
         <DrawerFooter
           formId={formId}
-          nextButtonDisabled={currentStep === 4}
+          nextButtonText={currentStep === 4 ? "Finish" : "Next"}
           backButtonDisabled={currentStep === 1}
           goBackward={goBackward}
         />
