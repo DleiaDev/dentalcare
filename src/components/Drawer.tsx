@@ -11,6 +11,7 @@ import ReactModal from "react-modal";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 import Button from "./Button";
+import Spinner from "@/icons/Spinner";
 
 ReactModal.setAppElement("#drawers-container");
 
@@ -19,6 +20,7 @@ type Props = {
   trigger: ReactNode;
   content: ReactNode;
   footer?: ReactNode;
+  spinner?: boolean;
   titleClassName?: string;
   titleContainerClassName?: string;
 };
@@ -98,6 +100,7 @@ const Component = forwardRef<Ref, Props & { level: number }>(
       content,
       footer,
       level,
+      spinner,
       titleClassName,
       titleContainerClassName,
     },
@@ -117,6 +120,7 @@ const Component = forwardRef<Ref, Props & { level: number }>(
     }
 
     function closeModal() {
+      if (spinner) return;
       setIsOpen(false);
       setOpeningLevel(undefined);
       setClosingLevel(level);
@@ -186,7 +190,14 @@ const Component = forwardRef<Ref, Props & { level: number }>(
             },
           }}
         >
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col relative">
+            {/* Spinner */}
+            {spinner ? (
+              <div className="bg-white/50 absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center animate-in fade-in">
+                <Spinner className="text-primary w-16 h-16" />
+              </div>
+            ) : null}
+
             {/* Title */}
             <div
               className={cn(

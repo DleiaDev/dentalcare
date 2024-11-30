@@ -38,7 +38,7 @@
     --appointment-status-registered-bg: #a0a0a0;
 
     /* Foreground, background */
-    --background: #ffffff;
+    --background: 0, 0%, 100%;
     --foreground: var(--gray-900);
 
     /* Muted */

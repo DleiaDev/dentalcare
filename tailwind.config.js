@@ -80,7 +80,7 @@ module.exports = {
           "status-encounter-bg": "var(--appointment-status-encounter-bg)",
           "status-registered-bg": "var(--appointment-status-registered-bg)",
         },
-        background: "var(--background)",
+        background: "hsl(var(--background))",
         foreground: "var(--foreground)",
         card: {
           DEFAULT: "hsl(var(--card))",
