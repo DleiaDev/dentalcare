@@ -16,64 +16,65 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Fragment, ReactNode } from "react";
 import ErrorMessage from "./ErrorMessage";
 
-type Option = {
+type Option<V = string | number> = {
   label: ReactNode;
-  value: string | number;
+  value: V;
   description?: string;
   disabled?: boolean;
   disabledReason?: string;
 };
 
-type Group = {
+type Group<O> = {
   label: string;
-  options: Option[];
+  options: O[];
 };
 
-type Props = {
+type Props<O extends Option> = {
   name?: string;
-  value?: Option["value"];
+  value?: O["value"];
   label?: string;
   placeholder?: string;
   className?: string;
   containerClassName?: string;
   isFetching?: boolean;
   fetchingFailed?: boolean;
-  onValueChange?: (value: Option["value"]) => void;
-  selectedValueFormat?: (selectedOption: Option) => ReactNode;
-  groups?: Group[];
-  options?: Option[];
+  onValueChange?: (value: O["value"]) => void;
+  selectedValueFormat?: (selectedOption: O) => ReactNode;
+  groups?: Group<O>[];
+  options?: O[];
 };
 
-type SelectValueFormattedProps = {
-  value: Option["value"];
-  placeholder: Props["placeholder"];
-  selectedValueFormat?: Props["selectedValueFormat"];
-  options?: Option[];
-  groups?: Group[];
+type SelectValueFormattedProps<O extends Option> = {
+  value: O["value"];
+  placeholder: Props<O>["placeholder"];
+  selectedValueFormat?: Props<O>["selectedValueFormat"];
+  options?: O[];
+  groups?: Group<O>[];
 };
 
-function getSelectedOption(
-  value: Option["value"],
-  options?: Option[],
-  groups?: Group[],
+function getSelectedOption<O extends Option>(
+  value: O["value"],
+  options?: O[],
+  groups?: Group<O>[],
 ) {
   let selectedOption;
+
   if (options) {
     selectedOption = options.find((option) => option.value == value);
   } else if (groups) {
     // TODO:
   }
-  return selectedOption as Option;
+  return selectedOption;
 }
 
-function SelectValueFormatted({
+function SelectValueFormatted<O extends Option>({
   options,
   groups,
   value,
   placeholder,
   selectedValueFormat,
-}: SelectValueFormattedProps) {
-  const selectedOption = getSelectedOption(value, options, groups);
+}: SelectValueFormattedProps<O>) {
+  const selectedOption = getSelectedOption<O>(value, options, groups);
 
   let result;
   if (selectedOption) {
@@ -125,7 +126,7 @@ function Options({ options }: { options: Option[] }) {
   );
 }
 
-function UIComponent({
+function UIComponent<O extends Option>({
   name,
   value,
   errorMessage,
@@ -139,14 +140,14 @@ function UIComponent({
   fetchingFailed,
   onValueChange,
   selectedValueFormat,
-}: Props & {
-  value: Option["value"];
+}: Props<O> & {
+  value: O["value"];
   errorMessage?: string;
-  onValueChange: Exclude<Props["onValueChange"], undefined>;
+  onValueChange: Exclude<Props<O>["onValueChange"], undefined>;
 }) {
-  const handleValueChange = (value: Option["value"]) => {
+  const handleValueChange = (value: O["value"]) => {
     const selectedOption = getSelectedOption(value, options, groups);
-    if (onValueChange) onValueChange(selectedOption.value);
+    if (onValueChange && selectedOption) onValueChange(selectedOption.value);
   };
 
   return (
@@ -207,11 +208,11 @@ function UIComponent({
   );
 }
 
-function FormWrapper({
+function FormWrapper<O extends Option>({
   name,
   onValueChange,
   ...props
-}: Props & { name: string }) {
+}: Props<O> & { name: string }) {
   const {
     control,
     formState: { errors },
@@ -220,8 +221,8 @@ function FormWrapper({
   const errorMessage = get(errors, name)?.message;
 
   const handleValueChange = (
-    value: Option["value"],
-    onFieldChange: (value: Option["value"]) => void,
+    value: O["value"],
+    onFieldChange: (value: O["value"]) => void,
   ) => {
     onFieldChange(value);
     if (onValueChange) onValueChange(value);
@@ -246,12 +247,12 @@ function FormWrapper({
   );
 }
 
-export default function Select({
+export default function Select<O extends Option>({
   name,
   value,
   onValueChange,
   ...props
-}: Props) {
+}: Props<O>) {
   if (name !== undefined && value === undefined) {
     return <FormWrapper {...props} name={name} onValueChange={onValueChange} />;
   } else if (
