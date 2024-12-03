@@ -112,9 +112,9 @@ export default function Form({
   onFinish,
 }: Props) {
   const today = new Date();
-  const plus1Month = new Date(today.setMonth(today.getMonth() + 1));
+  const plus1Month = new Date(new Date().setMonth(today.getMonth() + 1));
   const defaultDay = today.getDate();
-  const defaultMonth = `${plus1Month.getMonth()}` as Form["yearlyByDay_Month"];
+  const defaultMonth = `${today.getMonth() + 1}` as Form["yearlyByDay_Month"];
 
   const methods = useForm({
     mode: "onChange",

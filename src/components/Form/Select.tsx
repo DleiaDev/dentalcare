@@ -52,6 +52,16 @@ type SelectValueFormattedProps<O extends Option> = {
   groups?: Group<O>[];
 };
 
+function getOptionInGroups<O extends Option>(
+  value: O["value"],
+  groups: Group<O>[],
+) {
+  for (const group of groups) {
+    const foundOption = group.options.find((o) => o.value === value);
+    if (foundOption) return foundOption;
+  }
+}
+
 function getSelectedOption<O extends Option>(
   value: O["value"],
   options?: O[],
@@ -62,7 +72,7 @@ function getSelectedOption<O extends Option>(
   if (options) {
     selectedOption = options.find((option) => option.value == value);
   } else if (groups) {
-    // TODO:
+    selectedOption = getOptionInGroups(value, groups);
   }
   return selectedOption;
 }

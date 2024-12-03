@@ -19,12 +19,17 @@ import { trpc } from "@/trpc/client";
 import Button from "@/components/Button";
 import { PlusIcon, XIcon } from "lucide-react";
 import { BaseSyntheticEvent } from "react";
+import { HolidaysTypes } from "date-holidays";
 
 type HolidayFieldProps = {
   index: number;
   clinic: Clinic;
   onDeleteClick: () => void;
 };
+
+function getHolidayObjId(holiday: HolidaysTypes.Holiday) {
+  return `${holiday.name}-${holiday.date}`;
+}
 
 function HolidayField({ index, clinic, onDeleteClick }: HolidayFieldProps) {
   const { watch, setValue } = useFormContext();
@@ -52,7 +57,7 @@ function HolidayField({ index, clinic, onDeleteClick }: HolidayFieldProps) {
 
   const handleHolidayObjIdChange = (holidayObjId: string) => {
     const holidayObj = holidays.find(
-      (holiday) => holiday.date === holidayObjId,
+      (holiday) => getHolidayObjId(holiday) === holidayObjId,
     );
     setValue(`holidays.${index}.holidayObj`, holidayObj);
   };
@@ -81,7 +86,7 @@ function HolidayField({ index, clinic, onDeleteClick }: HolidayFieldProps) {
         placeholder="Select a holiday"
         onValueChange={handleHolidayObjIdChange}
         options={holidays.map((holiday) => ({
-          value: holiday.date,
+          value: getHolidayObjId(holiday),
           label: holiday.name,
           description: `${formatDate(holiday.start)} - ${formatDate(holiday.end)}`,
           disabled:
@@ -165,12 +170,17 @@ export default function Form({
     },
   });
 
-  const handleSubmit = (e?: BaseSyntheticEvent) => {
-    e?.stopPropagation();
-    return methods.handleSubmit((form) => {
+  const submit = methods.handleSubmit(
+    (form) => {
       onFinish(transformFormToData(form));
       methods.reset();
-    })(e);
+    },
+    (errors) => console.log(errors),
+  );
+
+  const handleSubmit = (e?: BaseSyntheticEvent) => {
+    e?.stopPropagation();
+    submit(e);
   };
 
   const { append, fields, remove } = useFieldArray({

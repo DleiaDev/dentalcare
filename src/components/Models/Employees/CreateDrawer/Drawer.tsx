@@ -1,15 +1,15 @@
+import { ComponentProps, useState } from "react";
 import Button from "@/components/Button";
 import Drawer from "@/components/Drawer";
 import DrawerFooter from "@/components/DrawerFooter";
 import Form from "./Form";
-import { ComponentProps, useState } from "react";
 
 type FormProps = ComponentProps<typeof Form>;
 
 export default function CreateDrawer({}) {
   const formId = "employee-create-form";
 
-  const [currentStep, setCurrentStep] = useState<FormProps["step"]>(4);
+  const [currentStep, setCurrentStep] = useState<FormProps["step"]>(1);
   const [data, setData] = useState<FormProps["data"]>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
