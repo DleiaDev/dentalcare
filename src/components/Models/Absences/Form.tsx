@@ -174,7 +174,11 @@ export default function Form({
         <Row>
           <Label>Repeat every</Label>
           {frequency !== "Yearly" && (
-            <NumberInput name="interval" containerClassName="mb-0 w-[7ch]" />
+            <NumberInput
+              name="interval"
+              containerClassName="mb-0 w-[7ch]"
+              min={1}
+            />
           )}
           <Select
             name="frequency"
