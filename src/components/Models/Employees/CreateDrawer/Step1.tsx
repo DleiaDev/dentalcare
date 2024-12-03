@@ -15,43 +15,32 @@ const MAXIMUM_MB = 5;
 const MAXIMUM_SIZE = MAXIMUM_MB * 1000000;
 
 // Zod schema
-const schema =
-  typeof window === "undefined"
-    ? null
-    : z.object({
-        avatar: z
-          .instanceof(FileList)
-          .optional()
-          .superRefine((fileList, ctx) => {
-            if (!fileList || fileList?.length < 1) return z.NEVER;
-            if (fileList.length > 1) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "File list contains more then 1 file",
-              });
-              return z.NEVER;
-            }
-            const [file] = fileList;
-            if (file.size > MAXIMUM_SIZE)
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
-              });
-          }),
-        employmentType: EmploymentTypeEnum,
-        name: z
-          .string()
-          .min(1, { message: "Name is required" })
-          .min(2, { message: "Name must contain at least 2 characters" }),
-        profession: z.string({ message: "Profession is required" }),
-        phone: z
-          .string({ message: "Phone is required" })
-          .refine((val) => isPossiblePhoneNumber(val), {
-            message: "Invalid phone number",
-          }),
-        email: z.string().min(1, { message: "Email is required" }).email(),
-        address: z.string().min(1, { message: "Address is required" }),
-      });
+const schema = z.object({
+  avatar: z
+    .instanceof(File)
+    .optional()
+    .superRefine((file, ctx) => {
+      if (!file) return;
+      if (file.size > MAXIMUM_SIZE)
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
+        });
+    }),
+  employmentType: EmploymentTypeEnum,
+  name: z
+    .string()
+    .min(1, { message: "Name is required" })
+    .min(2, { message: "Name must contain at least 2 characters" }),
+  profession: z.string({ message: "Profession is required" }),
+  phone: z
+    .string({ message: "Phone is required" })
+    .refine((val) => isPossiblePhoneNumber(val), {
+      message: "Invalid phone number",
+    }),
+  email: z.string().min(1, { message: "Email is required" }).email(),
+  address: z.string().min(1, { message: "Address is required" }),
+});
 
 // Types
 type ZodSchema = Exclude<typeof schema, null>;
@@ -72,7 +61,7 @@ export default function Step1({ formId, data, onFinish }: Props) {
   });
 
   const onSubmit = methods.handleSubmit((data) => {
-    data.avatar = data.avatar?.length === 1 ? data.avatar : undefined;
+    console.log(data);
     onFinish(data);
   });
 
