@@ -193,7 +193,7 @@ const Component = forwardRef<Ref, Props & { level: number }>(
           <div className="h-full flex flex-col relative">
             {/* Spinner */}
             {spinner ? (
-              <div className="bg-white/50 absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center animate-in fade-in">
+              <div className="bg-white/50 absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center animate-in fade-in rounded-xl">
                 <Spinner className="text-primary w-16 h-16" />
               </div>
             ) : null}

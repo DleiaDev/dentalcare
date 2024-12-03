@@ -11,7 +11,7 @@ $gutterWidth: 6.5rem;
   .rbc-time-content {
     flex: 1 1 auto;
     height: 0px;
-    border-block-start: 1px solid var(--border);
+    @apply border-t border-t-border;
   }
   .rbc-today {
     @apply bg-accent;
@@ -29,7 +29,7 @@ $gutterWidth: 6.5rem;
     }
   }
   .rbc-slot-selection {
-    background-color: var(--highlight);
+    @apply bg-highlight;
     opacity: 0.5;
     span {
       display: block;

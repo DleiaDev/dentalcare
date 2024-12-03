@@ -1,7 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import styles from "./Navbar.module.scss";
 import Search from "./Search/Search";
 import Separator from "@/components/ui/separator";
 import Dropdown from "@/components/Dropdown";
@@ -23,8 +22,8 @@ export default function Navbar() {
   const pageName = pageNameMap[pagePath];
 
   return (
-    <div className={styles["navbar"]}>
-      <h2 className={styles["navbar__page-name"]}>{pageName}</h2>
+    <div className="h-[5rem] px-8 flex justify-between items-center border-b border-b-border">
+      <h2 className="text-2xl font-bold">{pageName}</h2>
 
       <div className="flex items-center gap-x-8">
         <Search />

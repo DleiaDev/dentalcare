@@ -3,7 +3,7 @@ const nextConfig = {
   output: "standalone",
 
   sassOptions: {
-    prependData: "@import './src/app/variables.module.scss';",
+    silenceDeprecations: ["legacy-js-api"],
   },
 
   webpack(config) {
