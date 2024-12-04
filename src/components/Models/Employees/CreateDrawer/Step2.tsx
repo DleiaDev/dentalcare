@@ -1,7 +1,10 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
+import { Clinic } from "@/zod/Clinic";
+import { CreateEmployeeFormSchema } from "@/zod/Employee";
 import CheckboxList from "@/components/Form/CheckboxList";
+import { useMemo } from "react";
 
 // prettier-ignore
 const groups = [
@@ -81,19 +84,27 @@ const groups = [
   }
 ];
 
-const schema = z.object({
-  services: z.number().array(),
-});
-
-export type Data = z.infer<typeof schema>;
+export type Data = Pick<
+  z.infer<ReturnType<typeof CreateEmployeeFormSchema>>,
+  "services"
+>;
 
 type Props = {
   formId?: string;
   data?: Data;
+  clinic: Clinic;
   onFinish: (form: Data) => void;
 };
 
-export default function Step2({ formId, data, onFinish }: Props) {
+export default function Step2({ formId, data, clinic, onFinish }: Props) {
+  const schema = useMemo(
+    () =>
+      CreateEmployeeFormSchema(clinic).pick({
+        services: true,
+      }),
+    [clinic],
+  );
+
   const methods = useForm<Data>({
     mode: "onChange",
     resolver: zodResolver(schema),

@@ -1,69 +1,59 @@
 import { z } from "zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Clinic } from "@/zod/Clinic";
+import { CreateEmployeeFormSchema } from "@/zod/Employee";
 import AvatarUpload from "@/components/Form/AvatarUpload";
 import RadioGroup from "@/components/Form/RadioGroup";
-import { EmploymentTypeEnum } from "@/zod/utils/employmentType";
 import TextInput from "@/components/Form/TextInput";
 import PhoneInput from "@/components/Form/PhoneInput";
 import Select from "@/components/Form/Select";
-import { isPossiblePhoneNumber } from "react-phone-number-input";
 import EmailInput from "@/components/Form/EmailInput";
 import TextArea from "@/components/Form/TextArea";
-
-const MAXIMUM_MB = 5;
-const MAXIMUM_SIZE = MAXIMUM_MB * 1000000;
-
-// Zod schema
-const schema = z.object({
-  avatar: z
-    .instanceof(File)
-    .optional()
-    .superRefine((file, ctx) => {
-      if (!file) return;
-      if (file.size > MAXIMUM_SIZE)
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
-        });
-    }),
-  employmentType: EmploymentTypeEnum,
-  name: z
-    .string()
-    .min(1, { message: "Name is required" })
-    .min(2, { message: "Name must contain at least 2 characters" }),
-  profession: z.string({ message: "Profession is required" }),
-  phone: z
-    .string({ message: "Phone is required" })
-    .refine((val) => isPossiblePhoneNumber(val), {
-      message: "Invalid phone number",
-    }),
-  email: z.string().min(1, { message: "Email is required" }).email(),
-  address: z.string().min(1, { message: "Address is required" }),
-});
+import { useMemo } from "react";
 
 // Types
-type ZodSchema = Exclude<typeof schema, null>;
-export type Data = z.infer<ZodSchema>;
+export type Data = Pick<
+  z.infer<ReturnType<typeof CreateEmployeeFormSchema>>,
+  | "name"
+  | "avatar"
+  | "employmentType"
+  | "profession"
+  | "phone"
+  | "email"
+  | "address"
+>;
 
 // Props
 type Props = {
   formId?: string;
   data?: Data;
+  clinic: Clinic;
   onFinish: (form: Data) => void;
 };
 
-export default function Step1({ formId, data, onFinish }: Props) {
+export default function Step1({ formId, data, clinic, onFinish }: Props) {
+  const schema = useMemo(
+    () =>
+      CreateEmployeeFormSchema(clinic).pick({
+        name: true,
+        avatar: true,
+        employmentType: true,
+        profession: true,
+        phone: true,
+        email: true,
+        address: true,
+      }),
+    [clinic],
+  );
+
   const methods = useForm<Data>({
     mode: "onChange",
-    resolver: zodResolver(schema as ZodSchema),
+    resolver: zodResolver(schema),
     defaultValues: data,
   });
 
-  const onSubmit = methods.handleSubmit((data) => {
-    console.log(data);
-    onFinish(data);
-  });
+  const onSubmit = methods.handleSubmit(onFinish);
 
   return (
     <FormProvider {...methods}>

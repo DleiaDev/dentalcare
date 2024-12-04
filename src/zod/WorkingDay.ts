@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Employee, EmployeeSchema } from "./Employee";
 import {
-  CreateTimeSlotsInputSchema,
+  CreateTimeSlotsFormSchema,
   TimeSlot,
   TimeSlotSchema,
 } from "./TimeSlot";
@@ -31,11 +31,13 @@ export const WorkingDaySchema: z.ZodType<WorkingDay> = z.object({
   updatedAt: z.date(),
 });
 
-// ------- Input -------
+// ------- Forms -------
+
 export type CreateWorkingDayInput = z.infer<
-  ReturnType<typeof CreateWorkingDayInputSchema>
+  ReturnType<typeof CreateWorkingDayFormSchema>
 >;
-export const CreateWorkingDayInputSchema = (clinic: Clinic) => {
+
+export const CreateWorkingDayFormSchema = (clinic: Clinic) => {
   const dayToStartAndEndTime = clinic.WorkingDays.reduce(
     (acc, workingDay) => {
       const startTime = workingDay.TimeSlots[0].startTime;
@@ -50,37 +52,37 @@ export const CreateWorkingDayInputSchema = (clinic: Clinic) => {
     >,
   );
 
-  return z.object({
-    WorkingDays: z
-      .object({
-        dayOfWeek: DayOfWeekEnum,
-        TimeSlots: CreateTimeSlotsInputSchema,
-      })
-      .superRefine((workingDay, ctx) => {
-        const { startTime: clinicStartTime, endTime: clinicEndTime } =
-          dayToStartAndEndTime[workingDay.dayOfWeek];
-        const { startTime: employeeStartTime } = workingDay.TimeSlots[0];
-        const { endTime: employeeEndTime } =
-          workingDay.TimeSlots[workingDay.TimeSlots.length - 1];
-        if (employeeStartTime < clinicStartTime) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `Start time can't be earlier then clinic's start time (${formatTime(clinic.timeFormat, clinicStartTime)})`,
-            path: ["TimeSlots", 0, "startTime"],
-            fatal: true,
-          });
-          return z.NEVER;
-        }
-        if (clinicEndTime < employeeEndTime) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `End time can't be later then clinic's end time (${formatTime(clinic.timeFormat, clinicEndTime)})`,
-            path: ["TimeSlots", workingDay.TimeSlots.length - 1, "endTime"],
-            fatal: true,
-          });
-          return z.NEVER;
-        }
-      })
-      .array(),
-  });
+  return z
+    .object({
+      dayOfWeek: DayOfWeekEnum,
+      TimeSlots: CreateTimeSlotsFormSchema,
+    })
+    .superRefine((workingDay, ctx) => {
+      const { startTime: clinicStartTime, endTime: clinicEndTime } =
+        dayToStartAndEndTime[workingDay.dayOfWeek];
+      const { startTime: employeeStartTime } = workingDay.TimeSlots[0];
+      const { endTime: employeeEndTime } =
+        workingDay.TimeSlots[workingDay.TimeSlots.length - 1];
+      if (employeeStartTime < clinicStartTime) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Start time can't be earlier then clinic's start time (${formatTime(clinic.timeFormat, clinicStartTime)})`,
+          path: ["TimeSlots", 0, "startTime"],
+          fatal: true,
+        });
+        return z.NEVER;
+      }
+      if (clinicEndTime < employeeEndTime) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `End time can't be later then clinic's end time (${formatTime(clinic.timeFormat, clinicEndTime)})`,
+          path: ["TimeSlots", workingDay.TimeSlots.length - 1, "endTime"],
+          fatal: true,
+        });
+        return z.NEVER;
+      }
+    });
 };
+
+export const CreateWorkingDaysFormSchema = (clinic: Clinic) =>
+  CreateWorkingDayFormSchema(clinic).array();

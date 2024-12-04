@@ -23,9 +23,9 @@ export const TimeSlotSchema: z.ZodType<TimeSlot> = z.object({
   updatedAt: z.date(),
 });
 
-// ------- Input -------
+// ------- Forms -------
 
-export const CreateTimeSlotsInputSchema = z
+export const CreateTimeSlotFormSchema = z
   .object({
     id: z.string(),
     startTime: z.string().regex(/^([01][0-9]|2[0-3]):([0-5][0-9])$/, {
@@ -52,9 +52,10 @@ export const CreateTimeSlotsInputSchema = z
       });
       return z.NEVER;
     }
-  })
-  .array()
-  .superRefine((timeSlots, ctx) => {
+  });
+
+export const CreateTimeSlotsFormSchema =
+  CreateTimeSlotFormSchema.array().superRefine((timeSlots, ctx) => {
     timeSlots.forEach((timeSlot, timeSlotIndex) => {
       const nextTimeSlotsStartTime = timeSlots[timeSlotIndex + 1]?.startTime;
       if (!nextTimeSlotsStartTime) return;

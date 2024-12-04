@@ -14,8 +14,8 @@ import { PlusIcon, XIcon } from "lucide-react";
 import { BaseSyntheticEvent, useRef, useState } from "react";
 
 export type Data = {
-  holidays: HolidayFormData;
-  absences: AbsenceFormData[];
+  Holidays: HolidayFormData;
+  Absences: AbsenceFormData[];
 };
 
 type Props = {
@@ -29,10 +29,10 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
   const DrawerRef = useRef<Ref>(null);
   const [tab, setTab] = useState("Absence");
   const [holidayInputs, setHolidayInputs] = useState<HolidayFormData>(
-    data?.holidays ?? [],
+    data?.Holidays ?? [],
   );
   const [absenceInputs, setAbsenceInputs] = useState<AbsenceFormData[]>(
-    data?.absences ?? [],
+    data?.Absences ?? [],
   );
 
   const entries = [
@@ -53,9 +53,9 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
     ...holidayInputs.map((holidayInput) => ({
       type: "Holiday",
       key: holidayInput.key,
-      name: holidayInput.name,
+      name: holidayInput.holidayObj.name,
       text: holidayInput.text,
-      entityType: holidayInput.entityType,
+      entityType: "Employee",
     })),
     ...absenceInputs.map((absenceInput) => ({
       type: "Absence",
@@ -80,8 +80,8 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
     e?.preventDefault();
     e?.stopPropagation();
     const data = {
-      holidays: holidayInputs,
-      absences: absenceInputs,
+      Holidays: holidayInputs,
+      Absences: absenceInputs,
     };
     onFinish(data);
   };

@@ -48,6 +48,7 @@
     "cmdk": "1.0.0",
     "date-holidays": "^3.23.13",
     "dayjs": "^1.11.13",
+    "libphonenumber-js": "^1.11.16",
     "lodash.get": "^4.4.2",
     "lucide-react": "^0.441.0",
     "next": "15.0.3",

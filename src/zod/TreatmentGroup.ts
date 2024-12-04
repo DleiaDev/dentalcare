@@ -16,14 +16,3 @@ export const TreatmentGroupSchema: z.ZodType<TreatmentGroup> = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 });
-
-// ------- Input -------
-
-export const CreateTreatmentGroupInputSchema = z.object({
-  // Empty object as there are no required fields for creation
-});
-
-export type CreateTreatmentGroupInput = Omit<
-  TreatmentGroup,
-  "id" | "createdAt" | "updatedAt" | "treatments"
->;

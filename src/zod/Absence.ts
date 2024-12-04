@@ -31,7 +31,8 @@ export const AbsenceSchema: z.ZodType<Absence> = z.object({
   text: z.string(),
 });
 
-// Absence form schema
+// ------- Forms -------
+
 export const CreateAbsenceFormSchema = z.object({
   key: z.string(),
   name: z.string().min(1, { message: "Name is required" }),

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import {
   FieldError,
   FieldErrorsImpl,
@@ -7,11 +8,7 @@ import {
   useForm,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CreateWorkingDayInput,
-  CreateWorkingDayInputSchema,
-  WorkingDay,
-} from "@/zod/WorkingDay";
+import { WorkingDay } from "@/zod/WorkingDay";
 import { Clinic } from "@/zod/Clinic";
 import { DayOfWeek, DayOfWeekEnum } from "@/zod/utils/dayOfWeek";
 import BooleanInput from "@/components/Form/BooleanInput";
@@ -23,8 +20,12 @@ import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TimeSlot } from "@/zod/TimeSlot";
 import { useMemo } from "react";
+import { CreateEmployeeFormSchema } from "@/zod/Employee";
 
-export type Data = CreateWorkingDayInput;
+export type Data = Pick<
+  z.infer<ReturnType<typeof CreateEmployeeFormSchema>>,
+  "WorkingDays"
+>;
 
 type Props = {
   formId?: string;
@@ -158,7 +159,13 @@ export function Switch({
 }
 
 export default function Step3({ formId, data, clinic, onFinish }: Props) {
-  const schema = useMemo(() => CreateWorkingDayInputSchema(clinic), [clinic]);
+  const schema = useMemo(
+    () =>
+      CreateEmployeeFormSchema(clinic).pick({
+        WorkingDays: true,
+      }),
+    [clinic],
+  );
 
   const methods = useForm<Data>({
     mode: "onChange",

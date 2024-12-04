@@ -34,54 +34,46 @@ export const HolidaySchema: z.ZodType<Holiday> = z.object({
   text: z.string(),
 });
 
-export type HolidayFormData = {
-  key: string;
-  name: string;
-  countryCode: string;
-  startDate: Date;
-  endDate: Date;
-  entityType: "Employee" | "Clinic";
-  text: string;
-};
+// ------- Forms -------
 
-export type HolidayForm = z.infer<typeof HolidayFormSchema>;
+export type CreateHolidayFormData = z.infer<typeof CreateHolidayFormSchema>;
 
-export const HolidayFormSchema = z.object({
-  holidays: z
-    .object({
-      key: z.string(),
-      countryCode: z.string(),
-      holidayObjId: z.string().refine((holidayObjId) => holidayObjId !== "", {
-        message: "Holiday is required",
-      }),
-      holidayObj: z.object({
-        name: z.string(),
-        start: z.date(),
-        end: z.date(),
-      }),
-    })
-    .array()
-    .superRefine((holidays, ctx) => {
-      const countryToHolidayObjId = {} as Record<
-        HolidayForm["holidays"][number]["countryCode"],
-        HolidayForm["holidays"][number]["holidayObjId"][]
-      >;
-      holidays.forEach((holiday, index) => {
-        if (!countryToHolidayObjId[holiday.countryCode])
-          countryToHolidayObjId[holiday.countryCode] = [holiday.holidayObjId];
-        else if (
-          !countryToHolidayObjId[holiday.countryCode].includes(
-            holiday.holidayObjId,
-          )
-        )
-          countryToHolidayObjId[holiday.countryCode].push(holiday.holidayObjId);
-        else
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "You have already selected this holiday",
-            path: [index, "holidayObjId"],
-            fatal: true,
-          });
-      });
-    }),
+export const CreateHolidayFormSchema = z.object({
+  key: z.string(),
+  countryCode: z.string(),
+  holidayObjId: z.string().refine((holidayObjId) => holidayObjId !== "", {
+    message: "Holiday is required",
+  }),
+  holidayObj: z.object({
+    name: z.string(),
+    date: z.string(),
+  }),
+  text: z.string(), // For display purposes
 });
+
+export type CreateHolidaysFormData = z.infer<typeof CreateHolidaysFormSchema>;
+
+export const CreateHolidaysFormSchema =
+  CreateHolidayFormSchema.array().superRefine((holidays, ctx) => {
+    const countryToHolidayObjId = {} as Record<
+      CreateHolidayFormData["countryCode"],
+      CreateHolidayFormData["holidayObjId"][]
+    >;
+    holidays.forEach((holiday, index) => {
+      if (!countryToHolidayObjId[holiday.countryCode])
+        countryToHolidayObjId[holiday.countryCode] = [holiday.holidayObjId];
+      else if (
+        !countryToHolidayObjId[holiday.countryCode].includes(
+          holiday.holidayObjId,
+        )
+      )
+        countryToHolidayObjId[holiday.countryCode].push(holiday.holidayObjId);
+      else
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "You have already selected this holiday",
+          path: [index, "holidayObjId"],
+          fatal: true,
+        });
+    });
+  });

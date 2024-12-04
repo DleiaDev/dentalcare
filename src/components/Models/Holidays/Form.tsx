@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FormProvider,
@@ -8,9 +9,8 @@ import {
 import { Clinic } from "@/zod/Clinic";
 import {
   Holiday,
-  HolidayForm,
-  HolidayFormData,
-  HolidayFormSchema,
+  CreateHolidaysFormData,
+  CreateHolidaysFormSchema,
 } from "@/zod/Holiday";
 import CountryPicker from "@/components/Form/CountryPicker";
 import Select from "@/components/Form/Select";
@@ -20,6 +20,10 @@ import Button from "@/components/Button";
 import { PlusIcon, XIcon } from "lucide-react";
 import { BaseSyntheticEvent } from "react";
 import { HolidaysTypes } from "date-holidays";
+
+const schema = z.object({
+  holidays: CreateHolidaysFormSchema,
+});
 
 type HolidayFieldProps = {
   index: number;
@@ -37,6 +41,7 @@ function HolidayField({ index, clinic, onDeleteClick }: HolidayFieldProps) {
   const handleCountryCodeChange = () => {
     setValue(`holidays.${index}.holidayObjId`, "");
     setValue(`holidays.${index}.holidayObj`, undefined);
+    setValue(`holidays.${index}.text`, undefined);
   };
 
   const countryCode = watch(`holidays.${index}.countryCode`);
@@ -59,7 +64,12 @@ function HolidayField({ index, clinic, onDeleteClick }: HolidayFieldProps) {
     const holidayObj = holidays.find(
       (holiday) => getHolidayObjId(holiday) === holidayObjId,
     );
+    if (!holidayObj) return;
     setValue(`holidays.${index}.holidayObj`, holidayObj);
+    setValue(
+      `holidays.${index}.text`,
+      `${formatDate(holidayObj.start)} - ${formatDate(holidayObj.end)}`,
+    );
   };
 
   const clinicHolidaysMap = clinic.Holidays.reduce(
@@ -111,7 +121,7 @@ function HolidayField({ index, clinic, onDeleteClick }: HolidayFieldProps) {
   );
 }
 
-export type Data = HolidayFormData[];
+export type Data = CreateHolidaysFormData;
 
 type Props = {
   formId?: string;
@@ -121,31 +131,17 @@ type Props = {
   onFinish: (data: Data) => void;
 };
 
-function transformDataToForm(holidays: Data): HolidayForm {
+function createEmptyHoliday(clinic: Clinic) {
   return {
-    holidays: holidays.map((holiday) => ({
-      key: holiday.key,
-      countryCode: holiday.countryCode,
-      holidayObjId: holiday.key,
-      holidayObj: {
-        name: holiday.name,
-        start: holiday.startDate,
-        end: holiday.endDate,
-      },
-    })),
+    key: new Date().getTime().toString(),
+    countryCode: clinic.countryCode,
+    holidayObjId: "",
+    holidayObj: {
+      name: "",
+      date: "",
+    },
+    text: "",
   };
-}
-
-function transformFormToData({ holidays }: HolidayForm): Data {
-  return holidays.map((holiday) => ({
-    key: holiday.holidayObjId,
-    name: holiday.holidayObj.name,
-    countryCode: holiday.countryCode,
-    startDate: holiday.holidayObj.start,
-    endDate: holiday.holidayObj.end,
-    entityType: "Employee",
-    text: `${formatDate(holiday.holidayObj.start)} - ${formatDate(holiday.holidayObj.end)}`,
-  }));
 }
 
 export default function Form({
@@ -155,28 +151,17 @@ export default function Form({
   className,
   onFinish,
 }: Props) {
-  const defaultForm = data && transformDataToForm(data);
-
   const methods = useForm({
-    resolver: zodResolver(HolidayFormSchema),
-    defaultValues: defaultForm ?? {
-      holidays: [
-        {
-          key: new Date().getTime().toString(),
-          countryCode: clinic.countryCode,
-          holidayObjId: "",
-        },
-      ],
+    resolver: zodResolver(schema),
+    defaultValues: {
+      holidays: data ?? [createEmptyHoliday(clinic)],
     },
   });
 
-  const submit = methods.handleSubmit(
-    (form) => {
-      onFinish(transformFormToData(form));
-      methods.reset();
-    },
-    (errors) => console.log(errors),
-  );
+  const submit = methods.handleSubmit(({ holidays }) => {
+    onFinish(holidays);
+    methods.reset();
+  });
 
   const handleSubmit = (e?: BaseSyntheticEvent) => {
     e?.stopPropagation();
@@ -189,16 +174,7 @@ export default function Form({
   });
 
   const addHoliday = () => {
-    append({
-      key: new Date().getTime().toString(),
-      countryCode: clinic.countryCode,
-      holidayObjId: "",
-      holidayObj: {
-        name: "",
-        start: new Date(),
-        end: new Date(),
-      },
-    });
+    append(createEmptyHoliday(clinic));
   };
 
   return (
