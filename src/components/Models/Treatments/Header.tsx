@@ -6,7 +6,7 @@ import Drawer from "./CreateDrawer/Drawer";
 export default function Header() {
   return (
     <div className="flex items-center justify-between">
-      <Count icon="user" count={8} text="Doctor(s)" />
+      <Count icon="stethoscope" count={10} text="Treatments" />
       <div>
         <Drawer />
       </div>

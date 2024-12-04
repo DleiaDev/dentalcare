@@ -15,7 +15,7 @@ const colorMap = {
   flat: {
     head: ["currentColor", "currentColor"],
     body: ["currentColor", "currentColor"],
-    background: ["white", "white"],
+    background: ["transparent", "transparent"],
   },
 };
 

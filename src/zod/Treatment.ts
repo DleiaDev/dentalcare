@@ -21,3 +21,9 @@ export const TreatmentSchema: z.ZodType<Treatment> = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 });
+
+export type CreateTreatmentFormData = z.infer<typeof CreateTreatmentFormSchema>;
+
+export const CreateTreatmentFormSchema = z.object({
+  //
+});

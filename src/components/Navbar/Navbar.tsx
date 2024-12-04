@@ -11,6 +11,7 @@ const pageNameMap = {
   "/dashboard": "Dashboard",
   "/reservations": "Reservations",
   "/staff": "Staff",
+  "/treatments": "Treatments",
 } as const;
 
 type PagePath = keyof typeof pageNameMap;
