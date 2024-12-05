@@ -9,6 +9,7 @@ model Treatment {
 
 model TreatmentGroup {
   id         String      @id @default(dbgenerated("uuid_generate_v4()"))
+  name       String
   treatments Treatment[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt

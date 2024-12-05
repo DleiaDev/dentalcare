@@ -25,5 +25,8 @@ export const TreatmentSchema: z.ZodType<Treatment> = z.object({
 export type CreateTreatmentFormData = z.infer<typeof CreateTreatmentFormSchema>;
 
 export const CreateTreatmentFormSchema = z.object({
-  //
+  name: z.string().min(1, { message: "Name is required" }),
+  category: z
+    .string({ message: "You have to choose at least one" })
+    .min(1, "Category name can't be blank"),
 });
