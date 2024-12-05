@@ -1,9 +1,14 @@
+import { ReactNode, useMemo, useState } from "react";
 import get from "lodash.get";
-import { cn } from "@/lib/utils";
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { Controller, useFormContext } from "react-hook-form";
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import { cn } from "@/lib/utils";
+import Button from "@/components/Button";
 import Label from "./Label";
 import ErrorMessage from "./ErrorMessage";
+import { Skeleton } from "../ui/skeleton";
+import { PlusIcon } from "lucide-react";
+import TextInput from "./TextInput";
 
 type Option = {
   label: string;
@@ -18,10 +23,128 @@ type Props = {
   textClassName?: string;
   labelClassName?: string;
   containerClassName?: string;
+  allowCreate?: boolean;
+  isFetching?: boolean;
+  fetchingFailed?: boolean;
   onValueChange?: (value: Option["value"]) => void;
 };
 
-export function UIComponent({
+function RadioSkeleton() {
+  return (
+    <div className="flex gap-3 flex-wrap">
+      <Skeleton className="h-12 w-60" />
+      <Skeleton className="h-12 w-60" />
+      <Skeleton className="h-12 w-60" />
+    </div>
+  );
+}
+
+function RadioLabel({
+  option,
+  errorMessage,
+  value,
+  className,
+  children,
+}: {
+  value: Props["value"];
+  option: Option;
+  errorMessage?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <label
+      htmlFor={option.label}
+      className={cn(
+        "h-12 flex items-center gap-3 border border-border rounded-lg px-3 min-w-40 flex-1 cursor-pointer transition-colors hover:border-primary",
+        errorMessage && "border-error",
+        value === option.value && "border-primary",
+        className,
+      )}
+    >
+      {children}
+    </label>
+  );
+}
+
+function RadioIndicator({ option }: { option: Option }) {
+  return (
+    <RadioGroupPrimitive.Item
+      className="w-5 h-5 rounded-full border border-border"
+      value={option.value}
+      id={option.label}
+    >
+      <RadioGroupPrimitive.Indicator className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+        <span className="w-1/2 h-1/2 rounded-full bg-white"></span>
+      </RadioGroupPrimitive.Indicator>
+    </RadioGroupPrimitive.Item>
+  );
+}
+
+function NewOption({
+  value,
+  labelClassName,
+  errorMessage,
+  onValueChange,
+}: {
+  labelClassName: Props["labelClassName"];
+  value: Exclude<Props["value"], undefined>;
+  errorMessage?: string;
+  onValueChange: (value: string) => void;
+}) {
+  const [newOptionText, setNewOptionText] = useState("");
+  const [isCreatingNewOption, setIsCreatingNewOption] = useState(false);
+
+  const newOption = useMemo(
+    () => ({
+      value: newOptionText,
+      label: newOptionText,
+    }),
+    [newOptionText],
+  );
+
+  const handleAddNewClick = () => {
+    setIsCreatingNewOption(true);
+    onValueChange(newOptionText);
+  };
+
+  const handleChange = (newText: string) => {
+    setNewOptionText(newText);
+    if (value === newOptionText) onValueChange(newText);
+  };
+
+  return isCreatingNewOption ? (
+    <RadioLabel
+      value={value}
+      option={newOption}
+      errorMessage={errorMessage}
+      className={cn(
+        labelClassName,
+        errorMessage && value === newOptionText && "!border-error",
+      )}
+    >
+      <RadioIndicator option={newOption} />
+      <TextInput
+        value={newOptionText}
+        onValueChange={handleChange}
+        className="h-full p-0 border-none shadow-none focus-visible:ring-0"
+        containerClassName="mb-0 h-full"
+        autoFocus
+      />
+    </RadioLabel>
+  ) : (
+    <Button
+      intent="outlined"
+      className="flex-1 h-12 min-w-40 rounded-lg justify-start"
+      onClick={handleAddNewClick}
+    >
+      <PlusIcon className="mr-2 h-5 w-5" />
+      Add new
+    </Button>
+  );
+}
+
+function UIComponent({
   value,
   name,
   label,
@@ -30,6 +153,9 @@ export function UIComponent({
   textClassName,
   labelClassName,
   containerClassName,
+  allowCreate,
+  isFetching,
+  fetchingFailed,
   onBlur,
   onValueChange,
 }: Props & {
@@ -41,39 +167,44 @@ export function UIComponent({
   return (
     <div className={cn("mb-7", containerClassName)}>
       {label && <Label htmlFor={name}>{label}</Label>}
-      <RadioGroupPrimitive.Root
-        aria-label={label}
-        className="flex gap-6 flex-wrap"
-        value={value}
-        onBlur={onBlur}
-        onValueChange={onValueChange}
-      >
-        {options.map((option) => (
-          <label
-            key={option.value}
-            htmlFor={option.label}
-            className={cn(
-              "h-12 flex items-center gap-3 border border-border rounded-lg px-3 min-w-40 flex-1 cursor-pointer transition-colors hover:border-primary",
-              errorMessage && "border-error",
-              value === option.value && "border-primary",
-              labelClassName,
-            )}
-          >
-            <RadioGroupPrimitive.Item
-              className="w-5 h-5 rounded-full border border-border"
-              value={option.value}
-              id={option.label}
+      {isFetching ? (
+        <RadioSkeleton />
+      ) : fetchingFailed ? (
+        <div className="text-error text-sm font-semibold bg-input-invalid p-4 rounded-xl">
+          An error occurred
+        </div>
+      ) : (
+        <RadioGroupPrimitive.Root
+          aria-label={label}
+          className="flex gap-3 flex-wrap"
+          value={value}
+          onBlur={onBlur}
+          onValueChange={onValueChange}
+        >
+          {options.map((option) => (
+            <RadioLabel
+              key={option.value}
+              value={value}
+              option={option}
+              errorMessage={value === undefined ? errorMessage : undefined}
+              className={labelClassName}
             >
-              <RadioGroupPrimitive.Indicator className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                <span className="w-1/2 h-1/2 rounded-full bg-white"></span>
-              </RadioGroupPrimitive.Indicator>
-            </RadioGroupPrimitive.Item>
-            <span className={cn("font-medium", textClassName)}>
-              {option.label}
-            </span>
-          </label>
-        ))}
-      </RadioGroupPrimitive.Root>
+              <RadioIndicator option={option} />
+              <span className={cn("font-medium", textClassName)}>
+                {option.label}
+              </span>
+            </RadioLabel>
+          ))}
+          {allowCreate && (
+            <NewOption
+              labelClassName={labelClassName}
+              value={value}
+              errorMessage={errorMessage}
+              onValueChange={onValueChange}
+            />
+          )}
+        </RadioGroupPrimitive.Root>
+      )}
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </div>
   );
