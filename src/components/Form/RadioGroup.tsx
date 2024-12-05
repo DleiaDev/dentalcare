@@ -31,7 +31,7 @@ type Props = {
 
 function RadioSkeleton() {
   return (
-    <div className="flex gap-3 flex-wrap">
+    <div className="flex gap-3 flex-wrap animate-in fade-in duration-500">
       <Skeleton className="h-12 w-60" />
       <Skeleton className="h-12 w-60" />
       <Skeleton className="h-12 w-60" />
@@ -170,13 +170,16 @@ function UIComponent({
       {isFetching ? (
         <RadioSkeleton />
       ) : fetchingFailed ? (
-        <div className="text-error text-sm font-semibold bg-input-invalid p-4 rounded-xl">
+        <div className="text-error text-sm font-semibold bg-input-invalid p-4 rounded-xl animate-in fade-in duration-500">
           An error occurred
         </div>
       ) : (
         <RadioGroupPrimitive.Root
           aria-label={label}
-          className="flex gap-3 flex-wrap"
+          className={cn(
+            "flex gap-3 flex-wrap",
+            isFetching === false && "animate-in fade-in duration-500",
+          )}
           value={value}
           onBlur={onBlur}
           onValueChange={onValueChange}
