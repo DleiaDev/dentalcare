@@ -150,7 +150,7 @@ export default function Sidebar({ className }: Props) {
               links={[
                 {
                   title: !collapsed && "Stock",
-                  href: "/stock",
+                  href: "/stocks",
                   svg: { name: "bottle" },
                 },
                 {
