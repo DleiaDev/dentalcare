@@ -29,14 +29,14 @@ export default function Sidebar({ className }: Props) {
       <div className="min-w-[97px] xl:hidden"></div>
       <div
         className={cn(
-          "fixed inset-0 w-screen h-svh bg-black opacity-40 xl:hidden",
+          "fixed z-40 inset-0 w-screen h-svh bg-black opacity-40 xl:hidden",
           collapsed && "hidden",
         )}
         onClick={() => setCollapsed(true)}
       ></div>
       <div
         className={cn(
-          "border-e border-solid border-gray-400 bg-gray-200 max-w-80 absolute left-0 top-0 xl:relative",
+          "border-e border-solid border-gray-400 bg-gray-200 max-w-80 absolute z-50 left-0 top-0 xl:relative",
           className,
           !collapsed && "w-4/5",
         )}
@@ -156,7 +156,7 @@ export default function Sidebar({ className }: Props) {
                 {
                   title: !collapsed && "Peripherals",
                   href: "/peripherals",
-                  svg: { name: "hospital-bed" },
+                  svg: { name: "hospital-bed", type: "gray" },
                 },
               ]}
             />

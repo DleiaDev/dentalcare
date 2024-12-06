@@ -7,7 +7,7 @@ type Props = {
   icon: ComponentProps<typeof Svg>["name"];
 };
 
-export default function Header({ count, text, icon }: Props) {
+export default function Count({ count, text, icon }: Props) {
   return (
     <div className="flex items-center gap-3">
       <div className="bg-gray-300 rounded-lg p-1">

@@ -11,8 +11,8 @@ const colorMap = {
     light: ["#E3E6EF", "#BFC6D6"],
   },
   flat: {
-    dark: ["#A5ACC0", "#848DA3"],
-    light: ["#E3E6EF", "#BFC6D6"],
+    dark: ["currentColor", "currentColor"],
+    light: ["currentColor", "currentColor"],
   },
 };
 

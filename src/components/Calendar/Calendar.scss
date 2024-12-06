@@ -47,10 +47,10 @@ $gutterWidth: 6.5rem;
   }
 
   // Prevent gutter showing over sidebar on smaller screens
-  .rbc-time-header-gutter,
-  .rbc-time-gutter {
-    z-index: 0;
-  }
+  // .rbc-time-header-gutter,
+  // .rbc-time-gutter {
+  //   z-index: 1;
+  // }
 
   // Events (appointments)
   .rbc-event {
