@@ -10,9 +10,7 @@ import {
 import { EmploymentType, EmploymentTypeEnum } from "./utils/employmentType";
 import { isPossiblePhoneNumber } from "libphonenumber-js";
 import { CreateAbsenceFormSchema } from "./Absence";
-
-const MAXIMUM_MB = 5;
-const MAXIMUM_SIZE = MAXIMUM_MB * 1000000;
+import { MAXIMUM_B, MAXIMUM_MB } from "@/constants/storage";
 
 // ------- Model -------
 
@@ -59,7 +57,7 @@ export const CreateEmployeeFormSchema = (clinic: Clinic) => {
       .optional()
       .superRefine((file, ctx) => {
         if (!file) return;
-        if (file.size > MAXIMUM_SIZE)
+        if (file.size > MAXIMUM_B)
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: `File is too large, the limit is ${MAXIMUM_MB}MB`,

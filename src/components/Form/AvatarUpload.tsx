@@ -1,11 +1,11 @@
 import Svg from "@/components/Svg";
 import Button from "@/components/Button";
-import { ChangeEvent, useRef, useState } from "react";
-import Avatar from "../Avatar";
-import { Controller, useFormContext } from "react-hook-form";
+import { useRef, useState } from "react";
+import { useFormContext } from "react-hook-form";
 import Separator from "../ui/separator";
 import ErrorMessage from "./ErrorMessage";
 import { cn } from "@/lib/utils";
+import ImageInput, { Ref } from "./ImageInput";
 
 type Props = {
   name: string;
@@ -13,33 +13,27 @@ type Props = {
 };
 
 export default function AvatarUpload({ name, className }: Props) {
-  const inputEl = useRef<HTMLInputElement | null>(null);
+  const ImageInputRef = useRef<Ref>(null);
+  const [previewSrc, setPreviewSrc] = useState<string>();
   const {
-    control,
-    watch,
     resetField,
     formState: { errors },
   } = useFormContext();
 
-  const [rerender, setRerender] = useState(0);
+  const errorMessage = errors[name]?.message;
 
-  const value = watch(name);
-  let previewSrc = undefined;
-
-  if (value instanceof File) {
-    if (value) previewSrc = URL.createObjectURL(value);
-  }
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement>,
-    onFieldChange: (value: File) => void,
-  ) => {
-    if (!e.currentTarget?.files?.length) return;
-    const [file] = e.currentTarget.files;
-    onFieldChange(file);
+  const handleClick = () => {
+    ImageInputRef.current?.openFileBrowser();
   };
 
-  const errorMessage = errors[name]?.message;
+  const handleReset = () => {
+    resetField(name);
+    setPreviewSrc(undefined);
+  };
+
+  const handleValueChange = (value: File) => {
+    setPreviewSrc(URL.createObjectURL(value));
+  };
 
   return (
     <div
@@ -49,6 +43,11 @@ export default function AvatarUpload({ name, className }: Props) {
         className,
       )}
     >
+      <ImageInput
+        ref={ImageInputRef}
+        name={name}
+        onValueChange={handleValueChange}
+      />
       <div className="flex gap-6">
         {previewSrc ? (
           <img
@@ -65,27 +64,12 @@ export default function AvatarUpload({ name, className }: Props) {
         )}
         <div className="flex flex-col items-start justify-around">
           <div className="flex gap-3">
-            <Button
-              intent="text"
-              onClick={() => {
-                if (inputEl.current) {
-                  inputEl.current.click();
-                  inputEl.current.value = "";
-                }
-              }}
-            >
+            <Button intent="text" onClick={handleClick}>
               Upload photo
             </Button>
             {previewSrc && <Separator orientation="vertical" />}
             {previewSrc && (
-              <Button
-                intent="text"
-                color="destructive"
-                onClick={() => {
-                  resetField(name);
-                  setRerender(rerender + 1);
-                }}
-              >
+              <Button intent="text" color="destructive" onClick={handleReset}>
                 Delete
               </Button>
             )}
@@ -95,23 +79,6 @@ export default function AvatarUpload({ name, className }: Props) {
               "An image of the person, it's best if it has the same length and height"
             }
           </p>
-          <Controller
-            name={name}
-            control={control}
-            render={({ field }) => (
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                ref={(element) => {
-                  field.ref(element);
-                  inputEl.current = element;
-                }}
-                onBlur={field.onBlur}
-                onChange={(e) => handleChange(e, field.onChange)}
-              />
-            )}
-          />
         </div>
       </div>
       {typeof errorMessage === "string" && (
