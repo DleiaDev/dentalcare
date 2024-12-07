@@ -21,12 +21,13 @@ import BottleIcon from "@/icons/Bottle";
 import HospitalBedIcon from "@/icons/HospitalBed";
 import DoughnutChartIcon from "@/icons/DoughnutChart";
 import CustomerSupportIcon from "@/icons/CustomerSupport";
+import Image from "@/icons/Image";
 
 // Svg component props
 export type SvgComponentProps = {
   type: "colored" | "gray" | "flat";
   id: ReturnType<typeof useId>;
-} & SVGProps<SVGElement>;
+} & Omit<SVGProps<SVGElement>, "ref">;
 
 type SvgComponent = ComponentType<SvgComponentProps> | FC<SVGProps<SVGElement>>;
 type LazySvgComponent = LazyExoticComponent<SvgComponent>;
@@ -48,6 +49,7 @@ const svgMap: Record<string, SvgComponent | LazySvgComponent> = {
   "hospital-bed": HospitalBedIcon,
   "doughnut-chart": DoughnutChartIcon,
   "customer-support": CustomerSupportIcon,
+  image: Image,
 
   // Lazy icons
   // "random-icon": lazy(() => import("@/icons/RandomIcon")),

@@ -27,7 +27,7 @@ export default function Navbar() {
 
   return (
     <div className="h-[5rem] px-8 flex justify-between items-center border-b border-b-border">
-      <h2 className="text-2xl font-bold">{pageName}</h2>
+      <h2 className="text-3xl font-bold">{pageName}</h2>
 
       <div className="flex items-center gap-x-8">
         <Search />

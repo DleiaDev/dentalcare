@@ -168,7 +168,7 @@ const Component = forwardRef<Ref, Props & { level: number }>(
           closeTimeoutMS={500}
           overlayClassName={{
             base: cn(
-              "fixed top-0 left-0 w-full max-w-full h-full max-h-full animate-modal-overlay-open",
+              "z-50 fixed top-0 left-0 w-full max-w-full h-full max-h-full animate-modal-overlay-open",
               level > 0 && "!bg-transparent",
             ),
             afterOpen: "",

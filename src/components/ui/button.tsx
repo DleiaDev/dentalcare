@@ -29,6 +29,8 @@ const buttonVariants = cva(
         icon: "h-9 w-9 text-base",
         lg: "h-10 px-8 text-base",
         xl: "h-11 px-12 text-base",
+        "2xl": "h-12 px-12 text-lg",
+        "3xl": "h-14 px-14 text-xl",
       },
       disabled: {
         true: "cursor-not-allowed",
