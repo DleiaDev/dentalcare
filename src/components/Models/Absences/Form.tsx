@@ -6,7 +6,7 @@ import { BaseSyntheticEvent, ReactNode } from "react";
 import NumberInput from "@/components/Form/NumberInput";
 import Select from "@/components/Form/Select";
 import DateInput from "@/components/Form/DateInput";
-import { DayOfWeekShortEnum, DaysOfWeek } from "@/zod/utils/dayOfWeek";
+import { WeekdayShortEnum, Weekdays } from "@/zod/utils/weekday";
 import ToggleInput from "@/components/Form/ToggleInput";
 import RadioGroup from "@/components/Form/RadioGroup";
 import { Months } from "@/zod/utils/months";
@@ -200,7 +200,7 @@ export default function Form({
               name="weeklyByWeekday"
               min={1}
               containerClassName="mb-0"
-              options={DayOfWeekShortEnum.options.map((day) => ({
+              options={WeekdayShortEnum.options.map((day) => ({
                 value: day,
                 label: day,
               }))}
@@ -254,9 +254,9 @@ export default function Form({
             <Select
               name="monthlyByDay_Weekday"
               containerClassName="mb-0"
-              options={DaysOfWeek.map((dayOfWeek) => ({
-                value: dayOfWeek.short,
-                label: dayOfWeek.long,
+              options={Weekdays.map((weekday) => ({
+                value: weekday.short,
+                label: weekday.long,
               }))}
             />
             <div className="text-gray-700">of the month</div>
@@ -316,9 +316,9 @@ export default function Form({
             <Select
               name="yearlyByDay_Weekday"
               containerClassName="mb-0"
-              options={DaysOfWeek.map((dayOfWeek) => ({
-                value: dayOfWeek.short,
-                label: dayOfWeek.long,
+              options={Weekdays.map((weekday) => ({
+                value: weekday.short,
+                label: weekday.long,
               }))}
             />
             <div className="text-gray-700">of</div>

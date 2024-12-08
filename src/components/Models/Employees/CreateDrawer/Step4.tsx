@@ -122,7 +122,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
               <div
                 className={cn(
                   "text-white rounded-lg text-sm py-0.5 px-3 mt-2 inline-block font-medium",
-                  entry.entityType === "Clinic"
+                  entry.entityType === "CLINIC"
                     ? "bg-gray-600"
                     : "bg-primary/50",
                 )}

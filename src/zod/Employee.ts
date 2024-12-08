@@ -43,7 +43,7 @@ export const EmployeeSchema: z.ZodType<Employee> = z.object({
   updatedAt: z.date(),
 });
 
-// ------- Model -------
+// ------- Forms -------
 
 export type CreateEmployeeFormData = z.infer<
   ReturnType<typeof CreateEmployeeFormSchema>

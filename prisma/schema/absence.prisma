@@ -1,0 +1,22 @@
+model Absence {
+  id         String            @id @default(dbgenerated("uuid_generate_v4()"))
+  name       String
+  rrule      String
+  entityId   String
+  entityType AbsenceEntityType
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  Entity     AbsenceEntity
+  Clinic     Clinic?           @relation(fields: [entityId], references: [id], map: "absence_clinic_id")
+  Employee   Employee?         @relation(fields: [entityId], references: [id], map: "absence_employee_id")
+}
+
+enum AbsenceEntityType {
+  CLINIC
+  EMPLOYEE
+}
+
+enum AbsenceEntity {
+  Clinic
+  Employee
+}

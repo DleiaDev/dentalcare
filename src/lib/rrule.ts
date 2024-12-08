@@ -1,5 +1,5 @@
 import { CreateAbsenceFormData } from "@/zod/Absence";
-import { DayOfWeekShort } from "@/zod/utils/dayOfWeek";
+import { WeekdayShort } from "@/zod/utils/weekday";
 import { RRule, Weekday } from "rrule";
 
 type WithoutTextFormData = Omit<CreateAbsenceFormData, "text">;
@@ -25,7 +25,7 @@ function getFrequency(data: WithoutTextFormData) {
   return freq;
 }
 
-function toWeekday(weekdayStr: DayOfWeekShort, nth?: number): Weekday {
+function toWeekday(weekdayStr: WeekdayShort, nth?: number): Weekday {
   let weekday;
   switch (weekdayStr) {
     case "MO":

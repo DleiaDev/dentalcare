@@ -5,30 +5,32 @@ import {
   TimeSlot,
   TimeSlotSchema,
 } from "./TimeSlot";
-import { DayOfWeek, DayOfWeekEnum } from "./utils/dayOfWeek";
-import { Clinic } from "./Clinic";
+import { Weekday, WeekdayEnum } from "./utils/weekday";
+import { Clinic, ClinicSchema } from "./Clinic";
 import { formatTime } from "@/lib/utils";
 
 // ------- Model -------
 
 export type WorkingDay = {
   id: string;
-  employeeId: string;
-  Employee: Employee;
-  dayOfWeek: DayOfWeek;
+  entityId: string;
+  entityType: "CLINIC" | "EMPLOYEE";
+  weekday: Weekday;
   TimeSlots: TimeSlot[];
   createdAt: Date;
   updatedAt: Date;
+  Entity?: Employee | Clinic;
 };
 
 export const WorkingDaySchema: z.ZodType<WorkingDay> = z.object({
   id: z.string().uuid(),
-  employeeId: z.string().uuid(),
-  Employee: z.lazy(() => EmployeeSchema),
-  dayOfWeek: DayOfWeekEnum,
+  entityId: z.string().uuid(),
+  entityType: z.enum(["CLINIC", "EMPLOYEE"]),
+  weekday: WeekdayEnum,
   TimeSlots: z.array(TimeSlotSchema),
   createdAt: z.date(),
   updatedAt: z.date(),
+  Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema).optional()),
 });
 
 // ------- Forms -------
@@ -43,23 +45,23 @@ export const CreateWorkingDayFormSchema = (clinic: Clinic) => {
       const startTime = workingDay.TimeSlots[0].startTime;
       const endTime =
         workingDay.TimeSlots[workingDay.TimeSlots.length - 1].endTime;
-      acc[workingDay.dayOfWeek] = { startTime, endTime };
+      acc[workingDay.weekday] = { startTime, endTime };
       return acc;
     },
     {} as Record<
-      DayOfWeek,
+      Weekday,
       { startTime: TimeSlot["startTime"]; endTime: TimeSlot["endTime"] }
     >,
   );
 
   return z
     .object({
-      dayOfWeek: DayOfWeekEnum,
+      weekday: WeekdayEnum,
       TimeSlots: CreateTimeSlotsFormSchema,
     })
     .superRefine((workingDay, ctx) => {
       const { startTime: clinicStartTime, endTime: clinicEndTime } =
-        dayToStartAndEndTime[workingDay.dayOfWeek];
+        dayToStartAndEndTime[workingDay.weekday];
       const { startTime: employeeStartTime } = workingDay.TimeSlots[0];
       const { endTime: employeeEndTime } =
         workingDay.TimeSlots[workingDay.TimeSlots.length - 1];

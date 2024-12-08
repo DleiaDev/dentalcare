@@ -9,7 +9,7 @@ export type Holiday = {
   startDate: Date;
   endDate: Date;
   entityId: string;
-  entityType: "Employee" | "Clinic";
+  entityType: "EMPLOYEE" | "CLINIC";
   Entity?: Employee | Clinic;
   createdAt: Date;
   updatedAt: Date;
@@ -25,7 +25,7 @@ export const HolidaySchema: z.ZodType<Holiday> = z.object({
   startDate: z.date(),
   endDate: z.date(),
   entityId: z.string().uuid(),
-  entityType: z.enum(["Employee", "Clinic"]),
+  entityType: z.enum(["EMPLOYEE", "CLINIC"]),
   Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema).or(z.undefined())),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -40,6 +40,7 @@ export type CreateHolidayFormData = z.infer<typeof CreateHolidayFormSchema>;
 
 export const CreateHolidayFormSchema = z.object({
   key: z.string(),
+  entityType: z.enum(["EMPLOYEE", "CLINIC"]),
   countryCode: z.string(),
   holidayObjId: z.string().refine((holidayObjId) => holidayObjId !== "", {
     message: "Holiday is required",

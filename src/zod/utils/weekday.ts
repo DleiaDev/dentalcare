@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const DaysOfWeek = [
+export const Weekdays = [
   { long: "Monday", short: "MO" },
   { long: "Tuesday", short: "TU" },
   { long: "Wednesday", short: "WE" },
@@ -10,7 +10,7 @@ export const DaysOfWeek = [
   { long: "Sunday", short: "SU" },
 ];
 
-export const DayOfWeekEnum = z.enum([
+export const WeekdayEnum = z.enum([
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -20,9 +20,9 @@ export const DayOfWeekEnum = z.enum([
   "Sunday",
 ]);
 
-export type DayOfWeek = z.infer<typeof DayOfWeekEnum>;
+export type Weekday = z.infer<typeof WeekdayEnum>;
 
-export const DayOfWeekShortEnum = z.enum([
+export const WeekdayShortEnum = z.enum([
   "MO",
   "TU",
   "WE",
@@ -32,4 +32,4 @@ export const DayOfWeekShortEnum = z.enum([
   "SU",
 ]);
 
-export type DayOfWeekShort = z.infer<typeof DayOfWeekShortEnum>;
+export type WeekdayShort = z.infer<typeof WeekdayShortEnum>;

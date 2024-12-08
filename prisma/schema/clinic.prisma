@@ -1,0 +1,15 @@
+model Clinic {
+  id          String       @id @default(dbgenerated("uuid_generate_v4()"))
+  name        String
+  email       String       @unique
+  countryCode String
+  timeFormat  TimeFormat
+  Absences    Absence[]
+  Holidays    Holiday[]
+  WorkingDays WorkingDay[]
+}
+
+enum TimeFormat {
+  TWELVE
+  TWENTYFOUR
+}

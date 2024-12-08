@@ -10,7 +10,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { WorkingDay } from "@/zod/WorkingDay";
 import { Clinic } from "@/zod/Clinic";
-import { DayOfWeek, DayOfWeekEnum } from "@/zod/utils/dayOfWeek";
+import { Weekday, WeekdayEnum } from "@/zod/utils/weekday";
 import BooleanInput from "@/components/Form/BooleanInput";
 import TimeInput from "@/components/Form/TimeInput";
 import Button from "@/components/Button";
@@ -129,9 +129,9 @@ export function Switch({
   onCheckedChange,
 }: {
   checked: boolean;
-  day: DayOfWeek;
+  day: Weekday;
   disabled: boolean;
-  onCheckedChange: (checked: boolean, day: DayOfWeek) => void;
+  onCheckedChange: (checked: boolean, day: Weekday) => void;
 }) {
   return disabled ? (
     <Tooltip
@@ -184,36 +184,34 @@ export default function Step3({ formId, data, clinic, onFinish }: Props) {
     name: "WorkingDays",
   });
 
-  const isChecked = (day: DayOfWeek) => {
-    const field = fields.find((workingDay) => workingDay.dayOfWeek === day);
+  const isChecked = (day: Weekday) => {
+    const field = fields.find((workingDay) => workingDay.weekday === day);
     return field !== undefined;
   };
 
-  const handleCheckedChange = (checked: boolean, day: DayOfWeek) => {
+  const handleCheckedChange = (checked: boolean, day: Weekday) => {
     if (checked === true) {
       const clinicSettingWorkingDay = clinic.WorkingDays.find(
-        (workingDay) => workingDay.dayOfWeek === day,
+        (workingDay) => workingDay.weekday === day,
       ) as WorkingDay;
       append({
-        dayOfWeek: day,
+        weekday: day,
         TimeSlots: clinicSettingWorkingDay.TimeSlots,
       });
     } else {
       const index = fields.findIndex(
-        (workingDay) => workingDay.dayOfWeek === day,
+        (workingDay) => workingDay.weekday === day,
       );
       remove(index);
     }
   };
 
-  const addTimeSlot = (day: DayOfWeek) => {
-    const index = fields.findIndex(
-      (workingDay) => workingDay.dayOfWeek === day,
-    );
+  const addTimeSlot = (day: Weekday) => {
+    const index = fields.findIndex((workingDay) => workingDay.weekday === day);
     if (index === -1) return;
     const field = fields[index];
     const clinicWorkingDay = clinic.WorkingDays.find(
-      (workingDay) => workingDay.dayOfWeek === day,
+      (workingDay) => workingDay.weekday === day,
     );
     if (!clinicWorkingDay) throw new Error("Clinic working day not found");
     update(index, {
@@ -236,26 +234,26 @@ export default function Step3({ formId, data, clinic, onFinish }: Props) {
     update(fieldIndex, { ...field, TimeSlots });
   };
 
-  const dayOfWeekToIndex = fields.reduce(
+  const weekdayToIndex = fields.reduce(
     (acc, workingDay, index) => {
-      acc[workingDay.dayOfWeek] = index;
+      acc[workingDay.weekday] = index;
       return acc;
     },
-    {} as Record<DayOfWeek, number>,
+    {} as Record<Weekday, number>,
   );
 
   const dayToClinicWorking = clinic.WorkingDays.reduce(
     (acc, workingDay) => {
-      acc[workingDay.dayOfWeek] = true;
+      acc[workingDay.weekday] = true;
       return acc;
     },
-    {} as Record<DayOfWeek, boolean>,
+    {} as Record<Weekday, boolean>,
   );
 
   return (
     <FormProvider {...methods}>
       <form id={formId} onSubmit={handleSubmit}>
-        {DayOfWeekEnum.options.map((day) => (
+        {WeekdayEnum.options.map((day) => (
           <div
             key={day}
             className="flex justify-between gap-3 border-b border-b-border py-5 min-h-24 last:border-b-0"
@@ -268,14 +266,12 @@ export default function Step3({ formId, data, clinic, onFinish }: Props) {
             />
             <div className="flex flex-col justify-center items-end gap-2">
               <TimeSlots
-                field={fields[dayOfWeekToIndex[day]]}
-                fieldIndex={dayOfWeekToIndex[day]}
-                errorMessages={
-                  errors && errors[dayOfWeekToIndex[day]]?.TimeSlots
-                }
+                field={fields[weekdayToIndex[day]]}
+                fieldIndex={weekdayToIndex[day]}
+                errorMessages={errors && errors[weekdayToIndex[day]]?.TimeSlots}
                 onDelete={deleteTimeSlot}
               />
-              {dayOfWeekToIndex[day] !== undefined && (
+              {weekdayToIndex[day] !== undefined && (
                 <Button
                   intent="text"
                   className="self-end flex items-center gap-1 mr-2"

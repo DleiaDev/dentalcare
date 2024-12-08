@@ -5,6 +5,7 @@ import { WorkingDay, WorkingDaySchema } from "./WorkingDay";
 
 export type Clinic = {
   id: string;
+  email: string;
   countryCode: string;
   timeFormat: "12" | "24";
   Absences: Absence[];
@@ -14,6 +15,7 @@ export type Clinic = {
 
 export const ClinicSchema: z.ZodType<Clinic> = z.object({
   id: z.string().uuid(),
+  email: z.string().email(),
   countryCode: z.string(),
   timeFormat: z.enum(["12", "24"]),
   Absences: z.lazy(() => z.array(AbsenceSchema)),

@@ -1,0 +1,24 @@
+model Holiday {
+  id          String            @id @default(dbgenerated("uuid_generate_v4()"))
+  name        String
+  countryCode String
+  startDate   DateTime
+  endDate     DateTime
+  entityId    String
+  entityType  HolidayEntityType
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  Entity      HolidayEntity
+  Clinic      Clinic?           @relation(fields: [entityId], references: [id], map: "holiday_clinic_id")
+  Employee    Employee?         @relation(fields: [entityId], references: [id], map: "holiday_employee_id")
+}
+
+enum HolidayEntityType {
+  CLINIC
+  EMPLOYEE
+}
+
+enum HolidayEntity {
+  Clinic
+  Employee
+}

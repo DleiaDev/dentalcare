@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { Clinic, ClinicSchema } from "./Clinic";
 import { Employee, EmployeeSchema } from "./Employee";
-import { DayOfWeekShortEnum } from "./utils/dayOfWeek";
+import { WeekdayShortEnum } from "./utils/weekday";
 
 export type Absence = {
   id: string;
   name: string;
   rrule: string;
   entityId: string;
-  entityType: "Employee" | "Clinic";
+  entityType: "EMPLOYEE" | "CLINIC";
   Entity?: Employee | Clinic;
   createdAt: Date;
   updatedAt: Date;
@@ -22,8 +22,8 @@ export const AbsenceSchema: z.ZodType<Absence> = z.object({
   name: z.string(),
   rrule: z.string(),
   entityId: z.string().uuid(),
-  entityType: z.enum(["Employee", "Clinic"]),
-  Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema).or(z.undefined())),
+  entityType: z.enum(["EMPLOYEE", "CLINIC"]),
+  Entity: z.lazy(() => EmployeeSchema.or(ClinicSchema).optional()),
   createdAt: z.date(),
   updatedAt: z.date(),
 
@@ -36,16 +36,16 @@ export const AbsenceSchema: z.ZodType<Absence> = z.object({
 export const CreateAbsenceFormSchema = z.object({
   key: z.string(),
   name: z.string().min(1, { message: "Name is required" }),
-  entityType: z.enum(["Employee", "Clinic"]),
+  entityType: z.enum(["EMPLOYEE", "CLINIC"]),
   dtstart: z.string(),
   frequency: z.enum(["Daily", "Weekly", "Monthly", "Yearly"]),
   interval: z.number().positive().optional(),
-  weeklyByWeekday: z.array(DayOfWeekShortEnum).min(1).optional(),
+  weeklyByWeekday: z.array(WeekdayShortEnum).min(1).optional(),
   monthlyByDay_Nth: z.enum(["-1", "1", "2", "3", "4"]).optional(),
-  monthlyByDay_Weekday: DayOfWeekShortEnum.optional(),
+  monthlyByDay_Weekday: WeekdayShortEnum.optional(),
   monthlyByMonthday_Day: z.number().max(31).min(1).optional(),
   yearlyByDay_Nth: z.enum(["-1", "1", "2", "3", "4"]).optional(),
-  yearlyByDay_Weekday: DayOfWeekShortEnum.optional(),
+  yearlyByDay_Weekday: WeekdayShortEnum.optional(),
   yearlyByDay_Month: z.enum(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).optional(), // prettier-ignore
   yearlyByMonthday_Day: z.number().max(31).min(1).optional(),
   yearlyByMonthday_Month: z.enum(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]).optional(), // prettier-ignore

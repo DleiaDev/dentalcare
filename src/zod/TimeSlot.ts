@@ -6,21 +6,21 @@ import { WorkingDay, WorkingDaySchema } from "./WorkingDay";
 export type TimeSlot = {
   id: string;
   workingDayId: string;
-  WorkingDay: WorkingDay;
   startTime: string;
   endTime: string;
   createdAt: Date;
   updatedAt: Date;
+  WorkingDay?: WorkingDay;
 };
 
 export const TimeSlotSchema: z.ZodType<TimeSlot> = z.object({
   id: z.string().uuid(),
   workingDayId: z.string().uuid(),
-  WorkingDay: z.lazy(() => WorkingDaySchema),
   startTime: z.string().time(),
   endTime: z.string().time(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  WorkingDay: z.lazy(() => WorkingDaySchema.optional()),
 });
 
 // ------- Forms -------
