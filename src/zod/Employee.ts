@@ -78,7 +78,7 @@ export const CreateEmployeeFormSchema = (clinic: Clinic) => {
     address: z.string().min(1, { message: "Address is required" }),
 
     // Step 2
-    services: z.number().array(),
+    services: z.number().array().min(1),
 
     // Step 3
     WorkingDays: CreateWorkingDaysFormSchema(clinic),

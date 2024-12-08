@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
-import { CreateAbsenceFormData, CreateAbsenceFormSchema } from "@/zod/Absence";
+import {
+  Absence,
+  CreateAbsenceFormData,
+  CreateAbsenceFormSchema,
+} from "@/zod/Absence";
 import { BaseSyntheticEvent, ReactNode } from "react";
 import NumberInput from "@/components/Form/NumberInput";
 import Select from "@/components/Form/Select";
@@ -97,6 +101,7 @@ function transformDataBeforeSubmit(form: Form): Data {
 }
 
 type Props = {
+  entityType?: Absence["entityType"];
   formId?: string;
   data?: Form;
   defaultValues?: Form;
@@ -105,6 +110,7 @@ type Props = {
 };
 
 export default function Form({
+  entityType,
   formId,
   className,
   data,
@@ -121,7 +127,7 @@ export default function Form({
     resolver: zodResolver(CreateAbsenceFormSchema),
     defaultValues: data ?? {
       key: new Date().getTime().toString(),
-      entityType: "Employee",
+      entityType: entityType,
       dtstart: toDateInput(today),
       frequency: "Daily",
       weeklyByWeekday: ["MO"],

@@ -124,6 +124,7 @@ function HolidayField({ index, clinic, onDeleteClick }: HolidayFieldProps) {
 export type Data = CreateHolidaysFormData;
 
 type Props = {
+  entityType: Holiday["entityType"];
   formId?: string;
   data?: Data;
   clinic: Clinic;
@@ -131,9 +132,10 @@ type Props = {
   onFinish: (data: Data) => void;
 };
 
-function createEmptyHoliday(clinic: Clinic) {
+function createEmptyHoliday(entityType: Holiday["entityType"], clinic: Clinic) {
   return {
     key: new Date().getTime().toString(),
+    entityType,
     countryCode: clinic.countryCode,
     holidayObjId: "",
     holidayObj: {
@@ -145,6 +147,7 @@ function createEmptyHoliday(clinic: Clinic) {
 }
 
 export default function Form({
+  entityType,
   formId,
   data,
   clinic,
@@ -154,7 +157,7 @@ export default function Form({
   const methods = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      holidays: data ?? [createEmptyHoliday(clinic)],
+      holidays: data ?? [createEmptyHoliday(entityType, clinic)],
     },
   });
 
@@ -174,7 +177,7 @@ export default function Form({
   });
 
   const addHoliday = () => {
-    append(createEmptyHoliday(clinic));
+    append(createEmptyHoliday(entityType, clinic));
   };
 
   return (

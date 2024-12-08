@@ -2,6 +2,12 @@
 const nextConfig = {
   output: "standalone",
 
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "6mb",
+    },
+  },
+
   sassOptions: {
     silenceDeprecations: ["legacy-js-api"],
   },

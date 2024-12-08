@@ -8,7 +8,7 @@ import HolidayForm, {
   Data as HolidayFormData,
 } from "@/components/Models/Holidays/Form";
 import { Tabs, TabsList, TabsTrigger } from "@/components/Tabs";
-import { cn } from "@/lib/utils";
+import { capitalize, cn } from "@/lib/utils";
 import { Clinic } from "@/zod/Clinic";
 import { PlusIcon, XIcon } from "lucide-react";
 import { BaseSyntheticEvent, useRef, useState } from "react";
@@ -55,7 +55,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
       key: holidayInput.key,
       name: holidayInput.holidayObj.name,
       text: holidayInput.text,
-      entityType: "Employee",
+      entityType: "EMPLOYEE",
     })),
     ...absenceInputs.map((absenceInput) => ({
       type: "Absence",
@@ -107,7 +107,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
             className="border border-border px-5 py-3 rounded-xl flex flex-col justify-center"
           >
             <div className="relative">
-              {entry.entityType === "Employee" && (
+              {entry.entityType === "EMPLOYEE" && (
                 <Button
                   intent="ghost"
                   color="destructive"
@@ -127,7 +127,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
                     : "bg-primary/50",
                 )}
               >
-                {entry.entityType}
+                {capitalize(entry.entityType.toLowerCase())}
               </div>
             </div>
           </div>
@@ -160,12 +160,14 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
           content={
             <>
               <HolidayForm
+                entityType="EMPLOYEE"
                 formId="Holiday"
                 clinic={clinic}
                 className={cn(tab !== "Holiday" && "hidden")}
                 onFinish={onHolidaysFinish}
               />
               <AbsenceForm
+                entityType="EMPLOYEE"
                 formId="Absence"
                 className={cn(tab !== "Absence" && "hidden")}
                 onFinish={onAbsencesFinish}
