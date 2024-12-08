@@ -37,7 +37,7 @@ function UIComponent({
       {label && <Label htmlFor={name}>{label}</Label>}
       <input
         {...props}
-        value={value}
+        value={value ?? ""}
         id={name}
         type="text"
         className={cn(

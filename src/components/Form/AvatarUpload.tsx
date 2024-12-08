@@ -12,13 +12,22 @@ type Props = {
   className?: string;
 };
 
+function getPreviewSrc(file: unknown) {
+  return file instanceof File ? URL.createObjectURL(file) : undefined;
+}
+
 export default function AvatarUpload({ name, className }: Props) {
   const ImageInputRef = useRef<Ref>(null);
-  const [previewSrc, setPreviewSrc] = useState<string>();
   const {
     resetField,
+    getValues,
     formState: { errors },
   } = useFormContext();
+
+  const initialPreviewSrc = getPreviewSrc(getValues().avatar);
+  const [previewSrc, setPreviewSrc] = useState<string | undefined>(
+    initialPreviewSrc,
+  );
 
   const errorMessage = errors[name]?.message;
 
