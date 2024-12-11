@@ -1,14 +1,15 @@
 "use client";
 
-import { z } from "zod";
-import { FormProvider, useForm } from "react-hook-form";
 import Button from "@/components/Button";
 import TextInput from "@/components/Form/TextInput";
 import H3 from "@/components/H3";
 import H4 from "@/components/H4";
-import { zodResolver } from "@hookform/resolvers/zod";
-import ImageUpload from "./ImageUpload";
 import { MAXIMUM_B, MAXIMUM_MB } from "@/constants/storage";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
+import ImageUpload from "./Forms/ImageUpload";
+import TagInput from "./Forms/TagInput";
 
 const schema = z.object({
   image: z
@@ -22,12 +23,15 @@ const schema = z.object({
           message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
         });
     }),
+  Tags: z.number().array(),
 });
 
 export default function CreateForm() {
   const methods = useForm({
     resolver: zodResolver(schema),
-    defaultValues: {},
+    defaultValues: {
+      Tags: [],
+    },
   });
 
   const handleSubmit = methods.handleSubmit(
@@ -58,9 +62,10 @@ export default function CreateForm() {
         {/* Columns */}
         <div className="flex gap-12">
           {/* Left */}
-          <div>
+          <div className="w-72">
             {/* Image */}
             <ImageUpload />
+            <TagInput />
           </div>
 
           {/* Right */}

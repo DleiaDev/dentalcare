@@ -36,7 +36,7 @@ export default function ImageUpload({ className }: Props) {
   };
 
   return (
-    <div>
+    <div className="mb-7">
       {/* Input */}
       <ImageInput
         ref={ImageInputRef}
@@ -46,7 +46,7 @@ export default function ImageUpload({ className }: Props) {
 
       <div
         className={cn(
-          "w-64 h-64 rounded-xl relative",
+          "aspect-square rounded-xl relative",
           previewSrc && "border-2 border-border",
         )}
       >
