@@ -23,7 +23,7 @@ const schema = z.object({
           message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
         });
     }),
-  Tags: z.number().array(),
+  Tags: z.string().array(),
 });
 
 export default function CreateForm() {

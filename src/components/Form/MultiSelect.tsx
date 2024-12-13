@@ -27,6 +27,7 @@ import { Checkbox } from "../ui/checkbox";
 import Label from "./Label";
 import Spinner from "@/icons/Spinner";
 import ErrorMessage from "./ErrorMessage";
+import { PlusIcon } from "lucide-react";
 
 type Option = {
   value: string;
@@ -42,7 +43,9 @@ type Group = {
   options: Option[];
 };
 
-interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
+type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "value">;
+
+interface Props extends ButtonProps {
   name?: string;
   value?: Option["value"][];
   onValueChange?: (value: Option["value"][]) => void;
@@ -58,10 +61,15 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   isFetching?: boolean;
   fetchingFailed?: boolean;
   onFirstOpen?: () => void;
+  createButtonItemName?: string;
   // selectedValueFormat?: (selectedOption: O) => ReactNode;
 }
 
-function getOptionByValue(value: string, options?: Option[], groups?: Group[]) {
+function getOptionByValue(
+  value: Option["value"],
+  options?: Option[],
+  groups?: Group[],
+) {
   if (options) {
     return options.find((option) => option.value === value);
   } else if (groups) {
@@ -79,7 +87,7 @@ function Options({
 }: {
   value: Option["value"][];
   options: Option[];
-  onSelect: (v: string) => void;
+  onSelect: (v: Option["value"]) => void;
 }) {
   return (
     <>
@@ -128,11 +136,16 @@ function UIComponent({
   fetchingFailed,
   onValueChange,
   onFirstOpen,
+  createButtonItemName,
   ...props
   // selectedValueFormat,
 }: UIComponentProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [firstPopoverOpen, setIsFirstPopoverOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [newOptions, setNewOptions] = useState<Option[]>([]);
+
+  const allOptions = [...(options ?? []), ...newOptions];
 
   const handleTogglePopover = () => {
     setIsFirstPopoverOpen(true);
@@ -140,7 +153,17 @@ function UIComponent({
     if (!firstPopoverOpen && onFirstOpen) onFirstOpen();
   };
 
-  const handleOptionSelect = (optValue: string) => {
+  const handleCreateOption = () => {
+    const newOption = {
+      value: searchQuery,
+      label: searchQuery,
+      icon: options ? options[0]?.icon : undefined,
+    };
+    setNewOptions([...newOptions, newOption]);
+    onValueChange([...value, newOption.value]);
+  };
+
+  const handleOptionSelect = (optValue: Option["value"]) => {
     const newValue = value.includes(optValue)
       ? value.filter((v) => v !== optValue)
       : [...value, optValue];
@@ -192,7 +215,7 @@ function UIComponent({
               </span>
             ) : (
               value.map((v) => {
-                const option = getOptionByValue(v, options, groups);
+                const option = getOptionByValue(v, allOptions, groups);
                 const IconComponent = option?.icon;
                 return (
                   <Badge key={v} color="accent" className="text-base">
@@ -213,13 +236,32 @@ function UIComponent({
             </div>
           ) : (
             <Command className="animate-in fade-in duration-300">
-              <CommandInput placeholder="Search..." />
+              <CommandInput
+                placeholder="Search..."
+                value={searchQuery}
+                onValueChange={setSearchQuery}
+              />
               <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandEmpty className={cn(createButtonItemName && "p-0")}>
+                  {!createButtonItemName ? (
+                    <p>No results found</p>
+                  ) : (
+                    <Button
+                      intent="ghost"
+                      color="black"
+                      className="w-full justify-start p-3 h-auto rounded-sm"
+                      onClick={handleCreateOption}
+                    >
+                      <PlusIcon className="mr-2" />
+                      Create new {createButtonItemName} &quot;{searchQuery}
+                      &quot;
+                    </Button>
+                  )}
+                </CommandEmpty>
                 {options ? (
                   <Options
                     value={value}
-                    options={options}
+                    options={allOptions}
                     onSelect={handleOptionSelect}
                   />
                 ) : groups ? (
@@ -243,7 +285,6 @@ function UIComponent({
     </div>
   );
 }
-UIComponent.displayName = "UIComponent";
 
 function FormWrapper({
   name,
@@ -285,6 +326,10 @@ function FormWrapper({
 }
 
 export default function MultiSelect(props: Props) {
+  if (props.groups && props.createButtonItemName)
+    throw new Error(
+      "Combination of 'groups' and 'createButtonItemName' props isn't yet supported",
+    );
   const { name, value, onValueChange } = props;
   if (name !== undefined && value === undefined) {
     return <FormWrapper {...props} name={name} onValueChange={onValueChange} />;
