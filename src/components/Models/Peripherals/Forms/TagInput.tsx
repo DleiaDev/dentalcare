@@ -3,7 +3,11 @@ import MultiSelect from "@/components/Form/MultiSelect";
 import TagIcon from "@/icons/tag.svg";
 import { useState } from "react";
 
-export default function TagInput() {
+type Props = {
+  editLinkHref?: string;
+};
+
+export default function TagInput({ editLinkHref }: Props) {
   const [isFetchAllowed, setIsFetchAllowed] = useState(false);
 
   const {
@@ -26,6 +30,9 @@ export default function TagInput() {
       placeholder="Select a tag"
       isFetching={isFetching}
       fetchingFailed={!!error?.message}
+      createButtonItemName="tag"
+      editLinkHref={editLinkHref}
+      editLinkItemNamePlural="tags"
       options={tags.map((tag) => ({
         label: tag.name,
         value: tag.id,

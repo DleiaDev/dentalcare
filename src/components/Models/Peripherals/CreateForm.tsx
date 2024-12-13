@@ -10,6 +10,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import ImageUpload from "./Forms/ImageUpload";
 import TagInput from "./Forms/TagInput";
+import { getClinic } from "@/lib/clinic_dev";
 
 const schema = z.object({
   image: z
@@ -26,7 +27,11 @@ const schema = z.object({
   Tags: z.string().array(),
 });
 
-export default function CreateForm() {
+type Props = {
+  clinicId: string;
+};
+
+export default function CreateForm({ clinicId }: Props) {
   const methods = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -65,7 +70,7 @@ export default function CreateForm() {
           <div className="w-72">
             {/* Image */}
             <ImageUpload />
-            <TagInput />
+            <TagInput editLinkHref={`/clinic/${clinicId}/edit`} />
           </div>
 
           {/* Right */}

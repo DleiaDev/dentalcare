@@ -21,13 +21,15 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from "../ui/command";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "../ui/checkbox";
 import Label from "./Label";
 import Spinner from "@/icons/Spinner";
 import ErrorMessage from "./ErrorMessage";
-import { PlusIcon } from "lucide-react";
+import { PencilIcon, PlusIcon } from "lucide-react";
+import NextLink from "next/link";
 
 type Option = {
   value: string;
@@ -61,6 +63,8 @@ interface Props extends ButtonProps {
   isFetching?: boolean;
   fetchingFailed?: boolean;
   onFirstOpen?: () => void;
+  editLinkHref?: string;
+  editLinkItemNamePlural?: string;
   createButtonItemName?: string;
   // selectedValueFormat?: (selectedOption: O) => ReactNode;
 }
@@ -137,6 +141,8 @@ function UIComponent({
   onValueChange,
   onFirstOpen,
   createButtonItemName,
+  editLinkHref,
+  editLinkItemNamePlural,
   ...props
   // selectedValueFormat,
 }: UIComponentProps) {
@@ -154,11 +160,16 @@ function UIComponent({
   };
 
   const handleCreateOption = () => {
+    const alreadyExists = allOptions.some(
+      (option) => option.value === searchQuery,
+    );
+    if (alreadyExists) return;
     const newOption = {
       value: searchQuery,
       label: searchQuery,
       icon: options ? options[0]?.icon : undefined,
     };
+    setSearchQuery("");
     setNewOptions([...newOptions, newOption]);
     onValueChange([...value, newOption.value]);
   };
@@ -275,8 +286,19 @@ function UIComponent({
                     </CommandGroup>
                   ))
                 ) : null}
-                <CommandGroup></CommandGroup>
               </CommandList>
+              {editLinkItemNamePlural && editLinkHref && (
+                <>
+                  <CommandSeparator />
+                  <NextLink
+                    href={editLinkHref}
+                    className="text-gray-700 p-3 flex items-center bg-gray-200 hover:bg-gray-300 hover:text-800"
+                  >
+                    <PencilIcon className="mr-2 h-5 w-5" />
+                    Edit {editLinkItemNamePlural}
+                  </NextLink>
+                </>
+              )}
             </Command>
           )}
         </PopoverContent>
