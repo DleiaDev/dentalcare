@@ -1,8 +1,8 @@
-import { ComponentProps, useActionState, useState } from "react";
+import { ComponentProps, useState } from "react";
 import { createEmployee } from "@/actions/Employee";
 import Button from "@/components/Button";
-import Drawer from "@/components/Drawer";
-import DrawerFooter from "@/components/DrawerFooter";
+import Dialog from "@/components/Dialog";
+import DialogFooter from "@/components/DialogFooter";
 import Form from "./Form";
 
 type FormProps = ComponentProps<typeof Form>;
@@ -24,6 +24,7 @@ export default function CreateDrawer({}) {
 
   function finish(data: FormProps["data"]) {
     if (!data.step1 || !data.step2 || !data.step3 || !data.step4) return;
+    setIsPending(true);
     createEmployee({
       ...data.step1,
       ...data.step2,
@@ -49,7 +50,8 @@ export default function CreateDrawer({}) {
   };
 
   return (
-    <Drawer
+    <Dialog
+      desktopType="drawer"
       trigger={<Button>Add Doctor</Button>}
       title="Add new doctor staff"
       spinner={isPending}
@@ -62,7 +64,7 @@ export default function CreateDrawer({}) {
         />
       }
       footer={
-        <DrawerFooter
+        <DialogFooter
           formId={formId}
           nextButtonText={currentStep === 4 ? "Finish" : "Next"}
           backButtonDisabled={currentStep === 1}

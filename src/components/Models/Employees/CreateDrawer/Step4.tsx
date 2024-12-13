@@ -1,6 +1,6 @@
 import Button from "@/components/Button";
-import Drawer, { Ref } from "@/components/Drawer";
-import DrawerFooter from "@/components/DrawerFooter";
+import Dialog, { type Ref } from "@/components/Dialog";
+import DialogFooter from "@/components/DialogFooter";
 import AbsenceForm, {
   Data as AbsenceFormData,
 } from "@/components/Models/Absences/Form";
@@ -99,7 +99,11 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
   };
 
   return (
-    <form id={formId} onSubmit={handleSubmit}>
+    <form
+      id={formId}
+      onSubmit={handleSubmit}
+      className="animate-in fade-in duration-500"
+    >
       <div className="flex flex-col gap-4 mb-4">
         {entries.map((entry, index) => (
           <div
@@ -135,7 +139,8 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
       </div>
 
       <div className="flex justify-end">
-        <Drawer
+        <Dialog
+          desktopType="drawer"
           ref={DrawerRef}
           trigger={
             <Button intent="text">
@@ -175,7 +180,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
             </>
           }
           footer={
-            <DrawerFooter
+            <DialogFooter
               formId={tab}
               nextButtonText="Finish"
               showBackButton={false}

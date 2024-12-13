@@ -164,7 +164,7 @@ function UIComponent<O extends Option>({
     <div className={cn("mb-7", containerClassName)}>
       {label && <Label htmlFor={name}>{label}</Label>}
       <SelectRoot
-        value={value !== undefined ? "1" : undefined}
+        value={`${value}`}
         onValueChange={handleValueChange}
         disabled={isFetching || fetchingFailed}
       >

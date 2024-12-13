@@ -228,21 +228,23 @@ const Component = forwardRef<Ref, Props & { level: number }>(
 );
 Component.displayName = "Component";
 
-const Drawer = forwardRef<ElementRef<typeof Component>, Props>((props, ref) => {
-  const level = useContext(LevelContext);
+const DrawerDesktop = forwardRef<ElementRef<typeof Component>, Props>(
+  (props, ref) => {
+    const level = useContext(LevelContext);
 
-  return (
-    <LevelContext.Provider value={level + 1}>
-      {level === 0 ? (
-        <Providers>
+    return (
+      <LevelContext.Provider value={level + 1}>
+        {level === 0 ? (
+          <Providers>
+            <Component {...props} ref={ref} level={level} />
+          </Providers>
+        ) : (
           <Component {...props} ref={ref} level={level} />
-        </Providers>
-      ) : (
-        <Component {...props} ref={ref} level={level} />
-      )}
-    </LevelContext.Provider>
-  );
-});
-Drawer.displayName = "Drawer";
+        )}
+      </LevelContext.Provider>
+    );
+  },
+);
+DrawerDesktop.displayName = "DrawerDesktop";
 
-export default Drawer;
+export default DrawerDesktop;

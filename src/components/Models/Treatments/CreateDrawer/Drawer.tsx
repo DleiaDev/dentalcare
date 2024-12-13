@@ -1,8 +1,8 @@
-import { ComponentProps, useActionState, useState } from "react";
+import { ComponentProps, useState } from "react";
 // import { createTreatment } from "@/actions/Treatment";
 import Button from "@/components/Button";
-import Drawer from "@/components/Drawer";
-import DrawerFooter from "@/components/DrawerFooter";
+import Dialog from "@/components/Dialog";
+import DialogFooter from "@/components/DialogFooter";
 import Form from "./Form";
 
 type FormProps = ComponentProps<typeof Form>;
@@ -26,13 +26,14 @@ export default function CreateDrawer({}) {
   }
 
   return (
-    <Drawer
+    <Dialog
+      desktopType="drawer"
       trigger={<Button>Add Treatment</Button>}
       title="Add new treatment"
       spinner={isPending}
       content={<Form formId={formId} onFinish={handleFinish} />}
       footer={
-        <DrawerFooter
+        <DialogFooter
           formId={formId}
           nextButtonText="Save"
           showBackButton={false}

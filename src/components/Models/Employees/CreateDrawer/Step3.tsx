@@ -252,7 +252,11 @@ export default function Step3({ formId, data, clinic, onFinish }: Props) {
 
   return (
     <FormProvider {...methods}>
-      <form id={formId} onSubmit={handleSubmit}>
+      <form
+        id={formId}
+        onSubmit={handleSubmit}
+        className="animate-in fade-in duration-500"
+      >
         {WeekdayEnum.options.map((day) => (
           <div
             key={day}

@@ -1,4 +1,4 @@
-import { useDrawerContext } from "@/components/Drawer";
+import { useDrawerContext } from "@/components/DrawerDesktop";
 import Button from "@/components/Button";
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
   goBackward?: () => void;
 };
 
-export default function Footer({
+export default function DialogFooter({
   formId,
   nextButtonText = "Next",
   nextButtonDisabled,
