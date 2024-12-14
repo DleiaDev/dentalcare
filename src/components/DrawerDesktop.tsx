@@ -29,20 +29,6 @@ type TriggerProps = {
   onClick: () => void;
 };
 
-// Drawer context
-type DrawerContext = {
-  close: () => void;
-};
-const DrawerContext = createContext<DrawerContext | null>(null);
-export const useDrawerContext = () => {
-  const drawerContext = useContext(DrawerContext);
-  if (!drawerContext)
-    throw new Error(
-      "useDrawerContext has to be used within <DrawerContext.Provider>",
-    );
-  return drawerContext;
-};
-
 // Level context
 const LevelContext = createContext(0);
 
@@ -89,7 +75,7 @@ const Providers = ({ children }: { children: ReactNode }) => {
 };
 
 export type Ref = {
-  closeModal: () => void;
+  close: () => void;
 };
 
 const Component = forwardRef<Ref, Props & { level: number }>(
@@ -119,7 +105,7 @@ const Component = forwardRef<Ref, Props & { level: number }>(
       setTotalOpened((totalOpened) => totalOpened + 1);
     }
 
-    function closeModal() {
+    function close() {
       if (spinner) return;
       setIsOpen(false);
       setOpeningLevel(undefined);
@@ -128,7 +114,7 @@ const Component = forwardRef<Ref, Props & { level: number }>(
     }
 
     useImperativeHandle(ref, () => ({
-      closeModal,
+      close,
     }));
 
     let animationName = undefined;
@@ -155,16 +141,12 @@ const Component = forwardRef<Ref, Props & { level: number }>(
     if (React.isValidElement<TriggerProps>(trigger))
       triggerComponent = React.cloneElement(trigger, { onClick: openModal });
 
-    const drawerContext = {
-      close: closeModal,
-    };
-
     return (
-      <DrawerContext.Provider value={drawerContext}>
+      <>
         {triggerComponent}
         <ReactModal
           isOpen={isOpen}
-          onRequestClose={closeModal}
+          onRequestClose={close}
           closeTimeoutMS={500}
           overlayClassName={{
             base: cn(
@@ -208,7 +190,7 @@ const Component = forwardRef<Ref, Props & { level: number }>(
               <div className={cn("font-semibold text-lg", titleClassName)}>
                 {title}
               </div>
-              <Button intent="text" autoFocus onClick={closeModal}>
+              <Button intent="text" autoFocus onClick={close}>
                 <Cross1Icon className="w-5 h-5" />
               </Button>
             </div>
@@ -222,7 +204,7 @@ const Component = forwardRef<Ref, Props & { level: number }>(
             )}
           </div>
         </ReactModal>
-      </DrawerContext.Provider>
+      </>
     );
   },
 );

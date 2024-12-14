@@ -1,11 +1,31 @@
-import { type ReactNode, type RefObject } from "react";
-import { useMediaQuery } from "@uidotdev/usehooks";
+import {
+  createContext,
+  use,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  type ReactNode,
+  type RefObject,
+} from "react";
+import { useIsClient, useMediaQuery } from "@uidotdev/usehooks";
 import ModalDesktop from "./ModalDesktop";
 import DrawerDesktop from "./DrawerDesktop";
 import DrawerMobile from "./DrawerMobile";
 
 export type Ref = {
-  closeModal: () => void;
+  close: () => void;
+};
+
+type DialogContext = Ref;
+const DialogContext = createContext<DialogContext | null>(null);
+export const useDialogContext = () => {
+  const dialogContext = use(DialogContext);
+  if (!dialogContext)
+    throw new Error(
+      "useDialogContext has to be used within <DialogContext></DialogContext>",
+    );
+  return dialogContext;
 };
 
 type ScreenType = "mobile" | "desktop";
@@ -23,7 +43,7 @@ type Props = {
   desktopType: "drawer" | "modal";
 };
 
-export default function Dialog({
+function DialogComponent({
   ref,
   title,
   trigger,
@@ -35,59 +55,86 @@ export default function Dialog({
   titleContainerClassName,
   desktopType,
 }: Props) {
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const internalRef = useRef<Ref>(null);
 
-  if (isDesktop && desktopType === "modal")
-    return (
-      <ModalDesktop
-        ref={ref}
-        title={typeof title === "function" ? title("desktop") : title}
-        trigger={typeof trigger === "function" ? trigger("desktop") : trigger}
-        content={typeof content === "function" ? content("desktop") : content}
-        footer={typeof footer === "function" ? footer("desktop") : footer}
-        description={
-          typeof description === "function"
-            ? description("desktop")
-            : description
-        }
-        spinner={spinner}
-        titleClassName={titleClassName}
-        titleContainerClassName={titleContainerClassName}
-      />
-    );
+  const close = useCallback(() => {
+    if (!internalRef.current) return;
+    internalRef.current.close();
+  }, []);
 
-  if (isDesktop && desktopType === "drawer") {
-    return (
-      <DrawerDesktop
-        title={typeof title === "function" ? title("desktop") : title}
-        trigger={typeof trigger === "function" ? trigger("desktop") : trigger}
-        content={typeof content === "function" ? content("desktop") : content}
-        footer={typeof footer === "function" ? footer("desktop") : footer}
-        // description={
-        //   typeof description === "function"
-        //     ? description("desktop")
-        //     : description
-        // }
-        spinner={spinner}
-        titleClassName={titleClassName}
-        titleContainerClassName={titleContainerClassName}
-      />
-    );
-  }
+  const dialogContext = useMemo(
+    () => ({
+      close,
+    }),
+    [close],
+  );
+
+  useImperativeHandle(ref, () => ({
+    close,
+  }));
 
   return (
-    <DrawerMobile
-      ref={ref}
-      title={typeof title === "function" ? title("desktop") : title}
-      trigger={typeof trigger === "function" ? trigger("desktop") : trigger}
-      content={typeof content === "function" ? content("desktop") : content}
-      footer={typeof footer === "function" ? footer("desktop") : footer}
-      description={
-        typeof description === "function" ? description("desktop") : description
-      }
-      spinner={spinner}
-      titleClassName={titleClassName}
-      titleContainerClassName={titleContainerClassName}
-    />
+    <DialogContext.Provider value={dialogContext}>
+      {isDesktop && desktopType === "modal" ? (
+        <ModalDesktop
+          ref={internalRef}
+          title={typeof title === "function" ? title("desktop") : title}
+          trigger={typeof trigger === "function" ? trigger("desktop") : trigger}
+          content={typeof content === "function" ? content("desktop") : content}
+          footer={typeof footer === "function" ? footer("desktop") : footer}
+          description={
+            typeof description === "function"
+              ? description("desktop")
+              : description
+          }
+          spinner={spinner}
+          titleClassName={titleClassName}
+          titleContainerClassName={titleContainerClassName}
+        />
+      ) : isDesktop && desktopType === "drawer" ? (
+        <DrawerDesktop
+          ref={internalRef}
+          title={typeof title === "function" ? title("desktop") : title}
+          trigger={typeof trigger === "function" ? trigger("desktop") : trigger}
+          content={typeof content === "function" ? content("desktop") : content}
+          footer={typeof footer === "function" ? footer("desktop") : footer}
+          // description={
+          //   typeof description === "function"
+          //     ? description("desktop")
+          //     : description
+          // }
+          spinner={spinner}
+          titleClassName={titleClassName}
+          titleContainerClassName={titleContainerClassName}
+        />
+      ) : (
+        <DrawerMobile
+          ref={internalRef}
+          title={typeof title === "function" ? title("desktop") : title}
+          trigger={typeof trigger === "function" ? trigger("desktop") : trigger}
+          content={typeof content === "function" ? content("desktop") : content}
+          footer={typeof footer === "function" ? footer("desktop") : footer}
+          description={
+            typeof description === "function"
+              ? description("desktop")
+              : description
+          }
+          spinner={spinner}
+          titleClassName={titleClassName}
+          titleContainerClassName={titleContainerClassName}
+        />
+      )}
+    </DialogContext.Provider>
   );
+}
+
+export default function Dialog(props: Props) {
+  const isClient = useIsClient();
+
+  if (isClient === false) {
+    return null;
+  }
+
+  return <DialogComponent {...props} />;
 }
