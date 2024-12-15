@@ -8,9 +8,19 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { ReactNode, RefObject, useState } from "react";
+import {
+  ReactNode,
+  RefObject,
+  useCallback,
+  useImperativeHandle,
+  useState,
+} from "react";
+import Spinner from "@/icons/Spinner";
 
-type Ref = {};
+type Ref = {
+  open: () => void;
+  close: () => void;
+};
 
 type Props = {
   ref?: RefObject<Ref>;
@@ -22,29 +32,63 @@ type Props = {
   spinner?: boolean;
   titleClassName?: string;
   titleContainerClassName?: string;
+  onOpen?: () => void;
+  onClose?: () => void;
 };
 
 export default function ModalDesktop({
+  ref,
   title,
   trigger,
   content,
   footer,
   description,
   spinner,
-  ref,
+  onOpen,
+  onClose,
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const open = () => {
+    setIsOpen(true);
+    if (isOpen === false && onOpen) onOpen();
+  };
+
+  const close = () => {
+    if (spinner) return;
+    setIsOpen(false);
+    if (isOpen === true && onClose) onClose();
+  };
+
+  useImperativeHandle(ref, () => ({
+    open,
+    close,
+  }));
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>{title}</DrawerTitle>
-          <DrawerDescription>{description}</DrawerDescription>
-        </DrawerHeader>
-        {content}
-        {footer && <DrawerFooter className="pt-2">{footer}</DrawerFooter>}
+        <div className="h-full relative">
+          {/* Spinner */}
+          {spinner ? (
+            <div className="bg-white/50 absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center animate-in fade-in rounded-xl">
+              <Spinner className="text-primary w-16 h-16" />
+            </div>
+          ) : null}
+
+          {/* Header */}
+          <DrawerHeader className="text-left">
+            <DrawerTitle>{title}</DrawerTitle>
+            <DrawerDescription>{description}</DrawerDescription>
+          </DrawerHeader>
+
+          {/* Content */}
+          {content}
+
+          {/* Footer */}
+          {footer && <DrawerFooter className="pt-2">{footer}</DrawerFooter>}
+        </div>
       </DrawerContent>
     </Drawer>
   );

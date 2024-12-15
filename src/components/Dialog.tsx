@@ -13,11 +13,12 @@ import ModalDesktop from "./ModalDesktop";
 import DrawerDesktop from "./DrawerDesktop";
 import DrawerMobile from "./DrawerMobile";
 
-export type Ref = {
+export type DialogRef = {
+  open: () => void;
   close: () => void;
 };
 
-type DialogContext = Ref;
+type DialogContext = DialogRef;
 const DialogContext = createContext<DialogContext | null>(null);
 export const useDialogContext = () => {
   const dialogContext = use(DialogContext);
@@ -31,7 +32,7 @@ export const useDialogContext = () => {
 type ScreenType = "mobile" | "desktop";
 
 type Props = {
-  ref?: RefObject<Ref>;
+  ref?: RefObject<DialogRef>;
   title: ReactNode | ((screenType: ScreenType) => ReactNode);
   trigger: ReactNode | ((screenType: ScreenType) => ReactNode);
   content: ReactNode | ((screenType: ScreenType) => ReactNode);
@@ -41,6 +42,8 @@ type Props = {
   titleClassName?: string;
   titleContainerClassName?: string;
   desktopType: "drawer" | "modal";
+  onOpen?: () => void;
+  onClose?: () => void;
 };
 
 function DialogComponent({
@@ -54,24 +57,33 @@ function DialogComponent({
   titleClassName,
   titleContainerClassName,
   desktopType,
+  onOpen,
+  onClose,
 }: Props) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const internalRef = useRef<Ref>(null);
+  const internalRef = useRef<DialogRef>(null);
 
   const close = useCallback(() => {
     if (!internalRef.current) return;
     internalRef.current.close();
   }, []);
 
+  const open = useCallback(() => {
+    if (!internalRef.current) return;
+    internalRef.current.open();
+  }, []);
+
   const dialogContext = useMemo(
     () => ({
       close,
+      open,
     }),
-    [close],
+    [close, open],
   );
 
   useImperativeHandle(ref, () => ({
     close,
+    open,
   }));
 
   return (
@@ -91,6 +103,8 @@ function DialogComponent({
           spinner={spinner}
           titleClassName={titleClassName}
           titleContainerClassName={titleContainerClassName}
+          onOpen={onOpen}
+          onClose={onClose}
         />
       ) : isDesktop && desktopType === "drawer" ? (
         <DrawerDesktop
@@ -107,6 +121,8 @@ function DialogComponent({
           spinner={spinner}
           titleClassName={titleClassName}
           titleContainerClassName={titleContainerClassName}
+          onOpen={onOpen}
+          onClose={onClose}
         />
       ) : (
         <DrawerMobile
@@ -123,6 +139,8 @@ function DialogComponent({
           spinner={spinner}
           titleClassName={titleClassName}
           titleContainerClassName={titleContainerClassName}
+          onOpen={onOpen}
+          onClose={onClose}
         />
       )}
     </DialogContext.Provider>
