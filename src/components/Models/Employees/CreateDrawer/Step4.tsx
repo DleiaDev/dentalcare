@@ -1,5 +1,5 @@
 import Button from "@/components/Button";
-import Dialog, { type Ref } from "@/components/Dialog";
+import Dialog, { type DialogRef } from "@/components/Dialog";
 import DialogFooter from "@/components/DialogFooter";
 import AbsenceForm, {
   Data as AbsenceFormData,
@@ -26,7 +26,7 @@ type Props = {
 };
 
 export default function Step4({ data, formId, clinic, onFinish }: Props) {
-  const DrawerRef = useRef<Ref>(null);
+  const dialogRef = useRef<DialogRef>(null);
   const [tab, setTab] = useState("Absence");
   const [holidayInputs, setHolidayInputs] = useState<HolidayFormData>(
     data?.Holidays ?? [],
@@ -68,12 +68,12 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
 
   const onHolidaysFinish = (holidays: HolidayFormData) => {
     setHolidayInputs(holidays);
-    DrawerRef.current?.closeModal();
+    dialogRef.current?.close();
   };
 
   const onAbsencesFinish = (absence: AbsenceFormData) => {
     setAbsenceInputs([...absenceInputs, absence]);
-    DrawerRef.current?.closeModal();
+    dialogRef.current?.close();
   };
 
   const handleSubmit = (e?: BaseSyntheticEvent) => {
@@ -141,7 +141,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
       <div className="flex justify-end">
         <Dialog
           desktopType="drawer"
-          ref={DrawerRef}
+          ref={dialogRef}
           trigger={
             <Button intent="text">
               <PlusIcon className="h-5 w-5 mr-1" />
