@@ -66,6 +66,7 @@ interface Props extends ButtonProps {
   editLinkHref?: string;
   editLinkItemNamePlural?: string;
   createButtonItemName?: string;
+  handleCreateClick?: (query: string) => void;
   // selectedValueFormat?: (selectedOption: O) => ReactNode;
 }
 
@@ -143,6 +144,7 @@ function UIComponent({
   createButtonItemName,
   editLinkHref,
   editLinkItemNamePlural,
+  handleCreateClick,
   ...props
   // selectedValueFormat,
 }: UIComponentProps) {
@@ -160,6 +162,11 @@ function UIComponent({
   };
 
   const handleCreateOption = () => {
+    if (handleCreateClick) {
+      handleCreateClick(searchQuery);
+      setSearchQuery("");
+      return;
+    }
     const alreadyExists = allOptions.some(
       (option) => option.value === searchQuery,
     );
@@ -248,6 +255,7 @@ function UIComponent({
           ) : (
             <Command className="animate-in fade-in duration-300">
               <CommandInput
+                autoFocus
                 placeholder="Search..."
                 value={searchQuery}
                 onValueChange={setSearchQuery}
