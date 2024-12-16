@@ -79,6 +79,7 @@ export default function TagInput({ editLinkHref }: Props) {
             formId={formId}
             showBackButton={false}
             nextButtonText="Save"
+            nextButtonDisabled={isPending}
           />
         }
         spinner={isPending}

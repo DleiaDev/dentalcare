@@ -36,6 +36,7 @@ export default function CreateDrawer({}) {
         <DialogFooter
           formId={formId}
           nextButtonText="Save"
+          nextButtonDisabled={isPending}
           showBackButton={false}
         />
       }

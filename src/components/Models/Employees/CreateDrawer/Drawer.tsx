@@ -66,6 +66,7 @@ export default function CreateDrawer({}) {
       footer={
         <DialogFooter
           formId={formId}
+          nextButtonDisabled={isPending}
           nextButtonText={currentStep === 4 ? "Finish" : "Next"}
           backButtonDisabled={currentStep === 1}
           goBackward={goBackward}
