@@ -1,6 +1,5 @@
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -8,18 +7,12 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import {
-  ReactNode,
-  RefObject,
-  useCallback,
-  useImperativeHandle,
-  useState,
-} from "react";
+import { ReactNode, RefObject, useImperativeHandle, useState } from "react";
 import Spinner from "@/icons/Spinner";
 
 type Ref = {
   open: () => void;
-  close: () => void;
+  close: (ignoreSpinner: boolean) => void;
 };
 
 type Props = {
@@ -54,8 +47,8 @@ export default function ModalDesktop({
     if (isOpen === false && onOpen) onOpen();
   };
 
-  const close = () => {
-    if (spinner) return;
+  const close = (ignoreSpinner = false) => {
+    if (spinner && !ignoreSpinner) return;
     setIsOpen(false);
     if (isOpen === true && onClose) onClose();
   };

@@ -20,7 +20,7 @@ import Spinner from "@/icons/Spinner";
 
 type Ref = {
   open: () => void;
-  close: () => void;
+  close: (ignoreSpinner: boolean) => void;
 };
 
 type Props = {
@@ -57,8 +57,8 @@ export default function ModalDesktop({
     if (isOpen === false && onOpen) onOpen();
   };
 
-  const close = () => {
-    if (spinner) return;
+  const close = (ignoreSpinner = false) => {
+    if (spinner && !ignoreSpinner) return;
     setIsOpen(false);
     if (isOpen === true && onClose) onClose();
   };
@@ -99,7 +99,12 @@ export default function ModalDesktop({
               >
                 {title}
               </DialogTitle>
-              <Button intent="text" color="black" autoFocus onClick={close}>
+              <Button
+                intent="text"
+                color="black"
+                autoFocus
+                onClick={() => close()}
+              >
                 <Cross1Icon className="w-5 h-5" />
               </Button>
             </div>

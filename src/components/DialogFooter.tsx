@@ -18,7 +18,7 @@ export default function DialogFooter({
   showBackButton = true,
   goBackward,
 }: Props) {
-  const { close } = useDialogContext();
+  const { close, isPending } = useDialogContext();
   return (
     <div className="flex justify-end gap-6">
       <Button intent="ghost" color="black" size="xl" onClick={close}>
@@ -38,7 +38,7 @@ export default function DialogFooter({
         form={formId}
         size="xl"
         type="submit"
-        disabled={nextButtonDisabled}
+        disabled={nextButtonDisabled || isPending}
       >
         {nextButtonText}
       </Button>

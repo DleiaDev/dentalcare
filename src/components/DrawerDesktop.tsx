@@ -16,7 +16,7 @@ ReactModal.setAppElement("#drawers-container");
 
 export type Ref = {
   open: () => void;
-  close: () => void;
+  close: (ignoreSpinner: boolean) => void;
 };
 
 type Props = {
@@ -108,8 +108,8 @@ function Component({
     if (isOpen === false && onOpen) onOpen();
   }
 
-  function close() {
-    if (spinner) return;
+  function close(ignoreSpinner = false) {
+    if (spinner && !ignoreSpinner) return;
     setIsOpen(false);
     setOpeningLevel(undefined);
     setClosingLevel(level);
@@ -151,7 +151,7 @@ function Component({
       {triggerComponent}
       <ReactModal
         isOpen={isOpen}
-        onRequestClose={close}
+        onRequestClose={() => close()}
         closeTimeoutMS={500}
         overlayClassName={{
           base: cn(
@@ -195,7 +195,12 @@ function Component({
             <div className={cn("font-semibold text-lg", titleClassName)}>
               {title}
             </div>
-            <Button intent="text" color="black" autoFocus onClick={close}>
+            <Button
+              intent="text"
+              color="black"
+              autoFocus
+              onClick={() => close()}
+            >
               <Cross1Icon className="w-5 h-5" />
             </Button>
           </div>

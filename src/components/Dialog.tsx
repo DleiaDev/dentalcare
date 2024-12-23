@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   useMemo,
   useRef,
+  useState,
   type ReactNode,
   type RefObject,
 } from "react";
@@ -16,9 +17,20 @@ import DrawerMobile from "./DrawerMobile";
 export type DialogRef = {
   open: () => void;
   close: () => void;
+  setIsPending: (isPending: boolean) => void;
 };
 
-type DialogContext = DialogRef;
+type InternalRef = {
+  open: () => void;
+  close: (ignoreSpinner: boolean) => void;
+};
+
+type DialogContext = {
+  open: DialogRef["open"];
+  close: DialogRef["close"];
+  isPending: boolean;
+  setIsPending: DialogRef["setIsPending"];
+};
 const DialogContext = createContext<DialogContext | null>(null);
 export const useDialogContext = () => {
   const dialogContext = use(DialogContext);
@@ -61,11 +73,15 @@ function DialogComponent({
   onClose,
 }: Props) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const internalRef = useRef<DialogRef>(null);
+  const internalRef = useRef<InternalRef>(null);
+  const [isPending, setIsPending] = useState(false);
+
+  const isPendingFinal = spinner || isPending;
 
   const close = useCallback(() => {
     if (!internalRef.current) return;
-    internalRef.current.close();
+    setIsPending(false);
+    internalRef.current.close(true);
   }, []);
 
   const open = useCallback(() => {
@@ -77,13 +93,16 @@ function DialogComponent({
     () => ({
       close,
       open,
+      isPending: isPendingFinal,
+      setIsPending,
     }),
-    [close, open],
+    [close, open, isPendingFinal],
   );
 
   useImperativeHandle(ref, () => ({
     close,
     open,
+    setIsPending,
   }));
 
   return (
@@ -100,7 +119,7 @@ function DialogComponent({
               ? description("desktop")
               : description
           }
-          spinner={spinner}
+          spinner={isPendingFinal}
           titleClassName={titleClassName}
           titleContainerClassName={titleContainerClassName}
           onOpen={onOpen}
@@ -118,7 +137,7 @@ function DialogComponent({
           //     ? description("desktop")
           //     : description
           // }
-          spinner={spinner}
+          spinner={isPendingFinal}
           titleClassName={titleClassName}
           titleContainerClassName={titleContainerClassName}
           onOpen={onOpen}
@@ -136,7 +155,7 @@ function DialogComponent({
               ? description("desktop")
               : description
           }
-          spinner={spinner}
+          spinner={isPendingFinal}
           titleClassName={titleClassName}
           titleContainerClassName={titleContainerClassName}
           onOpen={onOpen}
