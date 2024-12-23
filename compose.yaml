@@ -17,6 +17,9 @@ services:
             - node_modules/
         - action: rebuild
           path: ./package.json
+        # TODO:
+        # - action: rebuild
+        #   path: ./node_modules/.pnpm/@prisma+client@6.0.1_prisma@6.0.1/node_modules/@prisma/client/
     networks:
       - main
     depends_on:
