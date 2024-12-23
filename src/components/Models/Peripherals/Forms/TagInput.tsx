@@ -5,8 +5,8 @@ import { useId, useRef, useState } from "react";
 import Dialog, { type DialogRef } from "@/components/Dialog";
 import DialogFooter from "@/components/DialogFooter";
 import CreateForm from "@/components/Models/PeripheralTags/CreateForm";
-import { CreatePeripheralTagFormData } from "@/zod/PeripheralTag";
-import { createPeripheralTag } from "@/actions/PeripheralTag";
+import { useFormContext } from "react-hook-form";
+import { PeripheralTag } from "@/zod/PeripheralTag";
 
 type Props = {
   editLinkHref?: string;
@@ -16,9 +16,11 @@ export default function TagInput({ editLinkHref }: Props) {
   const dialogRef = useRef<DialogRef>(null);
   const [newTagName, setNewTagName] = useState("");
   const [isFetchAllowed, setIsFetchAllowed] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const { setValue, getValues } = useFormContext();
 
   const formId = useId();
+
+  const utils = trpc.useUtils();
 
   const {
     data: tags = [],
@@ -27,6 +29,12 @@ export default function TagInput({ editLinkHref }: Props) {
   } = trpc.peripherals.getAllTags.useQuery(undefined, {
     enabled: isFetchAllowed,
   });
+
+  const handleCreated = (data: PeripheralTag) => {
+    dialogRef.current?.close();
+    utils.peripherals.getAllTags.invalidate();
+    setValue("Tags", [...getValues("Tags"), data.id]);
+  };
 
   const onDialogClose = () => {
     setNewTagName("");
@@ -41,22 +49,12 @@ export default function TagInput({ editLinkHref }: Props) {
     setNewTagName(query);
   };
 
-  const newTagFormData = {
-    name: newTagName,
+  const setIsPending = (isPending: boolean) => {
+    dialogRef.current?.setIsPending(isPending);
   };
 
-  const handleCreateTag = (data: CreatePeripheralTagFormData) => {
-    setIsPending(true);
-    createPeripheralTag(data)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      })
-      .finally(() => {
-        setIsPending(false);
-      });
+  const newTagFormData = {
+    name: newTagName,
   };
 
   return (
@@ -71,7 +69,8 @@ export default function TagInput({ editLinkHref }: Props) {
             formId={formId}
             data={newTagFormData}
             autoFocusName
-            onFinish={handleCreateTag}
+            setIsPending={setIsPending}
+            onCreated={handleCreated}
           />
         }
         footer={
@@ -79,10 +78,8 @@ export default function TagInput({ editLinkHref }: Props) {
             formId={formId}
             showBackButton={false}
             nextButtonText="Save"
-            nextButtonDisabled={isPending}
           />
         }
-        spinner={isPending}
         onClose={onDialogClose}
       />
       <MultiSelect

@@ -3,25 +3,31 @@ import TextInput from "@/components/Form/TextInput";
 import {
   CreatePeripheralTagFormData,
   CreatePeripheralTagFormSchema,
+  PeripheralTag,
 } from "@/zod/PeripheralTag";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BaseSyntheticEvent } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import TagIcon from "@/icons/tag.svg";
 import { Badge } from "@/components/ui/badge";
+import { createPeripheralTag } from "@/actions/PeripheralTag";
+import setServerErrors from "@/lib/utils/setServerErrors";
+import { useToast } from "@/hooks/use-toast";
 
 type Props = {
   formId?: string;
   data?: CreatePeripheralTagFormData;
   autoFocusName?: boolean;
-  onFinish: (data: CreatePeripheralTagFormData) => void;
+  onCreated: (data: PeripheralTag) => void;
+  setIsPending: (isPending: boolean) => void;
 };
 
 export default function CreateForm({
   formId,
   data,
   autoFocusName,
-  onFinish,
+  onCreated,
+  setIsPending,
 }: Props) {
   const methods = useForm({
     resolver: zodResolver(CreatePeripheralTagFormSchema),
@@ -30,7 +36,29 @@ export default function CreateForm({
     },
   });
 
-  const submit = methods.handleSubmit(onFinish);
+  const { toast } = useToast();
+
+  const submit = methods.handleSubmit((data) => {
+    setIsPending(true);
+    createPeripheralTag(data)
+      .then(({ errors, data }) => {
+        if (errors) {
+          setServerErrors(errors, methods.setError);
+        } else if (data) {
+          onCreated(data);
+          toast({
+            title: "Success",
+            description: "Tag has been created",
+          });
+        }
+      })
+      .catch((error: Error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setIsPending(false);
+      });
+  });
 
   const handleSubmit = (e?: BaseSyntheticEvent) => {
     e?.preventDefault();
