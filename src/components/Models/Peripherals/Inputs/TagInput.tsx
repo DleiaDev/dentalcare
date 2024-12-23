@@ -8,11 +8,7 @@ import CreateForm from "@/components/Models/PeripheralTags/CreateForm";
 import { useFormContext } from "react-hook-form";
 import { PeripheralTag } from "@/zod/PeripheralTag";
 
-type Props = {
-  editLinkHref?: string;
-};
-
-export default function TagInput({ editLinkHref }: Props) {
+export default function TagInput() {
   const dialogRef = useRef<DialogRef>(null);
   const [newTagName, setNewTagName] = useState("");
   const [isFetchAllowed, setIsFetchAllowed] = useState(false);
@@ -90,7 +86,7 @@ export default function TagInput({ editLinkHref }: Props) {
         isFetching={isFetching}
         fetchingFailed={!!error?.message}
         createButtonItemName="tag"
-        editLinkHref={editLinkHref}
+        // editLinkHref={editLinkHref}
         editLinkItemNamePlural="tags"
         options={tags.map((tag) => ({
           label: tag.name,

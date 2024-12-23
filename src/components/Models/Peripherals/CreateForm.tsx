@@ -67,9 +67,8 @@ export default function CreateForm({ clinicId }: Props) {
         <div className="flex gap-12">
           {/* Left */}
           <div className="w-72">
-            {/* Image */}
             <ImageUpload />
-            <TagInput editLinkHref={`/clinic/${clinicId}/edit`} />
+            <TagInput />
           </div>
 
           {/* Right */}
