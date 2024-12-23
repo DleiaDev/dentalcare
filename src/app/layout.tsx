@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import Navbar from "@/components/Navbar/Navbar";
 import Sidebar from "@/components/Sidebar/Sidebar";
+import { Toaster } from "@/components/ui/toaster";
 import { TRPCProvider } from "@/trpc/client";
 import "./tailwind.css";
 
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${font.className} m-0 overflow-hidden flex`}>
+        <Toaster />
         <TRPCProvider>
           <div id="drawers-container"></div>
           <Sidebar className="absolute left-0 top-0 xl:relative" />

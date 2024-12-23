@@ -62,7 +62,7 @@ module.exports = {
           800: "var(--gray-800)",
           900: "var(--gray-900)",
         },
-        success: "var(--success)",
+        success: "hsl(var(--success))",
         appointment: {
           "finished-bg": "var(--appointment-finished-bg)",
           "finished-icon-bg": "var(--appointment-finished-icon-bg)",
