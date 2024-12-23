@@ -8,9 +8,8 @@ import { MAXIMUM_B, MAXIMUM_MB } from "@/constants/storage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
-import ImageUpload from "./Forms/ImageUpload";
-import TagInput from "./Forms/TagInput";
-import { getClinic } from "@/lib/clinic_dev";
+import ImageUpload from "./Inputs/ImageUpload";
+import TagInput from "./Inputs/TagInput";
 
 const schema = z.object({
   image: z
