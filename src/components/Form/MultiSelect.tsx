@@ -148,6 +148,8 @@ function UIComponent({
   ...props
   // selectedValueFormat,
 }: UIComponentProps) {
+  if (!Array.isArray(value)) throw new Error("'value' must be an array");
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [firstPopoverOpen, setIsFirstPopoverOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
