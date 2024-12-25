@@ -1,14 +1,15 @@
 import get from "lodash.get";
-import { ChangeEvent } from "react";
+import { ChangeEvent, HTMLAttributes } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import Label from "./Label";
 import ErrorMessage from "./ErrorMessage";
 
-type Props = {
+type Props = HTMLAttributes<HTMLInputElement> & {
   name?: string;
   value?: string;
   label?: string;
+  labelDescription?: string;
   className?: string;
   containerClassName?: string;
   autoFocus?: boolean;
@@ -19,6 +20,7 @@ function UIComponent({
   className,
   name,
   label,
+  labelDescription,
   containerClassName,
   errorMessage,
   value,
@@ -34,7 +36,11 @@ function UIComponent({
 
   return (
     <div className={cn("mb-7", containerClassName)}>
-      {label && <Label htmlFor={name}>{label}</Label>}
+      {label && (
+        <Label htmlFor={name} description={labelDescription}>
+          {label}
+        </Label>
+      )}
       <input
         {...props}
         value={value ?? ""}
