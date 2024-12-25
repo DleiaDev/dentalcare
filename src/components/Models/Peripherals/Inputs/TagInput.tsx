@@ -91,6 +91,7 @@ export default function TagInput() {
         options={tags.map((tag) => ({
           label: tag.name,
           value: tag.id,
+          description: tag.description,
           icon: TagIcon,
         }))}
         onFirstOpen={handleOnFirstOpen}

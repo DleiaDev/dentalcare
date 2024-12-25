@@ -13,7 +13,6 @@ import {
 } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import Button from "../Button";
-import { Badge } from "../ui/badge";
 import {
   Command,
   CommandEmpty,

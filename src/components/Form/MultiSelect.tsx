@@ -35,7 +35,7 @@ type Option = {
   value: string;
   label: ReactNode;
   icon?: ComponentType<{ className?: string }>;
-  description?: string;
+  description?: string | null;
   disabled?: boolean;
   disabledReason?: string;
 };
@@ -109,7 +109,14 @@ function Options({
               {IconComponent && (
                 <IconComponent className="h-5 w-5 text-gray-700" />
               )}
-              {option.label}
+              <div>
+                {option.label}
+                {option.description && (
+                  <div className="text-sm text-gray-700">
+                    {option.description}
+                  </div>
+                )}
+              </div>
             </div>
             <Checkbox checked={isChecked} />
           </CommandItem>
