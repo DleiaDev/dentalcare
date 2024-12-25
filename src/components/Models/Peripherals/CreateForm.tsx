@@ -4,27 +4,12 @@ import Button from "@/components/Button";
 import TextInput from "@/components/Form/TextInput";
 import H3 from "@/components/H3";
 import H4 from "@/components/H4";
-import { MAXIMUM_B, MAXIMUM_MB } from "@/constants/storage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
-import { z } from "zod";
 import ImageUpload from "./Inputs/ImageUpload";
 import TagInput from "./Inputs/TagInput";
-
-const schema = z.object({
-  image: z
-    .instanceof(File)
-    .optional()
-    .superRefine((file, ctx) => {
-      if (!file) return;
-      if (file.size > MAXIMUM_B)
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
-        });
-    }),
-  Tags: z.string().array(),
-});
+import StatusInput from "./Inputs/StatusInput";
+import { CreatePeripheralFormSchema } from "@/zod/Peripheral";
 
 type Props = {
   clinicId: string;
@@ -32,9 +17,10 @@ type Props = {
 
 export default function CreateForm({ clinicId }: Props) {
   const methods = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(CreatePeripheralFormSchema),
     defaultValues: {
       Tags: [],
+      Status: undefined,
     },
   });
 
@@ -69,6 +55,7 @@ export default function CreateForm({ clinicId }: Props) {
           <div className="w-72">
             <ImageUpload />
             <TagInput />
+            <StatusInput />
           </div>
 
           {/* Right */}

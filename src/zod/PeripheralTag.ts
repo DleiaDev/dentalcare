@@ -17,6 +17,8 @@ export const PeripheralTagSchema: z.ZodType<PeripheralTag> = z.object({
   updatedAt: z.date(),
 });
 
+// ------- Forms -------
+
 export type CreatePeripheralTagFormData = z.infer<
   typeof CreatePeripheralTagFormSchema
 >;

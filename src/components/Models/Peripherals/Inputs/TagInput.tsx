@@ -87,7 +87,7 @@ export default function TagInput() {
         fetchingFailed={!!error?.message}
         createButtonItemName="tag"
         // editLinkHref={editLinkHref}
-        editLinkItemNamePlural="tags"
+        // editLinkItemNamePlural="tags"
         options={tags.map((tag) => ({
           label: tag.name,
           value: tag.id,
