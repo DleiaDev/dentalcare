@@ -113,4 +113,5 @@ export default function TextInput({
     return (
       <UIComponent {...props} value={value} onValueChange={onValueChange} />
     );
+  throw new Error("Provide either name or (value and onValueChange)");
 }

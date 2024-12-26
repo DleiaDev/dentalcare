@@ -17,7 +17,7 @@ export default function Label({
     <LabelPrimitive.Root
       ref={ref}
       className={cn(
-        "flex items-center gap-2 font-semibold text-sm mb-2",
+        "flex items-center gap-1 font-semibold text-sm mb-2",
         className,
       )}
       {...props}

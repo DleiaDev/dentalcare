@@ -10,6 +10,7 @@ import ImageUpload from "./Inputs/ImageUpload";
 import TagInput from "./Inputs/TagInput";
 import StatusInput from "./Inputs/StatusInput";
 import { CreatePeripheralFormSchema } from "@/zod/Peripheral";
+import CategoryInput from "./Inputs/CategoryInput";
 
 type Props = {
   clinicId: string;
@@ -35,7 +36,7 @@ export default function CreateForm({ clinicId }: Props) {
 
   return (
     <FormProvider {...methods}>
-      <form className="w-full max-w-[120rem] mx-auto" onSubmit={handleSubmit}>
+      <form className="w-full max-w-7xl mx-auto" onSubmit={handleSubmit}>
         {/* Header */}
         <div className="flex justify-between items-center mb-10">
           <H3>New peripherals</H3>
@@ -61,9 +62,15 @@ export default function CreateForm({ clinicId }: Props) {
           {/* Right */}
           <div className="border border-border rounded-xl flex-1 p-8">
             <H4>Product details</H4>
-            <div className="flex">
-              <TextInput label="Product name" />
-              <TextInput label="Series" />
+            <div className="grid gap-7 grid-cols-2 [&>*]:mb-0">
+              <TextInput name="name" label="Product name" />
+              <TextInput
+                name="Series"
+                label="Series"
+                labelDescription="(optional)"
+              />
+              <CategoryInput />
+              <TextInput name="weight" label="Weight" />
             </div>
           </div>
         </div>

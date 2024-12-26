@@ -8,4 +8,7 @@ export const peripheralsRouter = router({
   getAllStatuses: publicProcedure.query(async () => {
     return prisma.peripheralStatus.findMany();
   }),
+  getAllCategories: publicProcedure.query(async () => {
+    return prisma.peripheralCategory.findMany();
+  }),
 });

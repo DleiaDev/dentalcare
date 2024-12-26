@@ -82,7 +82,6 @@ export default function TagInput() {
         name="Tags"
         label="Tags"
         className="max-w-full"
-        placeholder="Select a tag"
         isFetching={isFetching}
         fetchingFailed={!!error?.message}
         createButtonItemName="tag"

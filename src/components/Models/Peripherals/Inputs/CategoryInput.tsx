@@ -2,17 +2,19 @@ import Dialog, { DialogRef } from "@/components/Dialog";
 import SingleSelect from "@/components/Form/SingleSelect";
 import { trpc } from "@/trpc/client";
 import { useId, useRef, useState } from "react";
-import CreateForm from "../../PeripheralStatuses/CreateForm";
-import { PeripheralStatus } from "@/zod/PeripheralStatus";
+import CreateForm from "../../PeripheralCategories/CreateForm";
+import { PeripheralCategory } from "@/zod/PeripheralCategory";
 import { useFormContext } from "react-hook-form";
 import DialogFooter from "@/components/DialogFooter";
-import StatusCircle from "@/components/StatusCircle";
-import { cn } from "@/lib/utils";
 
-export default function StatusInput() {
+type Props = {
+  containerClassName?: string;
+};
+
+export default function CategoryInput({ containerClassName }: Props) {
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
-  const [newStatusName, setNewStatusName] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
   const [isFetchAllowed, setIsFetchAllowed] = useState(false);
 
   const formId = useId();
@@ -20,21 +22,21 @@ export default function StatusInput() {
   const utils = trpc.useUtils();
 
   const {
-    data: statuses = [],
+    data: categories = [],
     error,
     isFetching,
-  } = trpc.peripherals.getAllStatuses.useQuery(undefined, {
+  } = trpc.peripherals.getAllCategories.useQuery(undefined, {
     enabled: isFetchAllowed,
   });
 
-  const handleCreated = (data: PeripheralStatus) => {
+  const handleCreated = (data: PeripheralCategory) => {
     dialogRef.current?.close();
-    utils.peripherals.getAllStatuses.invalidate();
-    setValue("Status", data.id);
+    utils.peripherals.getAllCategories.invalidate();
+    setValue("Category", data.id);
   };
 
   const onDialogClose = () => {
-    setNewStatusName("");
+    setNewCategoryName("");
   };
 
   const handleOnFirstOpen = () => {
@@ -43,16 +45,15 @@ export default function StatusInput() {
 
   const handleCreateClick = (query: string) => {
     dialogRef.current?.open();
-    setNewStatusName(query);
+    setNewCategoryName(query);
   };
 
   const setIsPending = (isPending: boolean) => {
     dialogRef.current?.setIsPending(isPending);
   };
 
-  const newStatusFormData = {
-    name: newStatusName,
-    color: "",
+  const newCategoryFormData = {
+    name: newCategoryName,
   };
 
   return (
@@ -60,12 +61,12 @@ export default function StatusInput() {
       <Dialog
         ref={dialogRef}
         desktopType="modal"
-        title="Create a new status"
+        title="Create a new category"
         trigger={""}
         content={
           <CreateForm
             formId={formId}
-            data={newStatusFormData}
+            data={newCategoryFormData}
             autoFocusName
             setIsPending={setIsPending}
             onCreated={handleCreated}
@@ -81,25 +82,18 @@ export default function StatusInput() {
         onClose={onDialogClose}
       />
       <SingleSelect
-        name="Status"
-        label="Status"
-        className="max-w-full"
+        name="Category"
+        label="Category"
+        containerClassName={containerClassName}
         isFetching={isFetching}
         fetchingFailed={!!error?.message}
-        createButtonItemName="status"
+        createButtonItemName="category"
         // editLinkHref={editLinkHref}
-        // editLinkItemNamePlural="statuses"
-        options={statuses.map((status) => ({
-          value: status.id,
-          label: status.name,
-          description: status.description,
-          icon: ({ className, ...props }) => (
-            <StatusCircle
-              {...props}
-              style={{ backgroundColor: status.color }}
-              className={cn(className, "min-w-4 min-h-4")}
-            />
-          ),
+        // editLinkItemNamePlural="categories"
+        options={categories.map((category) => ({
+          value: category.id,
+          label: category.name,
+          description: category.description,
         }))}
         onFirstOpen={handleOnFirstOpen}
         handleCreateClick={handleCreateClick}
