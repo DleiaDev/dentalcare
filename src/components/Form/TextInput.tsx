@@ -1,5 +1,5 @@
 import get from "lodash.get";
-import { ChangeEvent, HTMLAttributes } from "react";
+import { ChangeEvent, HTMLAttributes, type ReactNode } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import Label from "./Label";
@@ -13,6 +13,7 @@ type Props = HTMLAttributes<HTMLInputElement> & {
   className?: string;
   containerClassName?: string;
   autoFocus?: boolean;
+  additionalElements?: ReactNode;
   onValueChange?: (value: string) => void;
 };
 
@@ -24,6 +25,7 @@ function UIComponent({
   containerClassName,
   errorMessage,
   value,
+  additionalElements,
   onValueChange,
   ...props
 }: Props & {
@@ -56,6 +58,7 @@ function UIComponent({
         onChange={handleChange}
       />
       {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {additionalElements}
     </div>
   );
 }

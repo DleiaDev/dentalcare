@@ -27,7 +27,7 @@ export default function RootLayout({
           <Sidebar className="absolute left-0 top-0 xl:relative" />
           <div className="flex-1 h-svh flex flex-col overflow-hidden xl:h-auto">
             <Navbar />
-            <main className="flex-1">{children}</main>
+            <main className="flex-[1_1_0] overflow-auto">{children}</main>
           </div>
         </TRPCProvider>
       </body>

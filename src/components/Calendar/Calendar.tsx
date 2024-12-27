@@ -30,7 +30,7 @@ import Count from "@/components/Count";
 import Button from "@/components/Button";
 import Separator from "../ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
-import MultiSelect1 from "../MultiSelect1";
+// import MultiSelect1 from "../MultiSelect1";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -415,14 +415,14 @@ function Toolbar({ view, date, onNavigate, ...props }: ToolbarProps) {
             </TabsList>
           </Tabs>
         </div>
-        <MultiSelect1
-          triggerClassName="justify-self-end"
-          allVerbiage="All Dentists"
-          items={doctors.map((doctor) => ({
-            label: doctor.name,
-            value: doctor.id,
-          }))}
-        />
+        {/* <MultiSelect1 */}
+        {/*   triggerClassName="justify-self-end" */}
+        {/*   allVerbiage="All Dentists" */}
+        {/*   items={doctors.map((doctor) => ({ */}
+        {/*     label: doctor.name, */}
+        {/*     value: doctor.id, */}
+        {/*   }))} */}
+        {/* /> */}
       </div>
     </div>
   );

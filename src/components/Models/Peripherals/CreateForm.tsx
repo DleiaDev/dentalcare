@@ -11,6 +11,7 @@ import TagInput from "./Inputs/TagInput";
 import StatusInput from "./Inputs/StatusInput";
 import { CreatePeripheralFormSchema } from "@/zod/Peripheral";
 import CategoryInput from "./Inputs/CategoryInput";
+import TextArea from "@/components/Form/TextArea";
 
 type Props = {
   clinicId: string;
@@ -70,7 +71,25 @@ export default function CreateForm({ clinicId }: Props) {
                 labelDescription="(optional)"
               />
               <CategoryInput />
-              <TextInput name="weight" label="Weight" />
+              <TextInput
+                name="weight"
+                label="Weight"
+                className="pr-9"
+                containerClassName="relative"
+                additionalElements={
+                  <span className="absolute top-10 right-4 font-semibold">
+                    lb
+                  </span>
+                }
+              />
+              <TextInput name="sku" label="SKU" />
+              <TextInput name="barcode" label="Barcode" />
+              <TextArea
+                name="description"
+                label="Description"
+                containerClassName="col-span-2"
+                rows={3}
+              />
             </div>
           </div>
         </div>

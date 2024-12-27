@@ -7,10 +7,11 @@ import { useFormContext } from "react-hook-form";
 type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   name: string;
   label: string;
+  containerClassName?: string;
 };
 
 const TextArea = forwardRef<HTMLTextAreaElement, Props>(
-  ({ className, name, label, ...props }, ref) => {
+  ({ className, name, label, containerClassName, ...props }, ref) => {
     const {
       register,
       formState: { errors },
@@ -19,7 +20,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, Props>(
     const errorMessage = errors[name]?.message;
 
     return (
-      <div className="mb-7">
+      <div className={cn("mb-7", containerClassName)}>
         <Label htmlFor={name}>{label}</Label>
         <textarea
           id={name}
