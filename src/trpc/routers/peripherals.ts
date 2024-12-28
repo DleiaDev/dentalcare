@@ -11,4 +11,7 @@ export const peripheralsRouter = router({
   getAllCategories: publicProcedure.query(async () => {
     return prisma.peripheralCategory.findMany();
   }),
+  getAllVendors: publicProcedure.query(async () => {
+    return prisma.peripheralVendor.findMany();
+  }),
 });

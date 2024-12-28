@@ -1,0 +1,11 @@
+model PeripheralVendor {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()"))
+  name          String   @unique
+  description   String?
+  address       String
+  contact_name  String
+  contact_phone String
+  contact_email String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
