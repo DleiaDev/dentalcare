@@ -72,7 +72,7 @@ export default function ModalDesktop({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
-        <div className="h-full relative">
+        <div className="h-full relative flex flex-col">
           {/* Spinner */}
           {spinner ? (
             <div className="bg-white/50 absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center animate-in fade-in rounded-xl">
@@ -106,7 +106,7 @@ export default function ModalDesktop({
           </DialogHeader>
 
           {/* Content */}
-          <div className="py-5 px-9">{content}</div>
+          <div className="py-5 px-9 overflow-auto">{content}</div>
 
           {/* Footer */}
           {footer && (

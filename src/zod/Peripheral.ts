@@ -16,7 +16,10 @@ export const CreatePeripheralFormSchema = z.object({
   Tags: z.string().uuid().array(),
   Status: z.string().uuid(),
   name: z.string(),
-  series: z.string(),
+  series: z.string().optional(),
   Category: z.string().uuid(),
-  // weight: z.number(),
+  weight: z.number().optional(),
+  sku: z.string().optional(),
+  barcode: z.string().optional(),
+  description: z.string().optional(),
 });

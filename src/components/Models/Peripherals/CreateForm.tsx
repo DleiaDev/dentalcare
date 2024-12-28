@@ -12,6 +12,8 @@ import StatusInput from "./Inputs/StatusInput";
 import { CreatePeripheralFormSchema } from "@/zod/Peripheral";
 import CategoryInput from "./Inputs/CategoryInput";
 import TextArea from "@/components/Form/TextArea";
+import VendorInput from "./Inputs/VendorInput";
+import Separator from "@/components/ui/separator";
 
 type Props = {
   clinicId: string;
@@ -64,6 +66,8 @@ export default function CreateForm({ clinicId }: Props) {
           <div className="border border-border rounded-xl flex-1 p-8">
             <H4>Product details</H4>
             <div className="grid gap-7 grid-cols-2 [&>*]:mb-0">
+              <VendorInput />
+              <div></div>
               <TextInput name="name" label="Product name" />
               <TextInput
                 name="Series"
@@ -74,6 +78,7 @@ export default function CreateForm({ clinicId }: Props) {
               <TextInput
                 name="weight"
                 label="Weight"
+                labelDescription="(optional)"
                 className="pr-9"
                 containerClassName="relative"
                 additionalElements={

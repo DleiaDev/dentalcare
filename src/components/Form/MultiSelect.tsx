@@ -273,7 +273,7 @@ function UIComponent({
                 <CommandEmpty className={cn(createButtonItemName && "p-0")}>
                   {!createButtonItemName ? (
                     <p>No results found</p>
-                  ) : (
+                  ) : searchQuery ? (
                     <Button
                       intent="ghost"
                       color="black"
@@ -284,7 +284,7 @@ function UIComponent({
                       Create new {createButtonItemName} &quot;{searchQuery}
                       &quot;
                     </Button>
-                  )}
+                  ) : null}
                 </CommandEmpty>
                 {options ? (
                   <Options

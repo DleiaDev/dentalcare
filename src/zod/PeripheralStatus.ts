@@ -42,4 +42,5 @@ export const CreatePeripheralStatusServerSchema = z.object({
       return record === null;
     }, "Status already exists"),
   color: z.string(),
+  description: z.string().optional(),
 });
