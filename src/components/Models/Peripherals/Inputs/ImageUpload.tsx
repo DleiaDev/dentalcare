@@ -6,11 +6,7 @@ import { cn } from "@/lib/utils";
 import FileInput, { Ref } from "@/components/Form/FileInput";
 import Svg from "@/components/Svg";
 
-type Props = {
-  className?: string;
-};
-
-export default function ImageUpload({ className }: Props) {
+export default function ImageUpload() {
   const name = "image";
 
   const ImageInputRef = useRef<Ref>(null);
