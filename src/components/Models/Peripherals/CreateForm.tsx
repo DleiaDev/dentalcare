@@ -14,6 +14,7 @@ import CategoryInput from "./Inputs/CategoryInput";
 import TextArea from "@/components/Form/TextArea";
 import VendorInput from "./Inputs/VendorInput";
 import Separator from "@/components/ui/separator";
+import Label from "@/components/Form/Label";
 
 type Props = {
   clinicId: string;
@@ -95,6 +96,13 @@ export default function CreateForm({ clinicId }: Props) {
                 containerClassName="col-span-2"
                 rows={3}
               />
+              <div className="col-span-2">
+                <Label>Attachments</Label>
+                <p className="text-gray-600">
+                  Upload additional product photos, instruction manuals,
+                  insurance documents, etc.
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -1,16 +1,29 @@
-import { ChangeEvent, forwardRef, useImperativeHandle, useRef } from "react";
+import {
+  type ChangeEvent,
+  type HTMLAttributes,
+  type RefObject,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { Controller, useFormContext } from "react-hook-form";
-
-type Props = {
-  name: string;
-  onValueChange?: (value: File) => void;
-};
 
 export type Ref = {
   openFileBrowser: () => void;
 };
 
-const ImageInput = forwardRef<Ref, Props>(({ name, onValueChange }, ref) => {
+type Props = HTMLAttributes<HTMLInputElement> & {
+  ref: RefObject<Ref>;
+  name: string;
+  accept: string;
+  onValueChange?: (value: File) => void;
+};
+
+export default function FileInput({
+  name,
+  onValueChange,
+  ref,
+  ...props
+}: Props) {
   const inputEl = useRef<HTMLInputElement | null>();
   const { control } = useFormContext();
 
@@ -40,8 +53,8 @@ const ImageInput = forwardRef<Ref, Props>(({ name, onValueChange }, ref) => {
       control={control}
       render={({ field }) => (
         <input
+          {...props}
           type="file"
-          accept="image/*"
           className="hidden"
           ref={(element) => {
             field.ref(element);
@@ -53,7 +66,4 @@ const ImageInput = forwardRef<Ref, Props>(({ name, onValueChange }, ref) => {
       )}
     />
   );
-});
-ImageInput.displayName = "ImageInput";
-
-export default ImageInput;
+}

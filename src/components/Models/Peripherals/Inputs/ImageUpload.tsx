@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import ErrorMessage from "@/components/Form/ErrorMessage";
 import { cn } from "@/lib/utils";
-import ImageInput, { Ref } from "@/components/Form/ImageInput";
+import FileInput, { Ref } from "@/components/Form/FileInput";
 import Svg from "@/components/Svg";
 
 type Props = {
@@ -38,8 +38,9 @@ export default function ImageUpload({ className }: Props) {
   return (
     <div className="mb-7">
       {/* Input */}
-      <ImageInput
+      <FileInput
         ref={ImageInputRef}
+        accept="image/*"
         name={name}
         onValueChange={handleValueChange}
       />

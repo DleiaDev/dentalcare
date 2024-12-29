@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form";
 import Separator from "../ui/separator";
 import ErrorMessage from "./ErrorMessage";
 import { cn } from "@/lib/utils";
-import ImageInput, { Ref } from "./ImageInput";
+import FileInput, { Ref } from "./FileInput";
 
 type Props = {
   name: string;
@@ -52,9 +52,10 @@ export default function AvatarUpload({ name, className }: Props) {
         className,
       )}
     >
-      <ImageInput
+      <FileInput
         ref={ImageInputRef}
         name={name}
+        accept="image/*"
         onValueChange={handleValueChange}
       />
       <div className="flex gap-6">
