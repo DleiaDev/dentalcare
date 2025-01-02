@@ -111,11 +111,11 @@ module.exports = {
         destructive: {
           DEFAULT: "var(--destructive)",
           light: "var(--destructive-light)",
-          foreground: "var(--destructive-foreground)",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         input: {
           DEFAULT: "var(--input)",
-          invalid: "var(--input-invalid)",
+          invalid: "hsl(var(--input-invalid))",
         },
         error: "hsl(var(--error))",
         border: "var(--border)",

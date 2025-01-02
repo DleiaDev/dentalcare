@@ -56,10 +56,10 @@
     --accent-foreground: var(--foreground);
     --destructive: #e65889;
     --destructive-light: #ea6290;
-    --destructive-foreground: var(--primary-foreground);
+    --destructive-foreground: 0 0 100%;
     --error: 3 79% 56%;
     --input: var(--gray-400);
-    --input-invalid: #ffe9e8;
+    --input-invalid: 3 100% 95%;
     --border: var(--gray-400);
     --ring: 0 0% 3.9%;
     --chart-1: 12 76% 61%;
