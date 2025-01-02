@@ -25,22 +25,29 @@ export type CreatePeripheralVendorFormData = z.infer<
 >;
 
 export const CreatePeripheralVendorFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string({ message: "Name is required" }).min(1, "Name is required"),
   description: z.string().optional(),
-  address: z.string().min(1, "Address is required"),
-  contact_name: z.string().min(1, "Contact name is required"),
+  address: z
+    .string({ message: "Address is required" })
+    .min(1, "Address is required"),
+  contact_name: z
+    .string({ message: "Contact name is required" })
+    .min(1, "Contact name is required"),
   contact_phone: z
-    .string()
+    .string({ message: "Contact phone is required" })
     .min(1, "Contact phone is required")
     .refine((val) => isPossiblePhoneNumber(val), {
       message: "Invalid phone number",
     }),
-  contact_email: z.string().min(1, "Contact email is required").email(),
+  contact_email: z
+    .string({ message: "Contact email is required" })
+    .min(1, "Contact email is required")
+    .email(),
 });
 
 export const CreatePeripheralVendorServerSchema = z.object({
   name: z
-    .string()
+    .string({ message: "Name is required" })
     .min(1, "Name is required")
     .refine(async (name) => {
       const record = await prisma.peripheralVendor.findUnique({
@@ -49,13 +56,20 @@ export const CreatePeripheralVendorServerSchema = z.object({
       return record === null;
     }, "Vendor already exists"),
   description: z.string().optional(),
-  address: z.string().min(1, "Address is required"),
-  contact_name: z.string().min(1, "Contact name is required"),
+  address: z
+    .string({ message: "Address is required" })
+    .min(1, "Address is required"),
+  contact_name: z
+    .string({ message: "Contact name is required" })
+    .min(1, "Contact name is required"),
   contact_phone: z
-    .string()
+    .string({ message: "Contact phone is required" })
     .min(1, "Contact phone is required")
     .refine((val) => isPossiblePhoneNumber(val), {
       message: "Invalid phone number",
     }),
-  contact_email: z.string().min(1, "Contact email is required").email(),
+  contact_email: z
+    .string({ message: "Contact email is required" })
+    .min(1, "Contact email is required")
+    .email(),
 });

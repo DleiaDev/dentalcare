@@ -86,7 +86,7 @@ export default function VendorInput({ containerClassName }: Props) {
       />
       <SingleSelect
         name="Vendor"
-        label="Vendor"
+        label="* Vendor"
         containerClassName={containerClassName}
         isFetching={isFetching}
         fetchingFailed={!!error?.message}

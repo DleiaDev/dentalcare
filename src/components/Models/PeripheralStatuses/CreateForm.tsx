@@ -63,8 +63,12 @@ export default function CreateForm({
           });
         }
       })
-      .catch((error: Error) => {
-        console.log(error);
+      .catch(() => {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "An error has occurred",
+        });
       })
       .finally(() => {
         setIsPending(false);
@@ -90,13 +94,17 @@ export default function CreateForm({
             <div className="font-semibold">{name}</div>
           </div>
         </div>
-        <TextInput name="name" label="Status name" autoFocus={autoFocusName} />
+        <TextInput
+          name="name"
+          label="* Status name"
+          autoFocus={autoFocusName}
+        />
         <TextInput
           name="description"
           label="Description"
           labelDescription="(Optional)"
         />
-        <ColorPicker name="color" />
+        <ColorPicker name="color" label="* Color" />
       </form>
     </FormProvider>
   );

@@ -50,7 +50,11 @@ export default function CreateForm({
         }
       })
       .catch((error: Error) => {
-        console.log(error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "An error has occurred",
+        });
       })
       .finally(() => {
         setIsPending(false);
@@ -70,10 +74,14 @@ export default function CreateForm({
       <form id={formId} onSubmit={handleSubmit}>
         <TextInput
           name="name"
-          label="Category name"
+          label="* Category name"
           autoFocus={autoFocusName}
         />
-        <TextInput name="description" label="Description" />
+        <TextInput
+          name="description"
+          label="Description"
+          labelDescription="(optional)"
+        />
       </form>
     </FormProvider>
   );

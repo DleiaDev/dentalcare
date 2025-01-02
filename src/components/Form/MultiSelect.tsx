@@ -55,6 +55,7 @@ interface Props extends ButtonProps {
   options?: Option[];
   groups?: Group[];
   label?: string;
+  labelDescription?: string;
   modal?: boolean;
   triggerClassName?: string;
   placeholder?: string;
@@ -137,6 +138,7 @@ function UIComponent({
   value,
   errorMessage,
   label,
+  labelDescription,
   ref,
   modal,
   placeholder,
@@ -199,7 +201,11 @@ function UIComponent({
 
   return (
     <div className={cn("mb-7", containerClassName)}>
-      {label && <Label htmlFor={name}>{label}</Label>}
+      {label && (
+        <Label htmlFor={name} description={labelDescription}>
+          {label}
+        </Label>
+      )}
       <Popover
         open={isPopoverOpen}
         onOpenChange={setIsPopoverOpen}

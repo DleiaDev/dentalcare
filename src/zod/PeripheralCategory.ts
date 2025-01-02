@@ -26,13 +26,13 @@ export type CreatePeripheralCategoryFormData = z.infer<
 >;
 
 export const CreatePeripheralCategoryFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string({ message: "Name is required" }).min(1, "Name is required"),
   description: z.string().optional(),
 });
 
 export const CreatePeripheralCategoryServerSchema = z.object({
   name: z
-    .string()
+    .string({ message: "Name is required" })
     .min(1, "Name is required")
     .refine(async (name) => {
       const record = await prisma.peripheralCategory.findUnique({

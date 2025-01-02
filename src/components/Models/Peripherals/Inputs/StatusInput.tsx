@@ -83,6 +83,7 @@ export default function StatusInput() {
       <SingleSelect
         name="Status"
         label="Status"
+        labelDescription="(optional)"
         className="max-w-full"
         isFetching={isFetching}
         fetchingFailed={!!error?.message}

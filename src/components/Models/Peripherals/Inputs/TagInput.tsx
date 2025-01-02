@@ -81,6 +81,7 @@ export default function TagInput() {
       <MultiSelect
         name="Tags"
         label="Tags"
+        labelDescription="(optional)"
         className="max-w-full"
         isFetching={isFetching}
         fetchingFailed={!!error?.message}

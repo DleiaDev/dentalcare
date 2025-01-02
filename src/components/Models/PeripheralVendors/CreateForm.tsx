@@ -60,8 +60,12 @@ export default function CreateForm({
           });
         }
       })
-      .catch((error: Error) => {
-        console.log(error);
+      .catch(() => {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "An error has occurred",
+        });
       })
       .finally(() => {
         setIsPending(false);
@@ -77,13 +81,22 @@ export default function CreateForm({
   return (
     <FormProvider {...methods}>
       <form id={formId} onSubmit={handleSubmit} className="max-h-96">
-        <TextInput name="name" label="Vendor name" autoFocus={autoFocusName} />
-        <TextArea name="description" label="Description" rows={4} />
-        <TextInput name="address" label="Address" />
-        <TextInput name="contact_name" label="Contact name" />
+        <TextInput
+          name="name"
+          label="* Vendor name"
+          autoFocus={autoFocusName}
+        />
+        <TextArea
+          name="description"
+          label="Description"
+          labelDescription="(optional)"
+          rows={4}
+        />
+        <TextInput name="address" label="* Address" />
+        <TextInput name="contact_name" label="* Contact name" />
         <div className="flex gap-7 [&>*]:flex-1">
-          <PhoneInput name="contact_phone" label="Contact phone" />
-          <EmailInput name="contact_email" label="Contact email" />
+          <PhoneInput name="contact_phone" label="* Contact phone" />
+          <EmailInput name="contact_email" label="* Contact email" />
         </div>
       </form>
     </FormProvider>

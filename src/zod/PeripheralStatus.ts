@@ -26,14 +26,16 @@ export type CreatePeripheralStatusFormData = z.infer<
 >;
 
 export const CreatePeripheralStatusFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string({ message: "Name is required" }).min(1, "Name is required"),
+  color: z
+    .string({ message: "Color is required" })
+    .length(7, { message: "Color is required" }),
   description: z.string().optional(),
-  color: z.string().length(7, { message: "Color is required" }),
 });
 
 export const CreatePeripheralStatusServerSchema = z.object({
   name: z
-    .string()
+    .string({ message: "Name is required" })
     .min(1, "Name is required")
     .refine(async (name) => {
       const record = await prisma.peripheralStatus.findUnique({
@@ -41,6 +43,8 @@ export const CreatePeripheralStatusServerSchema = z.object({
       });
       return record === null;
     }, "Status already exists"),
-  color: z.string(),
+  color: z
+    .string({ message: "Color is required" })
+    .length(7, { message: "Color is required" }),
   description: z.string().optional(),
 });

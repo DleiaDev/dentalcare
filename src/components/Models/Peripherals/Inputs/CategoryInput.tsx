@@ -84,6 +84,7 @@ export default function CategoryInput({ containerClassName }: Props) {
       <SingleSelect
         name="Category"
         label="Category"
+        labelDescription="(optional)"
         containerClassName={containerClassName}
         isFetching={isFetching}
         fetchingFailed={!!error?.message}

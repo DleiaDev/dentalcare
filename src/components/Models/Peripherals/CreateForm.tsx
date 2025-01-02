@@ -13,8 +13,6 @@ import { CreatePeripheralFormSchema } from "@/zod/Peripheral";
 import CategoryInput from "./Inputs/CategoryInput";
 import TextArea from "@/components/Form/TextArea";
 import VendorInput from "./Inputs/VendorInput";
-import Separator from "@/components/ui/separator";
-import Label from "@/components/Form/Label";
 import AttachmentsInput from "./Inputs/AttachmentsInput";
 
 type Props = {
@@ -26,7 +24,7 @@ export default function CreateForm({ clinicId }: Props) {
     resolver: zodResolver(CreatePeripheralFormSchema),
     defaultValues: {
       Tags: [],
-      Status: undefined,
+      attachments: [],
     },
   });
 
@@ -70,7 +68,7 @@ export default function CreateForm({ clinicId }: Props) {
             <div className="grid gap-7 grid-cols-2 [&>*]:mb-0">
               <VendorInput />
               <div></div>
-              <TextInput name="name" label="Product name" />
+              <TextInput name="name" label="* Product name" />
               <TextInput
                 name="Series"
                 label="Series"
@@ -89,11 +87,16 @@ export default function CreateForm({ clinicId }: Props) {
                   </span>
                 }
               />
-              <TextInput name="sku" label="SKU" />
-              <TextInput name="barcode" label="Barcode" />
+              <TextInput name="sku" label="SKU" labelDescription="(optional)" />
+              <TextInput
+                name="barcode"
+                label="Barcode"
+                labelDescription="(optional)"
+              />
               <TextArea
                 name="description"
                 label="Description"
+                labelDescription="(optional)"
                 containerClassName="col-span-2"
                 rows={3}
               />

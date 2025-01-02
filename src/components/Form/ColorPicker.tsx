@@ -11,6 +11,7 @@ import getColorFormat from "@/lib/utils/getColorFormat";
 
 type Props = {
   name: string;
+  label: string;
 };
 
 const colors = {
@@ -36,7 +37,7 @@ const colors = {
   ],
 };
 
-export default function ColorPicker({ name }: Props) {
+export default function ColorPicker({ name, label }: Props) {
   const { setValue, watch } = useFormContext();
   const color = watch(name);
 
@@ -66,7 +67,7 @@ export default function ColorPicker({ name }: Props) {
   return (
     <div className="mb-7">
       <div className="mb-7">
-        <Label>Color</Label>
+        <Label>{label}</Label>
 
         {/* Input */}
         <div className="flex gap-3 items-center">
