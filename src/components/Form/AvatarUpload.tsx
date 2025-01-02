@@ -17,7 +17,7 @@ function getPreviewSrc(file: unknown) {
 }
 
 export default function AvatarUpload({ name, className }: Props) {
-  const ImageInputRef = useRef<Ref>(null);
+  const FileInputRef = useRef<Ref>(null);
   const {
     resetField,
     getValues,
@@ -32,7 +32,7 @@ export default function AvatarUpload({ name, className }: Props) {
   const errorMessage = errors[name]?.message;
 
   const handleClick = () => {
-    ImageInputRef.current?.openFileBrowser();
+    FileInputRef.current?.openFileBrowser();
   };
 
   const handleReset = () => {
@@ -53,7 +53,7 @@ export default function AvatarUpload({ name, className }: Props) {
       )}
     >
       <FileInput
-        ref={ImageInputRef}
+        ref={FileInputRef}
         name={name}
         accept="image/*"
         onValueChange={handleValueChange}

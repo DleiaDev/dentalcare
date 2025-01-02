@@ -9,7 +9,7 @@ import Svg from "@/components/Svg";
 export default function ImageUpload() {
   const name = "image";
 
-  const ImageInputRef = useRef<Ref>(null);
+  const FileInputRef = useRef<Ref>(null);
   const [previewSrc, setPreviewSrc] = useState<string>();
   const {
     resetField,
@@ -19,7 +19,7 @@ export default function ImageUpload() {
   const errorMessage = errors[name]?.message;
 
   const handleClick = () => {
-    ImageInputRef.current?.openFileBrowser();
+    FileInputRef.current?.openFileBrowser();
   };
 
   const handleReset = () => {
@@ -35,7 +35,7 @@ export default function ImageUpload() {
     <div className="mb-7">
       {/* Input */}
       <FileInput
-        ref={ImageInputRef}
+        ref={FileInputRef}
         accept="image/*"
         name={name}
         onValueChange={handleValueChange}

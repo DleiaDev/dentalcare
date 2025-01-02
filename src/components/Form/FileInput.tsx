@@ -1,3 +1,4 @@
+import { useToast } from "@/hooks/use-toast";
 import {
   type ChangeEvent,
   type HTMLAttributes,
@@ -12,7 +13,7 @@ export type Ref = {
 };
 
 type OnValueChange<IsMultiple extends boolean | undefined> =
-  IsMultiple extends true ? (value: FileList) => void : (value: File) => void;
+  IsMultiple extends true ? (value: File[]) => void : (value: File) => void;
 
 type Props<IsMultiple extends boolean | undefined> =
   HTMLAttributes<HTMLInputElement> & {
@@ -30,8 +31,10 @@ export default function FileInput<IsMultiple extends boolean | undefined>({
   onValueChange,
   ...props
 }: Props<IsMultiple>) {
+  const { toast } = useToast();
+
   const inputEl = useRef<HTMLInputElement | null>(null);
-  const { control } = useFormContext();
+  const { control, getValues } = useFormContext();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement>,
@@ -39,12 +42,37 @@ export default function FileInput<IsMultiple extends boolean | undefined>({
   ) => {
     if (!e.currentTarget?.files?.length) return;
 
+    const currentValue = getValues(name);
+
+    const newFiles = [...e.currentTarget.files];
+    const oldFiles = Array.isArray(currentValue)
+      ? [...currentValue]
+      : currentValue
+        ? [currentValue]
+        : [];
+
+    const sameNameExists = newFiles.some((newFile) =>
+      oldFiles.some((oldFile) => oldFile.name === newFile.name),
+    );
+
+    if (sameNameExists)
+      return toast({
+        variant: "destructive",
+        title: "Error",
+        description: "You have selected a file with the same name.",
+      });
+
     if (multiple) {
-      (onFieldChange as (value: FileList) => void)(e.currentTarget.files);
-      onValueChange?.(e.currentTarget.files as any);
+      (onFieldChange as (value: File[]) => void)([
+        ...currentValue,
+        ...e.currentTarget.files,
+      ]);
+      if (onValueChange)
+        (onValueChange as (value: File[]) => void)([...e.currentTarget.files]);
     } else {
       (onFieldChange as (value: File) => void)(e.currentTarget.files[0]);
-      onValueChange?.(e.currentTarget.files[0] as any);
+      if (onValueChange)
+        (onValueChange as (value: File) => void)(e.currentTarget.files[0]);
     }
   };
 
