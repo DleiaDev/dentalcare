@@ -119,7 +119,7 @@ function Options({
                 )}
               </div>
             </div>
-            <Checkbox checked={isChecked} />
+            <Checkbox checked={isChecked} tabIndex={-1} />
           </CommandItem>
         );
       })}

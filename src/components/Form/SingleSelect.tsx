@@ -143,7 +143,7 @@ function Options({
                 )}
               </div>
             </div>
-            <Checkbox checked={isChecked} />
+            <Checkbox checked={isChecked} tabIndex={-1} />
           </CommandItem>
         );
       })}
@@ -278,7 +278,6 @@ function UIComponent({
           ) : (
             <Command className="animate-in fade-in duration-300">
               <CommandInput
-                autoFocus
                 placeholder="Search..."
                 value={searchQuery}
                 onValueChange={setSearchQuery}
