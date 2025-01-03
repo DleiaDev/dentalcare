@@ -9,7 +9,7 @@ import { BaseSyntheticEvent } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { createPeripheralCategory } from "@/actions/PeripheralCategory";
 import setServerErrors from "@/lib/utils/setServerErrors";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 
 type Props = {
   formId?: string;

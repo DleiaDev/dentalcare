@@ -1,7 +1,7 @@
 import { createPeripheralStatus } from "@/actions/PeripheralStatus";
 import Label from "@/components/Form/Label";
 import TextInput from "@/components/Form/TextInput";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import setServerErrors from "@/lib/utils/setServerErrors";
 import {
   CreatePeripheralStatusFormData,

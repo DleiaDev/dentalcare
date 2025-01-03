@@ -12,7 +12,7 @@ import TagIcon from "@/icons/tag.svg";
 import { Badge } from "@/components/ui/badge";
 import { createPeripheralTag } from "@/actions/PeripheralTag";
 import setServerErrors from "@/lib/utils/setServerErrors";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 
 type Props = {
   formId?: string;

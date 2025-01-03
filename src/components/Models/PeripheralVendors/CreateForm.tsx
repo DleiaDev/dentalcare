@@ -9,7 +9,7 @@ import { BaseSyntheticEvent } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { createPeripheralVendor } from "@/actions/PeripheralVendor";
 import setServerErrors from "@/lib/utils/setServerErrors";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import TextArea from "@/components/Form/TextArea";
 import PhoneInput from "@/components/Form/PhoneInput";
 import EmailInput from "@/components/Form/EmailInput";
