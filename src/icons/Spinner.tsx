@@ -1,12 +1,14 @@
 import { cn } from "@/lib/utils";
+import { SVGProps } from "react";
 
-type Props = {
+type Props = SVGProps<SVGSVGElement> & {
   className?: string;
 };
 
-export default function Spinner({ className }: Props) {
+export default function Spinner({ className, ...props }: Props) {
   return (
     <svg
+      {...props}
       className={cn("animate-spin text-white", className)}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"

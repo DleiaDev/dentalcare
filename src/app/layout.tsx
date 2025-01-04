@@ -5,6 +5,7 @@ import Sidebar from "@/components/Sidebar/Sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { TRPCProvider } from "@/trpc/client";
 import "./tailwind.css";
+import SpinnerOverlay from "@/components/SpinnerOverlay";
 
 const font = Manrope({ subsets: ["latin"], display: "swap" });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${font.className} m-0 overflow-hidden flex`}>
         <Toaster />
+        <SpinnerOverlay />
         <TRPCProvider>
           <div id="drawers-container"></div>
           <Sidebar className="absolute left-0 top-0 xl:relative" />
