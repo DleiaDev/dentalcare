@@ -131,9 +131,11 @@ const listeners: Array<(state: State) => void> = [];
 let memoryState: State = { toasts: [] };
 
 function dispatch(action: Action) {
+  // Set global state
   memoryState = reducer(memoryState, action);
-  listeners.forEach((listener) => {
-    listener(memoryState);
+  // Set all local states to global state
+  listeners.forEach((setLocalState) => {
+    setLocalState(memoryState);
   });
 }
 

@@ -4,7 +4,6 @@ import React, { ComponentProps, useState } from "react";
 import { usePathname } from "next/navigation";
 import NextLink, { LinkProps } from "next/link";
 import Svg from "@/components/Svg";
-import clsx from "clsx";
 import { cn } from "@/lib/utils";
 
 type Props = LinkProps & {
@@ -19,7 +18,7 @@ export default function Link(props: Props) {
   const { svg: svgProps, title, ...linkProps } = props;
 
   const pathname = usePathname();
-  const isActive = pathname === linkProps.href;
+  const isActive = pathname.startsWith(linkProps.href.toString());
 
   const svgType = hover || isActive ? "colored" : svgProps.type;
 
