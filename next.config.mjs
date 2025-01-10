@@ -2,6 +2,18 @@
 const nextConfig = {
   output: "standalone",
 
+  images: {
+    // loader: "cloudinary",
+    // pathname: `/${process.env.CLOUDINARY_CLOUD_NAME}/**`,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: `/${process.env.CLOUDINARY_CLOUD_NAME}/image/private/**`,
+      },
+    ],
+  },
+
   experimental: {
     serverActions: {
       bodySizeLimit: "6mb",

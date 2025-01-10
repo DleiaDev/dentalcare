@@ -7,13 +7,15 @@ import { PlusIcon, XIcon } from "lucide-react";
 import { useRef } from "react";
 import { useFormContext } from "react-hook-form";
 
+const name = "attachments";
+
 function AttachmentPreviews({
   onDeleteClick,
 }: {
   onDeleteClick: (attachment: File) => void;
 }) {
   const { watch } = useFormContext();
-  const attachments = watch("attachments") as File[];
+  const attachments = watch(name) as File[];
   return (
     <>
       {attachments.map((attachment) => (
@@ -58,11 +60,11 @@ export default function AttachmentsInput() {
   };
 
   const handleDeleteClick = (attachment: File) => {
-    const currentAttachments = getValues("attachments") as File[];
+    const currentAttachments = getValues(name) as File[];
     const i = currentAttachments.findIndex((a) => a.name === attachment.name);
     if (i === -1) return;
     currentAttachments.splice(i, 1);
-    setValue("attachments", currentAttachments);
+    setValue(name, currentAttachments);
   };
 
   return (
@@ -86,7 +88,7 @@ export default function AttachmentsInput() {
       {typeof errorMessage === "string" && (
         <ErrorMessage>{errorMessage}</ErrorMessage>
       )}
-      <FileInput name="attachments" ref={ref} multiple />
+      <FileInput name={name} ref={ref} multiple />
     </div>
   );
 }

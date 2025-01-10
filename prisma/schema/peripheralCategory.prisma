@@ -1,7 +1,8 @@
 model PeripheralCategory {
-  id          String   @id @default(dbgenerated("uuid_generate_v4()"))
-  name        String   @unique
+  id          String       @id @default(dbgenerated("uuid_generate_v4()"))
+  name        String       @unique
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  peripherals Peripheral[]
 }

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MAXIMUM_B, MAXIMUM_MB } from "@/constants/storage";
+import isImage from "@/lib/utils/isImage";
 
 export const CreatePeripheralFormSchema = z.object({
   image: z
@@ -7,22 +8,27 @@ export const CreatePeripheralFormSchema = z.object({
     .optional()
     .superRefine((file, ctx) => {
       if (!file) return;
+      if (!isImage(file))
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `File is not of supported image formats`,
+        });
       if (file.size > MAXIMUM_B)
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `File is too large, the limit is ${MAXIMUM_MB}MB`,
         });
     }),
-  Vendor: z
+  vendorId: z
     .string({ message: "Vendor is required" })
     .uuid({ message: "Vendor is required" }),
-  Tags: z.string().uuid().array(),
-  Status: z.string().uuid().optional(),
+  tagIds: z.string().uuid().array(),
+  statusId: z.string().uuid().optional(),
   name: z
     .string({ message: "Name is required" })
     .min(1, { message: "Name is required" }),
   series: z.string().optional(),
-  Category: z.string().uuid().optional(),
+  categoryId: z.string().uuid().optional(),
   weight: z.number().optional(),
   sku: z.string().optional(),
   barcode: z.string().optional(),
@@ -30,7 +36,6 @@ export const CreatePeripheralFormSchema = z.object({
   attachments: z
     .instanceof(File)
     .array()
-    .optional()
     .superRefine((files, ctx) => {
       if (!files) return;
       files.forEach((file) => {
@@ -42,3 +47,9 @@ export const CreatePeripheralFormSchema = z.object({
       });
     }),
 });
+
+export type CreatePeripheralFormData = z.infer<
+  typeof CreatePeripheralFormSchema
+>;
+
+export const CreatePeripheralServerSchema = CreatePeripheralFormSchema;

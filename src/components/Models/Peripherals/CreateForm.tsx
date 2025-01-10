@@ -14,35 +14,37 @@ import CategoryInput from "./Inputs/CategoryInput";
 import TextArea from "@/components/Form/TextArea";
 import VendorInput from "./Inputs/VendorInput";
 import AttachmentsInput from "./Inputs/AttachmentsInput";
+import useSpinner from "@/hooks/useSpinner";
+import { createPeripheral } from "@/actions/Peripheral";
+import NumberInput from "@/components/Form/NumberInput";
 
 type Props = {
   clinicId: string;
 };
 
 export default function CreateForm({ clinicId }: Props) {
+  const { withSpinner } = useSpinner();
+
   const methods = useForm({
     resolver: zodResolver(CreatePeripheralFormSchema),
     defaultValues: {
-      Tags: [],
+      tagIds: [],
       attachments: [],
+      name: "",
+      vendorId: "",
     },
   });
 
-  const handleSubmit = methods.handleSubmit(
-    (data) => {
-      console.log(data);
-    },
-    (errors) => {
-      console.log(errors);
-    },
-  );
+  const handleSubmit = methods.handleSubmit((data) => {
+    withSpinner(() => createPeripheral(data));
+  });
 
   return (
     <FormProvider {...methods}>
       <form className="w-full max-w-7xl mx-auto" onSubmit={handleSubmit}>
         {/* Header */}
         <div className="flex justify-between items-center mb-10">
-          <H3>New peripherals</H3>
+          <H3>New peripheral</H3>
           <div className="flex gap-3">
             <Button intent="ghost" size="2xl" color="black">
               Cancel
@@ -75,7 +77,7 @@ export default function CreateForm({ clinicId }: Props) {
                 labelDescription="(optional)"
               />
               <CategoryInput />
-              <TextInput
+              <NumberInput
                 name="weight"
                 label="Weight"
                 labelDescription="(optional)"

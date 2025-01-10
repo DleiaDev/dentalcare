@@ -12,6 +12,7 @@ type Props = {
 };
 
 export default function CategoryInput({ containerClassName }: Props) {
+  const name = "categoryId";
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -32,7 +33,7 @@ export default function CategoryInput({ containerClassName }: Props) {
   const handleCreated = (data: PeripheralCategory) => {
     dialogRef.current?.close();
     utils.peripherals.getAllCategories.invalidate();
-    setValue("Category", data.id);
+    setValue(name, data.id);
   };
 
   const onDialogClose = () => {
@@ -82,7 +83,7 @@ export default function CategoryInput({ containerClassName }: Props) {
         onClose={onDialogClose}
       />
       <SingleSelect
-        name="Category"
+        name={name}
         label="Category"
         labelDescription="(optional)"
         containerClassName={containerClassName}

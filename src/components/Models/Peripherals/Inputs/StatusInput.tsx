@@ -10,6 +10,7 @@ import StatusCircle from "@/components/StatusCircle";
 import { cn } from "@/lib/utils";
 
 export default function StatusInput() {
+  const name = "statusId";
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
   const [newStatusName, setNewStatusName] = useState("");
@@ -30,7 +31,7 @@ export default function StatusInput() {
   const handleCreated = (data: PeripheralStatus) => {
     dialogRef.current?.close();
     utils.peripherals.getAllStatuses.invalidate();
-    setValue("Status", data.id);
+    setValue(name, data.id);
   };
 
   const onDialogClose = () => {
@@ -81,7 +82,7 @@ export default function StatusInput() {
         onClose={onDialogClose}
       />
       <SingleSelect
-        name="Status"
+        name={name}
         label="Status"
         labelDescription="(optional)"
         className="max-w-full"

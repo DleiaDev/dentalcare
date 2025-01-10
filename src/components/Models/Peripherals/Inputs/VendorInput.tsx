@@ -14,6 +14,7 @@ type Props = {
 };
 
 export default function VendorInput({ containerClassName }: Props) {
+  const name = "vendorId";
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
   const [newVendorName, setNewVendorName] = useState("");
@@ -34,7 +35,7 @@ export default function VendorInput({ containerClassName }: Props) {
   const handleCreated = (data: PeripheralVendor) => {
     dialogRef.current?.close();
     utils.peripherals.getAllVendors.invalidate();
-    setValue("Vendor", data.id);
+    setValue(name, data.id);
   };
 
   const onDialogClose = () => {
@@ -85,7 +86,7 @@ export default function VendorInput({ containerClassName }: Props) {
         onClose={onDialogClose}
       />
       <SingleSelect
-        name="Vendor"
+        name={name}
         label="* Vendor"
         containerClassName={containerClassName}
         isFetching={isFetching}

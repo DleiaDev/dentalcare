@@ -17,8 +17,6 @@ export default function SpinnerOverlay({
 }: Props) {
   const { isShown } = useSpinner();
 
-  console.log(isShown);
-
   if (!isShown) return null;
 
   return (

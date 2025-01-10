@@ -1,0 +1,9 @@
+model PeripheralAttachment {
+  id           String     @id @default(dbgenerated("uuid_generate_v4()"))
+  imageId      String     @unique
+  imageName    String
+  peripheralId String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  peripheral   Peripheral @relation(fields: [peripheralId], references: [id])
+}

@@ -1,0 +1,21 @@
+model Peripheral {
+  id          String                 @id @default(dbgenerated("uuid_generate_v4()"))
+  name        String
+  imageId     String?                @unique
+  imageName   String?
+  vendorId    String
+  statusId    String?
+  series      String?
+  categoryId  String?
+  weight      Float?
+  sku         String?                @unique
+  barcode     String?                @unique
+  description String?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  Vendor      PeripheralVendor       @relation(fields: [vendorId], references: [id])
+  Category    PeripheralCategory?    @relation(fields: [categoryId], references: [id])
+  Status      PeripheralStatus?      @relation(fields: [statusId], references: [id])
+  Tags        PeripheralTag[]
+  Attachments PeripheralAttachment[]
+}

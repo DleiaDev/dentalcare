@@ -9,6 +9,7 @@ import { useFormContext } from "react-hook-form";
 import { PeripheralTag } from "@/zod/PeripheralTag";
 
 export default function TagInput() {
+  const name = "tagIds";
   const dialogRef = useRef<DialogRef>(null);
   const [newTagName, setNewTagName] = useState("");
   const [isFetchAllowed, setIsFetchAllowed] = useState(false);
@@ -29,7 +30,7 @@ export default function TagInput() {
   const handleCreated = (data: PeripheralTag) => {
     dialogRef.current?.close();
     utils.peripherals.getAllTags.invalidate();
-    setValue("Tags", [...getValues("Tags"), data.id]);
+    setValue(name, [...getValues(name), data.id]);
   };
 
   const onDialogClose = () => {
@@ -79,7 +80,7 @@ export default function TagInput() {
         onClose={onDialogClose}
       />
       <MultiSelect
-        name="Tags"
+        name={name}
         label="Tags"
         labelDescription="(optional)"
         className="max-w-full"
