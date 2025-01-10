@@ -56,7 +56,7 @@ export default function NumberInput({
         render={({ field }) => (
           <input
             {...props}
-            value={field.value}
+            value={field.value ? `${field.value}` : ""}
             id={name}
             type="number"
             className={cn(
@@ -66,7 +66,6 @@ export default function NumberInput({
                 : "focus:border-primary ring-primary/20 ",
               className,
             )}
-            onBlur={field.onBlur}
             onChange={(e) => handleChange(e, field.onChange)}
             ref={(element) => {
               field.ref(element);
