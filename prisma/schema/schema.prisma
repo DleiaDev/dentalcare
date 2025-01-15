@@ -8,3 +8,12 @@ generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["prismaSchemaFolder", "postgresqlExtensions"]
 }
+
+generator zod {
+  provider                  = "pnpm zod-prisma-types"
+  output                    = "./zod"
+  useMultipleFiles          = true
+  writeBarrelFiles          = false
+  createInputTypes          = false
+  createRelationValuesTypes = true
+}
