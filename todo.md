@@ -1,3 +1,4 @@
 - Develop clinic's settings
 - Employee's working hours must not extend clinic's working hours
 - Cloudinary image authentication
+- Infinite scroll in Select and MultiSelect (needs also solution for fetching selected item on render)

@@ -30,7 +30,7 @@ import ErrorMessage from "./ErrorMessage";
 import { PencilIcon, PlusIcon } from "lucide-react";
 import NextLink from "next/link";
 
-type Option = {
+export type Option = {
   value: string;
   label: ReactNode;
   icon?: ComponentType<{ className?: string }>;
@@ -377,7 +377,7 @@ function FormWrapper({
   );
 }
 
-export default function MultiSelect(props: Props) {
+export default function SingleSelect(props: Props) {
   if (props.groups && props.createButtonItemName)
     throw new Error(
       "Combination of 'groups' and 'createButtonItemName' props isn't yet supported",
