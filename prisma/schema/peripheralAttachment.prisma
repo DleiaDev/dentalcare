@@ -1,7 +1,8 @@
 model PeripheralAttachment {
   id           String     @id @default(dbgenerated("uuid_generate_v4()"))
-  imageId      String     @unique
-  imageName    String
+  fileId       String     @unique
+  fileName     String
+  fileType     String
   peripheralId String
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
