@@ -6,9 +6,13 @@ import Dialog, { type DialogRef } from "@/components/Dialog";
 import DialogFooter from "@/components/DialogFooter";
 import CreateForm from "@/components/Models/PeripheralTags/CreateForm";
 import { useFormContext } from "react-hook-form";
-import { PeripheralTag } from "@/zod/PeripheralTag";
+import { PeripheralTag } from "@prisma/zod/modelSchema/PeripheralTagSchema";
 
-export default function TagInput() {
+type Props = {
+  tags?: PeripheralTag[];
+};
+
+export default function TagInput({ tags }: Props) {
   const name = "tagIds";
   const dialogRef = useRef<DialogRef>(null);
   const [newTagName, setNewTagName] = useState("");
@@ -20,16 +24,32 @@ export default function TagInput() {
   const utils = trpc.useUtils();
 
   const {
-    data: tags = [],
+    data: allTags,
     error,
     isFetching,
   } = trpc.peripherals.getAllTags.useQuery(undefined, {
     enabled: isFetchAllowed,
   });
 
-  const handleCreated = (data: PeripheralTag) => {
+  const options = allTags
+    ? allTags.map((tag) => ({
+        label: tag.name,
+        value: tag.id,
+        description: tag.description,
+        icon: TagIcon,
+      }))
+    : tags
+      ? tags.map((tag) => ({
+          label: tag.name,
+          value: tag.id,
+          description: tag.description,
+          icon: TagIcon,
+        }))
+      : [];
+
+  const handleCreated = async (data: PeripheralTag) => {
     dialogRef.current?.close();
-    utils.peripherals.getAllTags.invalidate();
+    await utils.peripherals.getAllTags.invalidate();
     setValue(name, [...getValues(name), data.id]);
   };
 
@@ -89,12 +109,7 @@ export default function TagInput() {
         createButtonItemName="tag"
         // editLinkHref={editLinkHref}
         // editLinkItemNamePlural="tags"
-        options={tags.map((tag) => ({
-          label: tag.name,
-          value: tag.id,
-          description: tag.description,
-          icon: TagIcon,
-        }))}
+        options={options}
         onFirstOpen={handleOnFirstOpen}
         handleCreateClick={handleCreateClick}
       />

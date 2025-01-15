@@ -11,9 +11,10 @@ import DialogFooter from "@/components/DialogFooter";
 
 type Props = {
   containerClassName?: string;
+  vendor?: PeripheralVendor;
 };
 
-export default function VendorInput({ containerClassName }: Props) {
+export default function VendorInput({ containerClassName, vendor }: Props) {
   const name = "vendorId";
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
@@ -25,16 +26,32 @@ export default function VendorInput({ containerClassName }: Props) {
   const utils = trpc.useUtils();
 
   const {
-    data: vendors = [],
+    data: vendors,
     error,
     isFetching,
   } = trpc.peripherals.getAllVendors.useQuery(undefined, {
     enabled: isFetchAllowed,
   });
 
-  const handleCreated = (data: PeripheralVendor) => {
+  const options = vendors
+    ? vendors.map((vendor) => ({
+        value: vendor.id,
+        label: vendor.name,
+        description: vendor.description,
+      }))
+    : vendor
+      ? [
+          {
+            value: vendor.id,
+            label: vendor.name,
+            description: vendor.description,
+          },
+        ]
+      : [];
+
+  const handleCreated = async (data: PeripheralVendor) => {
     dialogRef.current?.close();
-    utils.peripherals.getAllVendors.invalidate();
+    await utils.peripherals.getAllVendors.invalidate();
     setValue(name, data.id);
   };
 
@@ -94,11 +111,7 @@ export default function VendorInput({ containerClassName }: Props) {
         createButtonItemName="vendor"
         // editLinkHref={editLinkHref}
         // editLinkItemNamePlural="vendors"
-        options={vendors.map((vendor) => ({
-          value: vendor.id,
-          label: vendor.name,
-          description: vendor.description,
-        }))}
+        options={options}
         onFirstOpen={handleOnFirstOpen}
         handleCreateClick={handleCreateClick}
       />

@@ -1,24 +1,79 @@
 import Button from "@/components/Button";
-import FilePreview from "@/components/FilePreview";
+import FilePreview, {
+  Props as FilePreviewProps,
+} from "@/components/FilePreview";
 import ErrorMessage from "@/components/Form/ErrorMessage";
 import FileInput, { Ref } from "@/components/Form/FileInput";
 import Label from "@/components/Form/Label";
+import { PeripheralAttachment } from "@prisma/zod/modelSchema/PeripheralAttachmentSchema";
 import { PlusIcon, XIcon } from "lucide-react";
+import { getCldImageUrl } from "next-cloudinary";
 import { useRef } from "react";
 import { useFormContext } from "react-hook-form";
 
 const name = "attachments";
 
 function AttachmentPreviews({
+  attachments,
   onDeleteClick,
 }: {
-  onDeleteClick: (attachment: File) => void;
+  attachments?: PeripheralAttachment[];
+  onDeleteClick: (attachment: PeripheralAttachment | File) => void;
 }) {
-  const { watch } = useFormContext();
-  const attachments = watch(name) as File[];
+  const { watch, getValues } = useFormContext();
+
+  const attachmentIds = watch(
+    "attachmentIds",
+    getValues("attachmentIds") ?? [],
+  ) as string[];
+  const attachmentFiles = watch("attachments") as File[];
+
+  const attachmentPreviews = [...attachmentIds, ...attachmentFiles].map(
+    (fileOrId) => {
+      const isId = typeof fileOrId === "string";
+      let previewUrl: string | undefined;
+
+      const dbAttachment =
+        isId && attachments
+          ? attachments.find((dbAttachment) => dbAttachment.id === fileOrId)
+          : undefined;
+
+      if (fileOrId instanceof File) {
+        previewUrl = fileOrId.type.startsWith("image/")
+          ? URL.createObjectURL(fileOrId)
+          : undefined;
+      } else if (dbAttachment) {
+        previewUrl = dbAttachment.fileType.startsWith("image/")
+          ? getCldImageUrl({
+              width: 135,
+              height: 135,
+              src: dbAttachment.fileId,
+            })
+          : undefined;
+      }
+
+      return {
+        name: fileOrId instanceof File ? fileOrId.name : dbAttachment?.fileName,
+        type: fileOrId instanceof File ? fileOrId.type : dbAttachment?.fileType,
+        previewUrl,
+      };
+    },
+  );
+
+  const handleDeleteClick = (attachment: FilePreviewProps["file"]) => {
+    const attachmentFile = attachmentFiles.find(
+      (a) => a.name === attachment.name,
+    );
+    const dbAttachment = attachments?.find(
+      (a) => a.fileName === attachment.name,
+    );
+    const realAttachment = attachmentFile || dbAttachment;
+    if (realAttachment) onDeleteClick(realAttachment);
+  };
+
   return (
     <>
-      {attachments.map((attachment) => (
+      {attachmentPreviews.map((attachment) => (
         <div
           key={attachment.name}
           className="flex gap-3 items-center justify-between"
@@ -37,7 +92,7 @@ function AttachmentPreviews({
               </div>
             </div>
           </div>
-          <Button intent="text" onClick={() => onDeleteClick(attachment)}>
+          <Button intent="text" onClick={() => handleDeleteClick(attachment)}>
             <XIcon className="text-gray-800 w-6 h-6" />
           </Button>
         </div>
@@ -46,25 +101,42 @@ function AttachmentPreviews({
   );
 }
 
-export default function AttachmentsInput() {
+type Props = {
+  attachments?: PeripheralAttachment[];
+};
+
+export default function AttachmentsInput({ attachments }: Props) {
   const {
-    getValues,
+    watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useFormContext();
   const errorMessage = errors.attachments?.message;
   const ref = useRef<Ref>(null);
+  const formAttachments = watch(name) as File[];
 
   const handleOnClick = () => {
     ref.current?.openFileBrowser();
   };
 
-  const handleDeleteClick = (attachment: File) => {
-    const currentAttachments = getValues(name) as File[];
-    const i = currentAttachments.findIndex((a) => a.name === attachment.name);
-    if (i === -1) return;
-    currentAttachments.splice(i, 1);
-    setValue(name, currentAttachments);
+  const handleDeleteClick = (attachment: PeripheralAttachment | File) => {
+    let index: number;
+
+    if (attachment instanceof File) {
+      index = formAttachments.findIndex((a) => a.name === attachment.name);
+      if (index !== -1) {
+        formAttachments.splice(index, 1);
+        setValue(name, formAttachments);
+      }
+    } else {
+      const attachmentIds = getValues("attachmentIds") as string[];
+      index = attachmentIds.findIndex((id) => id === attachment.id);
+      if (index !== -1) {
+        attachmentIds.splice(index, 1);
+        setValue("attachmentIds", attachmentIds);
+      }
+    }
   };
 
   return (
@@ -75,7 +147,10 @@ export default function AttachmentsInput() {
         documents, etc.
       </p>
       <div className="flex flex-col gap-4">
-        <AttachmentPreviews onDeleteClick={handleDeleteClick} />
+        <AttachmentPreviews
+          attachments={attachments}
+          onDeleteClick={handleDeleteClick}
+        />
         <Button
           intent="text"
           onClick={handleOnClick}

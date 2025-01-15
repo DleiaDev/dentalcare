@@ -5,6 +5,8 @@ import uploadFile from "@/lib/utils/uploadFile";
 import {
   CreatePeripheralFormData,
   CreatePeripheralServerSchema,
+  UpdatePeripheralFormData,
+  UpdatePeripheralServerSchema,
 } from "@/zod/Peripheral";
 import { revalidatePath } from "next/cache";
 
@@ -24,7 +26,7 @@ export async function createPeripheral(formData: CreatePeripheralFormData) {
     });
 
   // Attachments
-  let attachments: { id: string; name: string }[] = [];
+  let attachments: { id: string; name: string; type: string }[] = [];
   if (formData.attachments.length > 0)
     attachments = await Promise.all(
       formData.attachments.map((attachment) =>
@@ -33,6 +35,7 @@ export async function createPeripheral(formData: CreatePeripheralFormData) {
         }).then((id) => ({
           id,
           name: attachment.name,
+          type: attachment.type,
         })),
       ),
     );
@@ -56,8 +59,9 @@ export async function createPeripheral(formData: CreatePeripheralFormData) {
       Attachments: {
         createMany: {
           data: attachments.map((attachment) => ({
-            imageId: attachment.id,
-            imageName: attachment.name,
+            fileId: attachment.id,
+            fileName: attachment.name,
+            fileType: attachment.type,
           })),
         },
       },
@@ -68,5 +72,26 @@ export async function createPeripheral(formData: CreatePeripheralFormData) {
 
   return {
     data: peripheral,
+  };
+}
+
+export async function updatePeripheral(formData: UpdatePeripheralFormData) {
+  const result = await UpdatePeripheralServerSchema.safeParseAsync(formData);
+
+  if (!result.success)
+    return {
+      errors: result.error.formErrors.fieldErrors,
+    };
+
+  // Image
+  let imageId: string | undefined;
+  if (formData.image) {
+    imageId = await uploadFile(formData.image, {
+      folder: `dentalcare/peripherals/images`,
+    });
+  }
+
+  return {
+    data: {},
   };
 }

@@ -1,15 +1,34 @@
 import Dialog, { DialogRef } from "@/components/Dialog";
-import SingleSelect from "@/components/Form/SingleSelect";
+import SingleSelect, { Option } from "@/components/Form/SingleSelect";
 import { trpc } from "@/trpc/client";
 import { useId, useRef, useState } from "react";
 import CreateForm from "../../PeripheralStatuses/CreateForm";
-import { PeripheralStatus } from "@/zod/PeripheralStatus";
 import { useFormContext } from "react-hook-form";
 import DialogFooter from "@/components/DialogFooter";
 import StatusCircle from "@/components/StatusCircle";
 import { cn } from "@/lib/utils";
+import { PeripheralStatus } from "@prisma/zod/modelSchema/PeripheralStatusSchema";
 
-export default function StatusInput() {
+type Props = {
+  status?: PeripheralStatus | null;
+};
+
+function getOptions(statuses: PeripheralStatus[]): Option[] {
+  return statuses.map((status) => ({
+    value: status.id,
+    label: status.name,
+    description: status.description,
+    icon: ({ className, ...props }) => (
+      <StatusCircle
+        {...props}
+        style={{ backgroundColor: status.color }}
+        className={cn(className, "min-w-4 min-h-4")}
+      />
+    ),
+  }));
+}
+
+export default function StatusInput({ status }: Props) {
   const name = "statusId";
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
@@ -21,12 +40,18 @@ export default function StatusInput() {
   const utils = trpc.useUtils();
 
   const {
-    data: statuses = [],
+    data: statuses,
     error,
     isFetching,
   } = trpc.peripherals.getAllStatuses.useQuery(undefined, {
     enabled: isFetchAllowed,
   });
+
+  const options = statuses
+    ? getOptions(statuses)
+    : status
+      ? getOptions([status])
+      : [];
 
   const handleCreated = (data: PeripheralStatus) => {
     dialogRef.current?.close();
@@ -91,18 +116,7 @@ export default function StatusInput() {
         createButtonItemName="status"
         // editLinkHref={editLinkHref}
         // editLinkItemNamePlural="statuses"
-        options={statuses.map((status) => ({
-          value: status.id,
-          label: status.name,
-          description: status.description,
-          icon: ({ className, ...props }) => (
-            <StatusCircle
-              {...props}
-              style={{ backgroundColor: status.color }}
-              className={cn(className, "min-w-4 min-h-4")}
-            />
-          ),
-        }))}
+        options={options}
         onFirstOpen={handleOnFirstOpen}
         handleCreateClick={handleCreateClick}
       />

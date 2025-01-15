@@ -3,15 +3,24 @@ import SingleSelect from "@/components/Form/SingleSelect";
 import { trpc } from "@/trpc/client";
 import { useId, useRef, useState } from "react";
 import CreateForm from "../../PeripheralCategories/CreateForm";
-import { PeripheralCategory } from "@/zod/PeripheralCategory";
 import { useFormContext } from "react-hook-form";
 import DialogFooter from "@/components/DialogFooter";
+import { PeripheralCategory } from "@prisma/zod/modelSchema/PeripheralCategorySchema";
 
 type Props = {
   containerClassName?: string;
+  category?: PeripheralCategory | null;
 };
 
-export default function CategoryInput({ containerClassName }: Props) {
+function getOptions(categories: PeripheralCategory[]) {
+  return categories.map((category) => ({
+    value: category.id,
+    label: category.name,
+    description: category.description,
+  }));
+}
+
+export default function CategoryInput({ containerClassName, category }: Props) {
   const name = "categoryId";
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
@@ -23,12 +32,18 @@ export default function CategoryInput({ containerClassName }: Props) {
   const utils = trpc.useUtils();
 
   const {
-    data: categories = [],
+    data: categories,
     error,
     isFetching,
   } = trpc.peripherals.getAllCategories.useQuery(undefined, {
     enabled: isFetchAllowed,
   });
+
+  const options = categories
+    ? getOptions(categories)
+    : category
+      ? getOptions([category])
+      : [];
 
   const handleCreated = (data: PeripheralCategory) => {
     dialogRef.current?.close();
@@ -92,11 +107,7 @@ export default function CategoryInput({ containerClassName }: Props) {
         createButtonItemName="category"
         // editLinkHref={editLinkHref}
         // editLinkItemNamePlural="categories"
-        options={categories.map((category) => ({
-          value: category.id,
-          label: category.name,
-          description: category.description,
-        }))}
+        options={options}
         onFirstOpen={handleOnFirstOpen}
         handleCreateClick={handleCreateClick}
       />

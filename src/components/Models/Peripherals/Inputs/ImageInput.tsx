@@ -5,25 +5,43 @@ import ErrorMessage from "@/components/Form/ErrorMessage";
 import { cn } from "@/lib/utils";
 import FileInput, { Ref } from "@/components/Form/FileInput";
 import Svg from "@/components/Svg";
+import { Peripheral } from "@prisma/client";
+import { getCldImageUrl } from "next-cloudinary";
 
-export default function ImageUpload() {
+export default function ImageInput({
+  imageId,
+}: {
+  imageId?: Peripheral["imageId"];
+}) {
   const name = "image";
+  const imageWidth = 284;
 
-  const FileInputRef = useRef<Ref>(null);
-  const [previewSrc, setPreviewSrc] = useState<string>();
+  const imageUrl = imageId
+    ? getCldImageUrl({
+        width: imageWidth,
+        height: imageWidth,
+        src: imageId,
+      })
+    : undefined;
+
+  const [previewSrc, setPreviewSrc] = useState<string | undefined>(imageUrl);
+
   const {
     resetField,
+    setValue,
     formState: { errors },
   } = useFormContext();
 
   const errorMessage = errors[name]?.message;
 
+  const FileInputRef = useRef<Ref>(null);
   const handleClick = () => {
     FileInputRef.current?.openFileBrowser();
   };
 
   const handleReset = () => {
-    resetField(name);
+    resetField(name); // Reset error
+    setValue(name, null); // Set as empty
     setPreviewSrc(undefined);
   };
 
@@ -77,9 +95,13 @@ export default function ImageUpload() {
 
         {/* Error */}
         {typeof errorMessage === "string" && (
-          <div className="absolute top-0 left-0 w-full h-full bg-input-invalid flex justify-center items-center opacity-100">
+          <Button
+            intent="text"
+            className="absolute top-0 left-0 w-full h-full bg-input-invalid flex justify-center items-center opacity-100 hover:bg-input-invalid"
+            onClick={handleClick}
+          >
             <ErrorMessage>{errorMessage}</ErrorMessage>
-          </div>
+          </Button>
         )}
       </div>
 

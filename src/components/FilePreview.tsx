@@ -31,25 +31,31 @@ type FileExtension =
   | "png"
   | "gif";
 
+export type Props = {
+  file: {
+    name: string;
+    type: string;
+    previewUrl?: string;
+  };
+  imageClassName?: string;
+  iconClassName?: string;
+};
+
 export default function FilePreview({
   file,
   imageClassName,
   iconClassName,
-}: {
-  file: File;
-  imageClassName?: string;
-  iconClassName?: string;
-}) {
+}: Props) {
   // Extract extension from filename or use MIME type
   const fileType = file.type;
   const extension = file.name.split(".").pop()?.toLowerCase() || fileType;
 
   // If it's an image and we have a preview URL, show the actual image
-  if (file.type.startsWith("image/")) {
+  if (file.previewUrl) {
     return (
       /* eslint-disable @next/next/no-img-element */
       <img
-        src={URL.createObjectURL(file)}
+        src={file.previewUrl}
         alt={file.name}
         className={cn("w-full h-full object-cover", imageClassName)}
         onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
