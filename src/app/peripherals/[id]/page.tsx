@@ -13,11 +13,11 @@ export default async function Page({
   const peripheral = await prisma.peripheral.findFirst({
     where: { id },
     include: {
-      Tags: true,
-      Attachments: true,
       Vendor: true,
       Category: true,
       Status: true,
+      Tags: true,
+      Attachments: true,
     },
   });
 
