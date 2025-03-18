@@ -2,6 +2,7 @@ import H3 from "@/components/H3";
 import Form from "@/components/Models/Peripherals/Form";
 import { getClinic } from "@/lib/clinic_dev";
 import prisma from "@/lib/prisma";
+
 export default async function Page({
   params,
 }: {

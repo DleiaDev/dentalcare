@@ -199,6 +199,8 @@ function UIComponent({
     onValueChange(newValue);
   };
 
+  const noOptions = options?.length === 0 || groups?.length === 0;
+
   return (
     <div className={cn("mb-7", containerClassName)}>
       {label && (
@@ -229,7 +231,7 @@ function UIComponent({
             )}
             disabled={fetchingFailed}
           >
-            {isFetching ? (
+            {isFetching && noOptions ? (
               <div className="text-ellipsis text-muted-foreground">
                 Loading...
               </div>
