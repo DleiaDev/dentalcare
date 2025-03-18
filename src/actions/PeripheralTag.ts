@@ -1,10 +1,8 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import {
-  type CreatePeripheralTagFormData,
-  CreatePeripheralTagServerSchema,
-} from "@/zod/PeripheralTag";
+import { type CreatePeripheralTagFormData } from "@/zod/PeripheralTag";
+import { CreatePeripheralTagServerSchema } from "@/zod/PeripheralTag.server";
 import { revalidatePath } from "next/cache";
 
 export async function createPeripheralTag(

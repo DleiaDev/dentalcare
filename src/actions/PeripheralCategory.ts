@@ -1,11 +1,9 @@
 "use server";
 
-import prisma from "@/lib/prisma";
-import {
-  type CreatePeripheralCategoryFormData,
-  CreatePeripheralCategoryServerSchema,
-} from "@/zod/PeripheralCategory";
 import { revalidatePath } from "next/cache";
+import prisma from "@/lib/prisma";
+import { type CreatePeripheralCategoryFormData } from "@/zod/PeripheralCategory";
+import { CreatePeripheralCategoryServerSchema } from "@/zod/PeripheralCategory.server";
 
 export async function createPeripheralCategory(
   formData: CreatePeripheralCategoryFormData,

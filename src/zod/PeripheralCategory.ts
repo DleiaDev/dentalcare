@@ -1,4 +1,3 @@
-import prisma from "@/lib/prisma";
 import { z } from "zod";
 
 export type PeripheralCategory = {
@@ -27,18 +26,5 @@ export type CreatePeripheralCategoryFormData = z.infer<
 
 export const CreatePeripheralCategoryFormSchema = z.object({
   name: z.string({ message: "Name is required" }).min(1, "Name is required"),
-  description: z.string().optional(),
-});
-
-export const CreatePeripheralCategoryServerSchema = z.object({
-  name: z
-    .string({ message: "Name is required" })
-    .min(1, "Name is required")
-    .refine(async (name) => {
-      const record = await prisma.peripheralCategory.findUnique({
-        where: { name },
-      });
-      return record === null;
-    }, "Category already exists."),
   description: z.string().optional(),
 });

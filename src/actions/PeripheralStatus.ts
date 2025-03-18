@@ -1,11 +1,9 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import {
-  type CreatePeripheralStatusFormData,
-  CreatePeripheralStatusServerSchema,
-} from "@/zod/PeripheralStatus";
 import { revalidatePath } from "next/cache";
+import { type CreatePeripheralStatusFormData } from "@/zod/PeripheralStatus";
+import { CreatePeripheralStatusServerSchema } from "@/zod/PeripheralStatus.server";
 
 export async function createPeripheralStatus(
   formData: CreatePeripheralStatusFormData,
