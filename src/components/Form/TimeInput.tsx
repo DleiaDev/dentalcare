@@ -16,7 +16,7 @@ const UIComponent = forwardRef<HTMLInputElement, Omit<Props, "deps">>(
         ref={ref}
         {...props}
         className={cn(
-          "w-36 py-1 px-3 flex rounded-md border border-border bg-white font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "w-36 py-1 px-3 flex rounded-md border border-border bg-white font-medium shadow-xs transition-colors focus:outline-hidden focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
       />

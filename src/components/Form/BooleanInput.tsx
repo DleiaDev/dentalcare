@@ -27,7 +27,7 @@ const UIComponent = forwardRef<
     <label
       ref={ref}
       className={cn(
-        "flex items-center gap-3 group cursor-pointer group-has-[:disabled]:cursor-not-allowed group-has=[:disabled]:opacity-50",
+        "flex items-center gap-3 group cursor-pointer group-has-disabled:cursor-not-allowed group-has=[:disabled]:opacity-50",
         className,
       )}
     >

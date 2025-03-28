@@ -94,7 +94,7 @@ export default function CreateForm({
         />
         <TextInput name="address" label="* Address" />
         <TextInput name="contact_name" label="* Contact name" />
-        <div className="flex gap-7 [&>*]:flex-1">
+        <div className="flex gap-7 *:flex-1">
           <PhoneInput name="contact_phone" label="* Contact phone" />
           <EmailInput name="contact_email" label="* Contact email" />
         </div>

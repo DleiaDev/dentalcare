@@ -237,7 +237,7 @@ function UIComponent({
             ref={ref}
             onClick={handleTogglePopover}
             className={cn(
-              "flex flex-wrap justify-start gap-2 min-h-12 w-full rounded-md border border-border bg-transparent px-3 py-2 font-medium shadow-sm transition-colors select-none max-w-full",
+              "flex flex-wrap justify-start gap-2 min-h-12 w-full rounded-md border border-border bg-transparent px-3 py-2 font-medium shadow-xs transition-colors select-none max-w-full",
               errorMessage
                 ? "border-error ring-error/20"
                 : fetchingFailed

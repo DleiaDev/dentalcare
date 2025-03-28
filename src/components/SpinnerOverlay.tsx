@@ -22,7 +22,7 @@ export default function SpinnerOverlay({
   return (
     <div
       className={cn(
-        "bg-white/50 top-0 left-0 w-full h-full z-[51] flex items-center justify-center animate-in fade-in rounded-xl",
+        "bg-white/50 top-0 left-0 w-full h-full z-51 flex items-center justify-center animate-in fade-in rounded-xl",
         position,
         containerClassName,
       )}

@@ -181,7 +181,7 @@ export default function Form({ clinicId, peripheral }: Props) {
             {/* Right */}
             <div className="border border-border rounded-xl flex-1 p-8">
               <H4>Product details</H4>
-              <div className="grid gap-7 grid-cols-2 [&>*]:mb-0">
+              <div className="grid gap-7 grid-cols-2 *:mb-0">
                 <VendorInput vendor={peripheral?.Vendor} />
                 <div></div>
                 <TextInput name="name" label="* Product name" />

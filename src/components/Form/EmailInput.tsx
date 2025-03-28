@@ -25,7 +25,7 @@ const EmailInput = forwardRef<HTMLInputElement, Props>(
           id={name}
           type="email"
           className={cn(
-            "flex h-12 w-full rounded-md border border-border bg-transparent px-3 py-1 font-medium shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-12 w-full rounded-md border border-border bg-transparent px-3 py-1 font-medium shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
             errorMessage
               ? "border-error ring-error/20"
               : "focus:border-primary ring-primary/20 ",

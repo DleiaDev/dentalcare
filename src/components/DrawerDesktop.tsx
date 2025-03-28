@@ -156,10 +156,10 @@ function Component({
         overlayClassName={{
           base: cn(
             "z-50 fixed top-0 left-0 w-full max-w-full h-full max-h-full animate-modal-overlay-open",
-            level > 0 && "!bg-transparent",
+            level > 0 && "bg-transparent!",
           ),
           afterOpen: "",
-          beforeClose: "!animate-modal-overlay-exit",
+          beforeClose: "animate-modal-overlay-exit!",
         }}
         className={{
           base: cn(
