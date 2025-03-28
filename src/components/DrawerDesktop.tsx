@@ -20,7 +20,7 @@ export type Ref = {
 };
 
 type Props = {
-  ref?: RefObject<Ref>;
+  ref?: RefObject<Ref | null>;
   title: ReactNode;
   trigger: ReactNode;
   content: ReactNode;
