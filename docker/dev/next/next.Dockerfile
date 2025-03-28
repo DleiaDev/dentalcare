@@ -1,6 +1,6 @@
 
 ARG NODE_VERSION=22.11.0
-FROM node:${NODE_VERSION}-slim AS base
+FROM node:$NODE_VERSION-slim AS base
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -26,7 +26,7 @@ RUN pnpm install --frozen-lockfile
 COPY --chown=node . .
 
 # Generate client
-RUN pnpx prisma generate
+RUN pnpm prisma generate
 
 EXPOSE 3000
 
