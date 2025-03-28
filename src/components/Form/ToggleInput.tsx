@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import Label from "./Label";
 import { Toggle } from "../ui/toggle";
 import { Controller, useFormContext } from "react-hook-form";
-import get from "lodash.get";
 import ErrorMessage from "./ErrorMessage";
 
 type Option = {
@@ -78,7 +77,7 @@ function FormWrapper({
     control,
     formState: { errors },
   } = useFormContext();
-  const errorMessage = get(errors, name)?.message;
+  const errorMessage = errors[name]?.message;
   const handlePressedChange = (
     value: Value,
     onFieldChange: Exclude<Props["onPressedChange"], undefined>,

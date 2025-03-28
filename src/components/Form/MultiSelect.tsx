@@ -3,7 +3,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import get from "lodash.get";
 import {
   type ButtonHTMLAttributes,
   type ComponentType,
@@ -343,7 +342,7 @@ function FormWrapper({
     formState: { errors },
   } = useFormContext();
 
-  const errorMessage = get(errors, name)?.message;
+  const errorMessage = errors[name]?.message;
 
   const handleValueChange = (
     value: Option["value"][],

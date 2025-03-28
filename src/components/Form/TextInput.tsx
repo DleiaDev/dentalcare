@@ -1,4 +1,3 @@
-import get from "lodash.get";
 import { ChangeEvent, HTMLAttributes, type ReactNode } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
@@ -72,7 +71,7 @@ function FormWrapper({
     control,
     formState: { errors },
   } = useFormContext();
-  const errorMessage = get(errors, name)?.message;
+  const errorMessage = errors[name]?.message;
   const handleValueChange = (
     value: string,
     onFieldChange: Exclude<Props["onValueChange"], undefined>,

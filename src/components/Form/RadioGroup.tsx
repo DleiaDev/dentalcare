@@ -1,5 +1,4 @@
 import { ReactNode, useMemo, useState } from "react";
-import get from "lodash.get";
 import { Controller, useFormContext } from "react-hook-form";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { cn } from "@/lib/utils";
@@ -222,7 +221,7 @@ function FormWrapper({
     control,
     formState: { errors },
   } = useFormContext();
-  const errorMessage = get(errors, name)?.message;
+  const errorMessage = errors[name]?.message;
   const handlePressedChange = (
     value: Option["value"],
     onFieldChange: Exclude<Props["onValueChange"], undefined>,

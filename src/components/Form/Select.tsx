@@ -1,4 +1,3 @@
-import get from "lodash.get";
 import {
   Select as SelectRoot,
   SelectContent,
@@ -228,7 +227,7 @@ function FormWrapper<O extends Option>({
     formState: { errors },
   } = useFormContext();
 
-  const errorMessage = get(errors, name)?.message;
+  const errorMessage = errors[name]?.message;
 
   const handleValueChange = (
     value: O["value"],
