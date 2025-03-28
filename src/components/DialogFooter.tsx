@@ -26,7 +26,7 @@ export default function DialogFooter({
       </Button>
       {showBackButton && (
         <Button
-          variant="outlined"
+          variant="outline"
           size="xl"
           disabled={backButtonDisabled}
           onClick={goBackward}

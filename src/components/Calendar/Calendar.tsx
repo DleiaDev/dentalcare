@@ -381,7 +381,7 @@ function Toolbar({ view, date, onNavigate, ...props }: ToolbarProps) {
           <Button
             className="me-3"
             disabled={isTodayDisabled}
-            variant="outlined"
+            variant="outline"
             onClick={() => onNavigate("TODAY")}
           >
             Today
