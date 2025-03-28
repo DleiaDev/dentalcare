@@ -77,7 +77,7 @@ function TimeSlots({
           >
             {field.TimeSlots.length > 1 && (
               <Button
-                intent="text"
+                variant="text"
                 color="destructive"
                 className="mt-2"
                 onClick={() => onDelete(fieldIndex, timeSlotIndex)}
@@ -277,7 +277,7 @@ export default function Step3({ formId, data, clinic, onFinish }: Props) {
               />
               {weekdayToIndex[day] !== undefined && (
                 <Button
-                  intent="text"
+                  variant="text"
                   className="self-end flex items-center gap-1 mr-2"
                   onClick={() => addTimeSlot(day)}
                 >

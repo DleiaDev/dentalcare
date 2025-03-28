@@ -55,7 +55,7 @@ function UIComponent({
         {options.map((option) => (
           <Toggle
             key={option.value}
-            intent="outline"
+            variant="outline"
             pressed={isPressed(option.value)}
             onPressedChange={() => handlePressedChange(option)}
           >

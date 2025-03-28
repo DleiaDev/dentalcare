@@ -133,7 +133,7 @@ function NewOption({
     </RadioLabel>
   ) : (
     <Button
-      intent="outlined"
+      variant="outlined"
       className="not-only:flex-1 h-12 min-w-40 rounded-lg justify-start"
       onClick={handleAddNewClick}
     >

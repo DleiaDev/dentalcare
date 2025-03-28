@@ -75,7 +75,7 @@ export default function ImageInput({
         ) : (
           // Trigger
           <Button
-            intent="text"
+            variant="text"
             color="gray"
             onClick={handleClick}
             className="w-full h-full group flex-col gap-4 border-4 border-border border-dashed transition-colors duration-300 hover:bg-gray-100 hover:border-gray-500"
@@ -96,7 +96,7 @@ export default function ImageInput({
         {/* Error */}
         {typeof errorMessage === "string" && (
           <Button
-            intent="text"
+            variant="text"
             className="absolute top-0 left-0 w-full h-full bg-input-invalid flex justify-center items-center opacity-100 hover:bg-input-invalid"
             onClick={handleClick}
           >
@@ -108,10 +108,10 @@ export default function ImageInput({
       {/* Buttons */}
       {previewSrc && (
         <div className="flex justify-between">
-          <Button intent="ghost" onClick={handleClick}>
+          <Button variant="ghost" onClick={handleClick}>
             Upload new image
           </Button>
-          <Button color="destructive" intent="ghost" onClick={handleReset}>
+          <Button color="destructive" variant="ghost" onClick={handleReset}>
             Delete
           </Button>
         </div>

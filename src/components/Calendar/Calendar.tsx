@@ -381,21 +381,21 @@ function Toolbar({ view, date, onNavigate, ...props }: ToolbarProps) {
           <Button
             className="me-3"
             disabled={isTodayDisabled}
-            intent="outlined"
+            variant="outlined"
             onClick={() => onNavigate("TODAY")}
           >
             Today
           </Button>
           <div className="flex">
             <Button
-              intent="ghost"
+              variant="ghost"
               className="text-gray-700"
               onClick={() => onNavigate("PREV")}
             >
               <ChevronLeftIcon className="w-7 h-7 cursor-pointer" />
             </Button>
             <Button
-              intent="ghost"
+              variant="ghost"
               className="text-gray-700"
               onClick={() => onNavigate("NEXT")}
             >

@@ -159,10 +159,10 @@ export default function Form({ clinicId, peripheral }: Props) {
         <div className="flex justify-between items-center mb-10">
           <H3>{title}</H3>
           <div className="flex gap-3">
-            <Button intent="ghost" size="2xl" color="black">
+            <Button variant="ghost" size="2xl" color="black">
               Cancel
             </Button>
-            <Button intent="fill" size="2xl" type="submit">
+            <Button variant="fill" size="2xl" type="submit">
               Save
             </Button>
           </div>

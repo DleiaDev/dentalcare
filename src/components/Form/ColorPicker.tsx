@@ -72,7 +72,7 @@ export default function ColorPicker({ name, label }: Props) {
         {/* Input */}
         <div className="flex gap-3 items-center">
           <Button
-            intent="text"
+            variant="text"
             className={cn("w-10 h-10", textColorClassName)}
             style={{ backgroundColor: color }}
             onClick={handleGenerateRandomColor}
@@ -94,7 +94,7 @@ export default function ColorPicker({ name, label }: Props) {
         {colors.dark.map((color) => (
           <Button
             key={color}
-            intent="text"
+            variant="text"
             style={{ backgroundColor: color }}
             className="rounded-lg w-8 h-8 p-0"
             onClick={() => setColor(color)}
@@ -105,7 +105,7 @@ export default function ColorPicker({ name, label }: Props) {
         {colors.light.map((color) => (
           <Button
             key={color}
-            intent="text"
+            variant="text"
             style={{ backgroundColor: color }}
             className="rounded-lg w-8 h-8 p-0"
             onClick={() => setColor(color)}

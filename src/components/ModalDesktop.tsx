@@ -94,7 +94,7 @@ export default function ModalDesktop({
                 {title}
               </DialogTitle>
               <Button
-                intent="text"
+                variant="text"
                 color="black"
                 autoFocus
                 onClick={() => close()}
