@@ -14,10 +14,10 @@ import { useFormContext } from "react-hook-form";
 const name = "attachments";
 
 function AttachmentPreviews({
-  attachments,
+  attachmentsInDatabase,
   onDeleteClick,
 }: {
-  attachments?: PeripheralAttachment[];
+  attachmentsInDatabase?: PeripheralAttachment[];
   onDeleteClick: (attachment: PeripheralAttachment | File) => void;
 }) {
   const { watch, getValues } = useFormContext();
@@ -34,8 +34,10 @@ function AttachmentPreviews({
       let previewUrl: string | undefined;
 
       const dbAttachment =
-        isId && attachments
-          ? attachments.find((dbAttachment) => dbAttachment.id === fileOrId)
+        isId && attachmentsInDatabase
+          ? attachmentsInDatabase.find(
+              (dbAttachment) => dbAttachment.id === fileOrId,
+            )
           : undefined;
 
       if (fileOrId instanceof File) {
@@ -64,7 +66,7 @@ function AttachmentPreviews({
     const attachmentFile = attachmentFiles.find(
       (a) => a.name === attachment.name,
     );
-    const dbAttachment = attachments?.find(
+    const dbAttachment = attachmentsInDatabase?.find(
       (a) => a.fileName === attachment.name,
     );
     const realAttachment = attachmentFile || dbAttachment;
@@ -102,10 +104,10 @@ function AttachmentPreviews({
 }
 
 type Props = {
-  attachments?: PeripheralAttachment[];
+  attachmentsInDatabase?: PeripheralAttachment[];
 };
 
-export default function AttachmentsInput({ attachments }: Props) {
+export default function AttachmentsInput({ attachmentsInDatabase }: Props) {
   const {
     watch,
     setValue,
@@ -148,7 +150,7 @@ export default function AttachmentsInput({ attachments }: Props) {
       </p>
       <div className="flex flex-col gap-4">
         <AttachmentPreviews
-          attachments={attachments}
+          attachmentsInDatabase={attachmentsInDatabase}
           onDeleteClick={handleDeleteClick}
         />
         <Button

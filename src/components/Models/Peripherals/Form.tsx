@@ -22,7 +22,7 @@ import AttachmentsInput from "./Inputs/AttachmentsInput";
 import useSpinner from "@/hooks/useSpinner";
 import { createPeripheral, updatePeripheral } from "@/actions/Peripheral";
 import NumberInput from "@/components/Form/NumberInput";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { PeripheralWithRelations } from "@prisma/zod/modelSchema/PeripheralSchema";
 import { useToast } from "@/hooks/useToast";
 import { useRouter } from "next/navigation";
@@ -65,6 +65,10 @@ export default function Form({ clinicId, peripheral }: Props) {
 
   const title = peripheral?.name ?? "New periphral";
 
+  const [attachmentsInDatabase, setAttachmentsInDatabase] = useState(
+    peripheral?.Attachments ?? [],
+  );
+
   const methods = useForm({
     resolver: zodResolver(schema),
     defaultValues: defaultData,
@@ -73,23 +77,23 @@ export default function Form({ clinicId, peripheral }: Props) {
   const { toast } = useToast();
   const router = useRouter();
 
-  const createUser = (data: CreatePeripheralFormData) => {
+  const handleCreate = (data: CreatePeripheralFormData) => {
     withSpinner(async () => {
       try {
         const { data: peripheral, errors } = await createPeripheral(data);
-        if (errors) {
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "An error has occurred",
-          });
-        } else {
+        if (!errors) {
           toast({
             variant: "success",
             title: "Success",
             description: "Peripheral has been created",
           });
           router.push(`/peripherals/${peripheral.id}`);
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "An error has occurred",
+          });
         }
       } catch (error) {
         toast({
@@ -101,21 +105,33 @@ export default function Form({ clinicId, peripheral }: Props) {
     });
   };
 
-  const updateUser = (data: UpdatePeripheralFormData) => {
+  const handleAfterUpdate = (peripheral: PeripheralWithRelations) => {
+    methods.reset(getDefaultValues(peripheral));
+    setAttachmentsInDatabase(peripheral.Attachments);
+  };
+
+  const handleUpdate = (
+    peripheralId: string,
+    formData: UpdatePeripheralFormData,
+  ) => {
     withSpinner(async () => {
       try {
-        const { errors } = await updatePeripheral(data);
-        if (errors) {
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "An error has occurred",
-          });
-        } else {
+        const { errors, data: peripheral } = await updatePeripheral(
+          peripheralId,
+          formData,
+        );
+        if (!errors) {
           toast({
             variant: "success",
             title: "Success",
             description: "Information updated",
+          });
+          handleAfterUpdate(peripheral);
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "An error has occurred",
           });
         }
       } catch (error) {
@@ -130,8 +146,9 @@ export default function Form({ clinicId, peripheral }: Props) {
 
   const handleSubmit = methods.handleSubmit(
     (data: CreatePeripheralFormData | UpdatePeripheralFormData) => {
-      if (peripheral) updateUser(data as UpdatePeripheralFormData);
-      else createUser(data as CreatePeripheralFormData);
+      if (peripheral)
+        handleUpdate(peripheral.id, data as UpdatePeripheralFormData);
+      else handleCreate(data as CreatePeripheralFormData);
     },
   );
 
@@ -203,7 +220,9 @@ export default function Form({ clinicId, peripheral }: Props) {
                   containerClassName="col-span-2"
                   rows={3}
                 />
-                <AttachmentsInput attachments={peripheral?.Attachments} />
+                <AttachmentsInput
+                  attachmentsInDatabase={attachmentsInDatabase}
+                />
               </div>
             </div>
           </div>
