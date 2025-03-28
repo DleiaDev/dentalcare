@@ -209,9 +209,7 @@ function Component({
           <div className="flex-1 py-5 px-9 overflow-auto">{content}</div>
 
           {/* Footer */}
-          {footer && (
-            <div className="py-5 px-9 border-t border-t-border">{footer}</div>
-          )}
+          {footer && <div className="py-5 px-9 border-t">{footer}</div>}
         </div>
       </ReactModal>
     </>
