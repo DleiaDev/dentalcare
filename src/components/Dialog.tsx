@@ -1,11 +1,7 @@
 import {
   createContext,
   use,
-  useCallback,
-  useImperativeHandle,
   useMemo,
-  useRef,
-  useState,
   type ReactNode,
   type RefObject,
 } from "react";
@@ -17,19 +13,12 @@ import DrawerMobile from "./DrawerMobile";
 export type DialogRef = {
   open: () => void;
   close: () => void;
-  setIsPending: (isPending: boolean) => void;
-};
-
-type InternalRef = {
-  open: () => void;
-  close: (ignoreSpinner: boolean) => void;
 };
 
 type DialogContext = {
   open: DialogRef["open"];
   close: DialogRef["close"];
   isPending: boolean;
-  setIsPending: DialogRef["setIsPending"];
 };
 const DialogContext = createContext<DialogContext | null>(null);
 export const useDialogContext = () => {
@@ -73,43 +62,21 @@ function DialogComponent({
   onClose,
 }: Props) {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const internalRef = useRef<InternalRef>(null);
-  const [isPending, setIsPending] = useState(false);
-
-  const isPendingFinal = spinner || isPending;
-
-  const close = useCallback(() => {
-    if (!internalRef.current) return;
-    setIsPending(false);
-    internalRef.current.close(true);
-  }, []);
-
-  const open = useCallback(() => {
-    if (!internalRef.current) return;
-    internalRef.current.open();
-  }, []);
 
   const dialogContext = useMemo(
     () => ({
-      close,
-      open,
-      isPending: isPendingFinal,
-      setIsPending,
+      close: () => ref?.current?.close(),
+      open: () => ref?.current?.open(),
+      isPending: spinner ?? false,
     }),
-    [close, open, isPendingFinal],
+    [spinner, ref],
   );
-
-  useImperativeHandle(ref, () => ({
-    close,
-    open,
-    setIsPending,
-  }));
 
   return (
     <DialogContext.Provider value={dialogContext}>
       {isDesktop && desktopType === "modal" ? (
         <ModalDesktop
-          ref={internalRef}
+          ref={ref}
           title={typeof title === "function" ? title("desktop") : title}
           trigger={typeof trigger === "function" ? trigger("desktop") : trigger}
           content={typeof content === "function" ? content("desktop") : content}
@@ -119,7 +86,7 @@ function DialogComponent({
               ? description("desktop")
               : description
           }
-          spinner={isPendingFinal}
+          spinner={spinner}
           titleClassName={titleClassName}
           titleContainerClassName={titleContainerClassName}
           onOpen={onOpen}
@@ -127,7 +94,7 @@ function DialogComponent({
         />
       ) : isDesktop && desktopType === "drawer" ? (
         <DrawerDesktop
-          ref={internalRef}
+          ref={ref}
           title={typeof title === "function" ? title("desktop") : title}
           trigger={typeof trigger === "function" ? trigger("desktop") : trigger}
           content={typeof content === "function" ? content("desktop") : content}
@@ -137,7 +104,7 @@ function DialogComponent({
           //     ? description("desktop")
           //     : description
           // }
-          spinner={isPendingFinal}
+          spinner={spinner}
           titleClassName={titleClassName}
           titleContainerClassName={titleContainerClassName}
           onOpen={onOpen}
@@ -145,7 +112,7 @@ function DialogComponent({
         />
       ) : (
         <DrawerMobile
-          ref={internalRef}
+          ref={ref}
           title={typeof title === "function" ? title("desktop") : title}
           trigger={typeof trigger === "function" ? trigger("desktop") : trigger}
           content={typeof content === "function" ? content("desktop") : content}
@@ -155,7 +122,7 @@ function DialogComponent({
               ? description("desktop")
               : description
           }
-          spinner={isPendingFinal}
+          spinner={spinner}
           titleClassName={titleClassName}
           titleContainerClassName={titleContainerClassName}
           onOpen={onOpen}

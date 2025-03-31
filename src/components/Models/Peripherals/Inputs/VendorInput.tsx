@@ -18,6 +18,7 @@ export default function VendorInput({ containerClassName, vendor }: Props) {
   const name = "vendorId";
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
+  const [isPending, setIsPending] = useState(false);
   const [newVendorName, setNewVendorName] = useState("");
   const [isFetchAllowed, setIsFetchAllowed] = useState(false);
 
@@ -68,10 +69,6 @@ export default function VendorInput({ containerClassName, vendor }: Props) {
     setNewVendorName(query);
   };
 
-  const setIsPending = (isPending: boolean) => {
-    dialogRef.current?.setIsPending(isPending);
-  };
-
   const newVendorFormData = {
     ...getDefaultValues(),
     name: newVendorName,
@@ -83,6 +80,7 @@ export default function VendorInput({ containerClassName, vendor }: Props) {
         ref={dialogRef}
         desktopType="modal"
         title="Create a new vendor"
+        spinner={isPending}
         trigger={""}
         content={
           <CreateForm

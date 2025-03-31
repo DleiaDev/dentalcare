@@ -24,6 +24,7 @@ export default function CategoryInput({ containerClassName, category }: Props) {
   const name = "categoryId";
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
+  const [isPending, setIsPending] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isFetchAllowed, setIsFetchAllowed] = useState(false);
 
@@ -64,10 +65,6 @@ export default function CategoryInput({ containerClassName, category }: Props) {
     setNewCategoryName(query);
   };
 
-  const setIsPending = (isPending: boolean) => {
-    dialogRef.current?.setIsPending(isPending);
-  };
-
   const newCategoryFormData = {
     name: newCategoryName,
   };
@@ -78,6 +75,7 @@ export default function CategoryInput({ containerClassName, category }: Props) {
         ref={dialogRef}
         desktopType="modal"
         title="Create a new category"
+        spinner={isPending}
         trigger={""}
         content={
           <CreateForm

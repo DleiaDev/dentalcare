@@ -16,7 +16,7 @@ ReactModal.setAppElement("#drawers-container");
 
 export type Ref = {
   open: () => void;
-  close: (ignoreSpinner: boolean) => void;
+  close: () => void;
 };
 
 type Props = {
@@ -108,8 +108,7 @@ function Component({
     if (isOpen === false && onOpen) onOpen();
   }
 
-  function close(ignoreSpinner = false) {
-    if (spinner && !ignoreSpinner) return;
+  function close() {
     setIsOpen(false);
     setOpeningLevel(undefined);
     setClosingLevel(level);
