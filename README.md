@@ -1,8 +1,6 @@
 This is a [Next.js](https://nextjs.org/) project that allows dental clinics to manage their business.
 
-## Getting Started
-
-First, run the development server:
+## Running the project
 
 ```bash
 docker compose up --build --watch
