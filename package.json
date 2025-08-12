@@ -10,13 +10,10 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "prisma:studio": "dotenv -e .env.local -e .env.development pnpx prisma studio",
-    "prisma:push": "dotenv -e .env.local -e .env.development pnpx prisma db push",
-    "prisma:migrate": "dotenv -e .env.local -e .env.development pnpx prisma migrate dev",
-    "prisma:reset": "dotenv -e .env.local -e .env.development pnpx prisma migrate reset"
-  },
-  "prisma": {
-    "seed": "ts-node --transpile-only prisma/seed.ts"
+    "prisma:studio": "dotenv -e .env.local -e .env.development pnpx prisma studio -- --schema ./prisma/schema",
+    "prisma:push": "dotenv -e .env.local -e .env.development pnpx prisma db push -- --schema ./prisma/schema",
+    "prisma:migrate": "dotenv -e .env.local -e .env.development pnpx prisma migrate dev -- --schema ./prisma/schema",
+    "prisma:reset": "dotenv -e .env.local -e .env.development pnpx prisma migrate reset -- --schema ./prisma/schema"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
