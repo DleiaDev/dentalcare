@@ -72,7 +72,6 @@
     "zod-prisma-types": "^3.2.4"
   },
   "devDependencies": {
-    "@flydotio/dockerfile": "^0.7.9",
     "@hookform/devtools": "^4.3.3",
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.0.17",
