@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         fill: "shadow-sm",
-        outlined: "border shadow-sm",
+        outline: "border shadow-sm",
         ghost: "",
         text: "",
       },
@@ -48,11 +48,11 @@ const buttonVariants = cva(
         className: "text-gray-700",
       },
       {
-        variant: "outlined",
+        variant: "outline",
         className: "bg-transparent",
       },
       {
-        variant: "outlined",
+        variant: "outline",
         color: "primary",
         className: "hover:bg-accent",
       },
