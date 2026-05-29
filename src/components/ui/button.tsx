@@ -8,7 +8,7 @@ const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
-      intent: {
+      variant: {
         fill: "shadow-sm",
         outlined: "border shadow-sm",
         ghost: "",
@@ -39,59 +39,59 @@ const buttonVariants = cva(
     },
     compoundVariants: [
       {
-        intent: "fill",
+        variant: "fill",
         className: "text-primary-foreground",
       },
       {
-        intent: "fill",
+        variant: "fill",
         color: "white",
         className: "text-gray-700",
       },
       {
-        intent: "outlined",
+        variant: "outlined",
         className: "bg-transparent",
       },
       {
-        intent: "outlined",
+        variant: "outlined",
         color: "primary",
         className: "hover:bg-accent",
       },
       {
-        intent: "ghost",
+        variant: "ghost",
         className: "bg-transparent",
       },
       {
-        intent: "ghost",
+        variant: "ghost",
         color: "primary",
         className: "hover:bg-accent",
       },
       {
-        intent: "ghost",
+        variant: "ghost",
         color: "destructive",
         className: "hover:bg-error/10",
       },
       {
-        intent: "text",
+        variant: "text",
         className: "h-auto w-auto p-0 bg-transparent hover:bg-transparent",
       },
       {
-        intent: "text",
+        variant: "text",
         color: "primary",
         className: "text-primary hover:text-primary-light",
       },
       {
-        intent: "text",
+        variant: "text",
         color: "gray",
         className: "text-gray-600 hover:text-gray-500",
       },
       {
-        intent: "text",
+        variant: "text",
         color: "destructive",
         className: "text-destructive hover:text-destructive-light",
       },
     ],
     defaultVariants: {
-      intent: "fill",
+      variant: "fill",
       color: "primary",
       size: "base",
     },
@@ -107,7 +107,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
-      intent,
+      variant,
       color,
       size,
       asChild = false,
@@ -119,7 +119,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ intent, color, size, className }))}
+        className={cn(buttonVariants({ variant, color, size, className }))}
         ref={ref}
         type={type}
         {...props}

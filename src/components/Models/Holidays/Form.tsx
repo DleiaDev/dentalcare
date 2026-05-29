@@ -110,7 +110,7 @@ function HolidayField({ index, clinic, onDeleteClick }: HolidayFieldProps) {
         }))}
       />
       <Button
-        intent="ghost"
+        variant="ghost"
         color="destructive"
         className="min-w-0 mt-1.5"
         onClick={onDeleteClick}
@@ -192,7 +192,7 @@ export default function Form({
           />
         ))}
         <div className="flex justify-end">
-          <Button intent="text" onClick={addHoliday}>
+          <Button variant="text" onClick={addHoliday}>
             <PlusIcon className="h-5 w-5" />
             Add
           </Button>

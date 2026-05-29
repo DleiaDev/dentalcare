@@ -94,7 +94,7 @@ function AttachmentPreviews({
               </div>
             </div>
           </div>
-          <Button intent="text" onClick={() => handleDeleteClick(attachment)}>
+          <Button variant="text" onClick={() => handleDeleteClick(attachment)}>
             <XIcon className="text-gray-800 w-6 h-6" />
           </Button>
         </div>
@@ -154,7 +154,7 @@ export default function AttachmentsInput({ attachmentsInDatabase }: Props) {
           onDeleteClick={handleDeleteClick}
         />
         <Button
-          intent="text"
+          variant="text"
           onClick={handleOnClick}
           className="flex gap-2 py-3 text-gray-700 border-4 border-border border-dashed hover:text-gray-700 hover:bg-gray-100 hover:border-gray-500 transition-colors duration-300"
         >

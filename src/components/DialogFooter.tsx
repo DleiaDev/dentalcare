@@ -21,12 +21,12 @@ export default function DialogFooter({
   const { close, isPending } = useDialogContext();
   return (
     <div className="flex justify-end gap-6">
-      <Button intent="ghost" color="black" size="xl" onClick={close}>
+      <Button variant="ghost" color="black" size="xl" onClick={close}>
         Cancel
       </Button>
       {showBackButton && (
         <Button
-          intent="outlined"
+          variant="outlined"
           size="xl"
           disabled={backButtonDisabled}
           onClick={goBackward}

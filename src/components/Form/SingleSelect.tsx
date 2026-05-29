@@ -232,7 +232,7 @@ function UIComponent({
         <PopoverTrigger asChild>
           <Button
             {...props}
-            intent="text"
+            variant="text"
             color="black"
             ref={ref}
             onClick={handleTogglePopover}
@@ -287,7 +287,7 @@ function UIComponent({
                     <p>No results found</p>
                   ) : searchQuery ? (
                     <Button
-                      intent="ghost"
+                      variant="ghost"
                       color="black"
                       className="w-full justify-start p-3 h-auto rounded-sm"
                       onClick={handleCreateOption}

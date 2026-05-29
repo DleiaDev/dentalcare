@@ -113,7 +113,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
             <div className="relative">
               {entry.entityType === "EMPLOYEE" && (
                 <Button
-                  intent="ghost"
+                  variant="ghost"
                   color="destructive"
                   className="absolute -top-2 -right-4"
                   onClick={() => deleteEntry(entry)}
@@ -143,7 +143,7 @@ export default function Step4({ data, formId, clinic, onFinish }: Props) {
           desktopType="drawer"
           ref={dialogRef}
           trigger={
-            <Button intent="text">
+            <Button variant="text">
               <PlusIcon className="h-5 w-5 mr-1" />
               Add
             </Button>

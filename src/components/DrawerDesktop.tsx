@@ -196,7 +196,7 @@ function Component({
               {title}
             </div>
             <Button
-              intent="text"
+              variant="text"
               color="black"
               autoFocus
               onClick={() => close()}

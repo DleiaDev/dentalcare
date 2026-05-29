@@ -74,12 +74,12 @@ export default function AvatarUpload({ name, className }: Props) {
         )}
         <div className="flex flex-col items-start justify-around">
           <div className="flex gap-3">
-            <Button intent="text" onClick={handleClick}>
+            <Button variant="text" onClick={handleClick}>
               Upload photo
             </Button>
             {previewSrc && <Separator orientation="vertical" />}
             {previewSrc && (
-              <Button intent="text" color="destructive" onClick={handleReset}>
+              <Button variant="text" color="destructive" onClick={handleReset}>
                 Delete
               </Button>
             )}
