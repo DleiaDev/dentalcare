@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "standalone",
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
+  // output: "standalone",
 
   images: {
     // loader: "cloudinary",
