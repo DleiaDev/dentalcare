@@ -277,6 +277,7 @@ function UIComponent({
           ) : (
             <Command className="animate-in fade-in duration-300">
               <CommandInput
+                autoFocus
                 placeholder="Search..."
                 value={searchQuery}
                 onValueChange={setSearchQuery}

@@ -6,7 +6,6 @@
 !.env*
 !eslint.config.mjs
 !components.json
-!fly.toml
 !jest.config.ts
 !next.config.mjs
 !package.json

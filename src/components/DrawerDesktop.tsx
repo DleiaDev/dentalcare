@@ -45,7 +45,7 @@ const TotalOpenedContext = createContext<{
   setTotalOpened: (setFunc: (totalOpened: number) => number) => void;
 }>({
   totalOpened: 0,
-  setTotalOpened: () => {},
+  setTotalOpened: () => { },
 });
 
 // Opening level context
@@ -54,7 +54,7 @@ const OpeningLevelContext = createContext<{
   setOpeningLevel: (openingLevel?: number) => void;
 }>({
   openingLevel: 0,
-  setOpeningLevel: () => {},
+  setOpeningLevel: () => { },
 });
 
 // Closing level context
@@ -63,7 +63,7 @@ const ClosingLevelContext = createContext<{
   setClosingLevel: (closingLevel?: number) => void;
 }>({
   closingLevel: 0,
-  setClosingLevel: () => {},
+  setClosingLevel: () => { },
 });
 
 const Providers = ({ children }: { children: ReactNode }) => {
@@ -129,6 +129,14 @@ function Component({
   else if (isClosing && level === 0) animationName = "modal-first-close";
   else if (isClosing && level > 0) animationName = "modal-nested-close";
 
+  // let animationClass = '';
+  // const isOpening = openingLevel === level;
+  // const isClosing = closingLevel === level;
+  // if (isOpening && level === 0) animationClass = "animate-[modal-first-open_500ms_ease-in-out]";
+  // else if (isOpening && level > 0) animationClass = "animate-[modal-nested-open_500ms_ease-in-out]";
+  // else if (isClosing && level === 0) animationClass = "animate-[modal-first-close_500ms_ease-in-out]";
+  // else if (isClosing && level > 0) animationClass = "animate-[modal-nested-close_500ms_ease-in-out]";
+
   let translateXPercentage = 0;
   if (level === 0 && totalOpened === 1) translateXPercentage = 0;
   else if (level < totalOpened - 1)
@@ -150,7 +158,7 @@ function Component({
       {triggerComponent}
       <ReactModal
         isOpen={isOpen}
-        onRequestClose={() => close()}
+        onRequestClose={close}
         closeTimeoutMS={500}
         overlayClassName={{
           base: cn(
@@ -164,6 +172,7 @@ function Component({
           base: cn(
             "absolute h-[95%] w-2/3 max-w-[50rem] right-4 top-0 bottom-0 my-auto rounded-xl bg-background",
           ),
+          // beforeClose: animationClass,
           beforeClose: "",
           afterOpen: "",
         }}
@@ -171,8 +180,7 @@ function Component({
           content: {
             transform,
             animation,
-            transition:
-              "transform 500ms cubic-bezier(0.32,0.72,0,1), opacity 500ms cubic-bezier(0.32,0.72,0,1)",
+            // transition: "transform 500ms cubic-bezier(0.32,0.72,0,1), opacity 500ms cubic-bezier(0.32,0.72,0,1)",
           },
         }}
       >
