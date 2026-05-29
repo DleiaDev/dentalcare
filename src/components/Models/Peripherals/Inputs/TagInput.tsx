@@ -15,6 +15,7 @@ type Props = {
 export default function TagInput({ tags }: Props) {
   const name = "tagIds";
   const dialogRef = useRef<DialogRef>(null);
+  const [isPending, setIsPending] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [isFetchAllowed, setIsFetchAllowed] = useState(false);
   const { setValue, getValues } = useFormContext();
@@ -66,10 +67,6 @@ export default function TagInput({ tags }: Props) {
     setNewTagName(query);
   };
 
-  const setIsPending = (isPending: boolean) => {
-    dialogRef.current?.setIsPending(isPending);
-  };
-
   const newTagFormData = {
     name: newTagName,
   };
@@ -81,6 +78,7 @@ export default function TagInput({ tags }: Props) {
         desktopType="modal"
         title="Create a new tag"
         trigger={<div></div>}
+        spinner={isPending}
         content={
           <CreateForm
             formId={formId}

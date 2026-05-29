@@ -32,6 +32,7 @@ export default function StatusInput({ status }: Props) {
   const name = "statusId";
   const { setValue } = useFormContext();
   const dialogRef = useRef<DialogRef>(null);
+  const [isPending, setIsPending] = useState(false);
   const [newStatusName, setNewStatusName] = useState("");
   const [isFetchAllowed, setIsFetchAllowed] = useState(false);
 
@@ -72,10 +73,6 @@ export default function StatusInput({ status }: Props) {
     setNewStatusName(query);
   };
 
-  const setIsPending = (isPending: boolean) => {
-    dialogRef.current?.setIsPending(isPending);
-  };
-
   const newStatusFormData = {
     name: newStatusName,
     color: "",
@@ -88,6 +85,7 @@ export default function StatusInput({ status }: Props) {
         desktopType="modal"
         title="Create a new status"
         trigger={""}
+        spinner={isPending}
         content={
           <CreateForm
             formId={formId}

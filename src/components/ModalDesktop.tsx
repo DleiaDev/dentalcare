@@ -51,8 +51,7 @@ export default function ModalDesktop({
     if (isOpen === false && onOpen) onOpen();
   };
 
-  const close = (ignoreSpinner = false) => {
-    if (spinner && !ignoreSpinner) return;
+  const close = () => {
     setIsOpen(false);
     if (isOpen === true && onClose) onClose();
   };
