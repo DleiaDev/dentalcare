@@ -44,7 +44,7 @@ export const useDialogContext = () => {
 type ScreenType = "mobile" | "desktop";
 
 type Props = {
-  ref?: RefObject<DialogRef>;
+  ref?: RefObject<DialogRef | null>;
   title: ReactNode | ((screenType: ScreenType) => ReactNode);
   trigger: ReactNode | ((screenType: ScreenType) => ReactNode);
   content: ReactNode | ((screenType: ScreenType) => ReactNode);
