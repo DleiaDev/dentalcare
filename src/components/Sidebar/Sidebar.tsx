@@ -6,7 +6,7 @@ import LogoSvg from "@/icons/logo.svg";
 import { cn } from "@/lib/utils";
 import Button from "../Button";
 import { ChevronRightIcon, ChevronLeftIcon } from "@radix-ui/react-icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Separator from "@/components/ui/separator";
 
@@ -17,10 +17,13 @@ type Props = {
 export default function Sidebar({ className }: Props) {
   const [collapsed, setCollapsed] = useState(true);
 
+  // Collapse the sidebar on navigation
   const pathname = usePathname();
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setCollapsed(true);
-  }, [pathname]);
+  }
 
   // TODO: aria-hidden="true" to all immediate children of <body> when overlay is present
 

@@ -1,18 +1,13 @@
-import { FlatCompat } from "@eslint/eslintrc";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import pluginQuery from "@tanstack/eslint-plugin-query";
 
 /** @type {import('eslint').Linter.Config[]} */
 const configs = [
-  ...compat.extends("next/core-web-vitals"),
-  ...compat.extends("plugin:@tanstack/query/recommended"),
+  ...nextCoreWebVitals,
+  ...pluginQuery.configs["flat/recommended"],
+  {
+    ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"],
+  },
 ];
 
 export default configs;
