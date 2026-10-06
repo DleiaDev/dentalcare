@@ -10,6 +10,7 @@
 !next.config.mjs
 !package.json
 !pnpm-lock.yaml
+!pnpm-workspace.yaml
 !postcss.config.js
 !postcss.config.mjs
 !svgr.d.ts

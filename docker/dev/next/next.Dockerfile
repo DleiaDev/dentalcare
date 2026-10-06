@@ -1,5 +1,5 @@
 
-ARG NODE_VERSION=22.11.0
+ARG NODE_VERSION=24.16.0
 FROM node:$NODE_VERSION-slim AS base
 
 RUN apt-get update \
@@ -11,15 +11,19 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Install pnpm
-ARG PNPM_VERSION=9.4.0
-RUN npm install -g pnpm@$PNPM_VERSION
+# Upgrade corepack first: older bundled versions ship stale npm signing keys
+RUN npm install -g corepack@latest && corepack enable
+
+# Create /app as root and hand it to node, since WORKDIR creates it as root
+# under the classic builder
+RUN mkdir /app && chown node:node /app
 
 USER node
 
 WORKDIR /app
 
 # Install node modules
-COPY --chown=node package.json pnpm-lock.yaml ./
+COPY --chown=node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Copy application code
