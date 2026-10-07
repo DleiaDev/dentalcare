@@ -1,18 +1,17 @@
-import React, {
+import {
   createContext,
-  ReactNode,
-  RefObject,
-  useContext,
+  use,
   useImperativeHandle,
   useState,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
 } from "react";
-import ReactModal from "react-modal";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
-import Button from "./Button";
 import Spinner from "@/icons/Spinner";
-
-ReactModal.setAppElement("#drawers-container");
+import Button from "./Button";
 
 export type Ref = {
   open: () => void;
@@ -32,209 +31,188 @@ type Props = {
   onClose?: () => void;
 };
 
-type TriggerProps = {
-  onClick: () => void;
-};
+// Not a technical limit, just a guard against overcomplicated drawers.
+const MAX_LEVELS = 5;
 
-// Level context
-const LevelContext = createContext(0);
+// Space between a drawer and the right edge of the screen (same as `right-4`).
+const SCREEN_GAP = "1rem";
 
-// Total opened context
-const TotalOpenedContext = createContext<{
-  totalOpened: number;
-  setTotalOpened: (setFunc: (totalOpened: number) => number) => void;
-}>({
-  totalOpened: 0,
-  setTotalOpened: () => { },
+// How much of a parent drawer stays visible while its child is open.
+const PEEK = "5%";
+
+// Horizontal drawer positions, relative to where a drawer sits by the right edge.
+// Percentages are of the drawer's own width.
+const X_ROOT = "0px";
+const X_NESTED = `calc(-${PEEK} - ${SCREEN_GAP})`; // leaves room for the parent's peek
+const X_PEEKING = `calc(100% - ${PEEK})`;
+const X_OFFSCREEN = `calc(100% + ${SCREEN_GAP})`;
+
+function getTranslateX(level: number, topLevel: number) {
+  const levelsAbove = topLevel - level;
+  if (levelsAbove === 0) return level === 0 ? X_ROOT : X_NESTED;
+  if (levelsAbove === 1) return X_PEEKING;
+  return X_OFFSCREEN;
+}
+
+// How far a nested drawer moves while fading in and out.
+const NESTED_SLIDE = "24%";
+
+// Where a drawer comes from when opening and goes to when closing.
+// The root slides in from the screen edge; nested drawers fade in while
+// sliding slightly to the right into `translateX`.
+function getHiddenState(level: number, translateX: string) {
+  if (level === 0) return { x: X_OFFSCREEN, opacity: 1 };
+  return { x: `calc(${translateX} - ${NESTED_SLIDE})`, opacity: 0 };
+}
+
+// Shared by a root drawer and all of its descendants. `topLevel` is the level
+// of the frontmost open drawer, -1 when none is open.
+const StackContext = createContext({
+  topLevel: -1,
+  setTopLevel: (_level: number) => {},
 });
 
-// Opening level context
-const OpeningLevelContext = createContext<{
-  openingLevel?: number;
-  setOpeningLevel: (openingLevel?: number) => void;
-}>({
-  openingLevel: 0,
-  setOpeningLevel: () => { },
-});
-
-// Closing level context
-const ClosingLevelContext = createContext<{
-  closingLevel?: number;
-  setClosingLevel: (closingLevel?: number) => void;
-}>({
-  closingLevel: 0,
-  setClosingLevel: () => { },
-});
-
-const Providers = ({ children }: { children: ReactNode }) => {
-  const [totalOpened, setTotalOpened] = useState(0);
-  const [openingLevel, setOpeningLevel] = useState<number | undefined>();
-  const [closingLevel, setClosingLevel] = useState<number | undefined>();
+function StackProvider({ children }: { children: ReactNode }) {
+  const [topLevel, setTopLevel] = useState(-1);
   return (
-    <TotalOpenedContext.Provider value={{ totalOpened, setTotalOpened }}>
-      <OpeningLevelContext.Provider value={{ openingLevel, setOpeningLevel }}>
-        <ClosingLevelContext.Provider value={{ closingLevel, setClosingLevel }}>
-          {children}
-        </ClosingLevelContext.Provider>
-      </OpeningLevelContext.Provider>
-    </TotalOpenedContext.Provider>
+    <StackContext.Provider value={{ topLevel, setTopLevel }}>
+      {children}
+    </StackContext.Provider>
   );
-};
+}
 
-function Component({
+// Provided by a drawer to everything inside it, so a nested drawer can be
+// placed anywhere in the parent's title, content or footer.
+const ParentDrawerContext = createContext<{
+  level: number;
+  isVisible: boolean;
+} | null>(null);
+
+function Drawer({
   ref,
+  level,
+  isParentVisible,
   trigger,
   title,
   content,
   footer,
-  level,
   spinner,
   titleClassName,
   titleContainerClassName,
   onOpen,
   onClose,
-}: Props & { level: number }) {
-  const { openingLevel, setOpeningLevel } = useContext(OpeningLevelContext);
-  const { closingLevel, setClosingLevel } = useContext(ClosingLevelContext);
-  const { totalOpened, setTotalOpened } = useContext(TotalOpenedContext);
-
+}: Props & { level: number; isParentVisible: boolean }) {
+  const { topLevel, setTopLevel } = use(StackContext);
   const [isOpen, setIsOpen] = useState(false);
 
-  function open() {
-    setIsOpen(true);
-    setOpeningLevel(level);
-    setClosingLevel(undefined);
-    setTotalOpened((totalOpened) => totalOpened + 1);
-    if (isOpen === false && onOpen) onOpen();
-  }
-
-  function close() {
-    setIsOpen(false);
-    setOpeningLevel(undefined);
-    setClosingLevel(level);
-    setTotalOpened((totalOpened) => totalOpened - 1);
-    if (isOpen === true && onClose) onClose();
+  function setOpen(open: boolean) {
+    if (open === isOpen) return;
+    setIsOpen(open);
+    setTopLevel(open ? level : level - 1);
+    if (open) onOpen?.();
+    else onClose?.();
   }
 
   useImperativeHandle(ref, () => ({
-    open,
-    close,
+    open: () => setOpen(true),
+    close: () => setOpen(false),
   }));
 
-  let animationName = undefined;
-  const isOpening = openingLevel === level;
-  const isClosing = closingLevel === level;
-  if (isOpening && level === 0) animationName = "modal-first-open";
-  else if (isOpening && level > 0) animationName = "modal-nested-open";
-  else if (isClosing && level === 0) animationName = "modal-first-close";
-  else if (isClosing && level > 0) animationName = "modal-nested-close";
+  // Closing a parent also closes its open children
+  const isVisible = isOpen && isParentVisible;
 
-  // let animationClass = '';
-  // const isOpening = openingLevel === level;
-  // const isClosing = closingLevel === level;
-  // if (isOpening && level === 0) animationClass = "animate-[modal-first-open_500ms_ease-in-out]";
-  // else if (isOpening && level > 0) animationClass = "animate-[modal-nested-open_500ms_ease-in-out]";
-  // else if (isClosing && level === 0) animationClass = "animate-[modal-first-close_500ms_ease-in-out]";
-  // else if (isClosing && level > 0) animationClass = "animate-[modal-nested-close_500ms_ease-in-out]";
-
-  let translateXPercentage = 0;
-  if (level === 0 && totalOpened === 1) translateXPercentage = 0;
-  else if (level < totalOpened - 1)
-    translateXPercentage = (totalOpened - level - 1) * 75;
-  else if (level === totalOpened - 1) translateXPercentage = -26;
-
-  const animation = `${animationName} 500ms cubic-bezier(0.32,0.72,0,1)`;
-  const transform = `translateX(${translateXPercentage}%)`;
-
-  if (React.Children.count(trigger) > 1)
-    throw new Error("Only one child trigger is allowed");
-
-  let triggerComponent = undefined;
-  if (React.isValidElement<TriggerProps>(trigger))
-    triggerComponent = React.cloneElement(trigger, { onClick: open });
+  // A closing drawer stays where it was, so its exit animation starts from there
+  const targetX = getTranslateX(level, topLevel);
+  const [lastVisibleX, setLastVisibleX] = useState(targetX);
+  if (isVisible && lastVisibleX !== targetX) setLastVisibleX(targetX);
+  const translateX = isVisible ? targetX : lastVisibleX;
+  const hidden = getHiddenState(level, translateX);
 
   return (
-    <>
-      {triggerComponent}
-      <ReactModal
-        isOpen={isOpen}
-        onRequestClose={close}
-        closeTimeoutMS={500}
-        overlayClassName={{
-          base: cn(
-            "z-50 fixed top-0 left-0 w-full max-w-full h-full max-h-full animate-modal-overlay-open",
-            level > 0 && "bg-transparent!",
-          ),
-          afterOpen: "",
-          beforeClose: "animate-modal-overlay-exit!",
-        }}
-        className={{
-          base: cn(
-            "absolute h-[95%] w-2/3 max-w-[50rem] right-4 top-0 bottom-0 my-auto rounded-xl bg-background",
-          ),
-          // beforeClose: animationClass,
-          beforeClose: "",
-          afterOpen: "",
-        }}
-        style={{
-          content: {
-            transform,
-            animation,
-            // transition: "transform 500ms cubic-bezier(0.32,0.72,0,1), opacity 500ms cubic-bezier(0.32,0.72,0,1)",
-          },
-        }}
-      >
-        <div className="h-full flex flex-col relative">
-          {/* Spinner */}
-          {spinner ? (
-            <div className="bg-white/50 absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center animate-in fade-in rounded-xl">
-              <Spinner className="text-primary w-16 h-16" />
+    <DialogPrimitive.Root open={isVisible} onOpenChange={setOpen}>
+      <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
+      <DialogPrimitive.Portal>
+        {/* Only the root backdrop is dimmed. Nested ones are transparent but still close their drawer on click */}
+        <DialogPrimitive.Overlay
+          className={cn(
+            "fixed inset-0 z-50",
+            level === 0 &&
+              "data-[state=open]:animate-modal-overlay-open data-[state=closed]:animate-modal-overlay-exit",
+          )}
+        />
+        <DialogPrimitive.Content
+          aria-describedby={undefined}
+          className={cn(
+            "fixed inset-y-0 right-4 z-50 my-auto h-[95%] w-2/3 max-w-[50rem] rounded-xl bg-background",
+            // Moving aside for a child drawer
+            "transition-transform duration-500 ease-drawer",
+            // Opening and closing
+            "data-[state=open]:animate-drawer-enter data-[state=closed]:animate-drawer-leave",
+          )}
+          style={
+            {
+              transform: `translateX(${translateX})`,
+              "--drawer-hidden-x": hidden.x,
+              "--drawer-hidden-opacity": hidden.opacity,
+            } as CSSProperties
+          }
+        >
+          <ParentDrawerContext.Provider value={{ level, isVisible }}>
+            <div className="h-full flex flex-col relative">
+              {/* Spinner */}
+              {spinner ? (
+                <div className="bg-white/50 absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center animate-in fade-in rounded-xl">
+                  <Spinner className="text-primary w-16 h-16" />
+                </div>
+              ) : null}
+
+              {/* Title */}
+              <div
+                className={cn(
+                  "flex items-center justify-between py-5 px-9 border-b border-b-border",
+                  titleContainerClassName,
+                )}
+              >
+                <DialogPrimitive.Title
+                  className={cn("font-semibold text-lg", titleClassName)}
+                >
+                  {title}
+                </DialogPrimitive.Title>
+                <DialogPrimitive.Close asChild>
+                  <Button variant="text" color="black">
+                    <Cross1Icon className="w-5 h-5" />
+                  </Button>
+                </DialogPrimitive.Close>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 py-5 px-9 overflow-auto">{content}</div>
+
+              {/* Footer */}
+              {footer && <div className="py-5 px-9 border-t">{footer}</div>}
             </div>
-          ) : null}
-
-          {/* Title */}
-          <div
-            className={cn(
-              "flex items-center justify-between py-5 px-9 border-b border-b-border",
-              titleContainerClassName,
-            )}
-          >
-            <div className={cn("font-semibold text-lg", titleClassName)}>
-              {title}
-            </div>
-            <Button
-              variant="text"
-              color="black"
-              autoFocus
-              onClick={() => close()}
-            >
-              <Cross1Icon className="w-5 h-5" />
-            </Button>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 py-5 px-9 overflow-auto">{content}</div>
-
-          {/* Footer */}
-          {footer && <div className="py-5 px-9 border-t">{footer}</div>}
-        </div>
-      </ReactModal>
-    </>
+          </ParentDrawerContext.Provider>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
 
 export default function DrawerDesktop(props: Props) {
-  const level = useContext(LevelContext);
+  const parent = use(ParentDrawerContext);
 
-  return (
-    <LevelContext.Provider value={level + 1}>
-      {level === 0 ? (
-        <Providers>
-          <Component {...props} level={level} />
-        </Providers>
-      ) : (
-        <Component {...props} level={level} />
-      )}
-    </LevelContext.Provider>
-  );
+  // A drawer without a parent starts a new stack for itself and its descendants
+  if (parent === null) {
+    return (
+      <StackProvider>
+        <Drawer {...props} level={0} isParentVisible />
+      </StackProvider>
+    );
+  }
+
+  const level = parent.level + 1;
+  if (level >= MAX_LEVELS)
+    throw new Error(`Drawers can't be nested more than ${MAX_LEVELS} levels deep`);
+
+  return <Drawer {...props} level={level} isParentVisible={parent.isVisible} />;
 }
