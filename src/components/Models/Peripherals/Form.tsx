@@ -146,7 +146,7 @@ export default function Form({ clinicId, peripheral }: Props) {
 
   const handleSubmit = methods.handleSubmit(
     (data: CreatePeripheralFormData | UpdatePeripheralFormData) => {
-      if (data)
+      if (peripheral)
         handleUpdate(peripheral.id, data as UpdatePeripheralFormData);
       else handleCreate(data as CreatePeripheralFormData);
     },
