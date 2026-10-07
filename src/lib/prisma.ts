@@ -1,8 +1,10 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import deleteFiles from "./utils/deleteFiles";
 
 const prismaClientSingleton = () => {
-  const client = new PrismaClient().$extends({
+  const adapter = new PrismaPg({ connectionString: process.env.POSTGRES_URL });
+  const client = new PrismaClient({ adapter }).$extends({
     query: {
       // peripheralAttachment: {
       //   async deleteMany({ args, query }) {

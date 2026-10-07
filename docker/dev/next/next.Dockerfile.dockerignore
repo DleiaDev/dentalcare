@@ -13,6 +13,7 @@
 !pnpm-workspace.yaml
 !postcss.config.js
 !postcss.config.mjs
+!prisma.config.ts
 !svgr.d.ts
 !tailwind.config.js
 !tsconfig.json
