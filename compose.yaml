@@ -15,6 +15,7 @@ services:
           target: /app
           ignore:
             - node_modules/
+            - .next/
         - action: rebuild
           path: ./package.json
         # TODO:
