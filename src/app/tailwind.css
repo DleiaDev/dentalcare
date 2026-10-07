@@ -8,6 +8,9 @@
 @theme {
   --animate-modal-overlay-open: modal-overlay-open 300ms forwards ease-in-out;
   --animate-modal-overlay-exit: modal-overlay-exit 300ms forwards ease-in-out;
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --animate-drawer-enter: drawer-enter 500ms var(--ease-drawer);
+  --animate-drawer-leave: drawer-leave 500ms var(--ease-drawer) forwards;
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
 
@@ -101,6 +104,19 @@
     }
     to {
       background-color: rgba(0, 0, 0, 0.4);
+    }
+  }
+  /* Drawers animate between their inline transform and the hidden state set inline by DrawerDesktop */
+  @keyframes drawer-enter {
+    from {
+      transform: translateX(var(--drawer-hidden-x));
+      opacity: var(--drawer-hidden-opacity);
+    }
+  }
+  @keyframes drawer-leave {
+    to {
+      transform: translateX(var(--drawer-hidden-x));
+      opacity: var(--drawer-hidden-opacity);
     }
   }
   @keyframes modal-overlay-exit {
