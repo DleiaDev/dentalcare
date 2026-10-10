@@ -1,53 +1,70 @@
 import { useToast } from "@/hooks/useToast";
 import {
   type ChangeEvent,
-  type HTMLAttributes,
-  type RefObject,
+  type InputHTMLAttributes,
+  type Ref,
   useImperativeHandle,
   useRef,
 } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
-export type Ref = {
+export type FileInputHandle = {
   openFileBrowser: () => void;
 };
 
-type OnValueChange<IsMultiple extends boolean | undefined> =
-  IsMultiple extends true ? (value: File[]) => void : (value: File) => void;
+type Props = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  | "type"
+  | "value"
+  | "defaultValue"
+  | "className"
+  | "onChange"
+  | "onBlur"
+  | "multiple"
+> & {
+  ref?: Ref<FileInputHandle>;
+  name: string;
+} & (
+    | {
+        multiple: true;
+        /** Called with the full list of files after new ones are added. */
+        onValueChange?: (value: File[]) => void;
+      }
+    | {
+        multiple?: false;
+        onValueChange?: (value: File) => void;
+      }
+  );
 
-type Props<IsMultiple extends boolean | undefined> =
-  HTMLAttributes<HTMLInputElement> & {
-    ref: RefObject<Ref>;
-    name: string;
-    accept?: string;
-    multiple?: IsMultiple;
-    onValueChange?: OnValueChange<IsMultiple>;
-  };
-
-export default function FileInput<IsMultiple extends boolean | undefined>({
+export default function FileInput({
   ref,
   name,
   multiple,
   onValueChange,
   ...props
-}: Props<IsMultiple>) {
+}: Props) {
   const { toast } = useToast();
 
   const inputEl = useRef<HTMLInputElement | null>(null);
-  const { control, getValues } = useFormContext();
+  const { control } = useFormContext();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement>,
-    onFieldChange: OnValueChange<IsMultiple>,
+    currentValue: unknown,
+    onFieldChange: (value: File | File[]) => void,
   ) => {
-    if (!e.currentTarget?.files?.length) return;
+    const newFiles = [...(e.currentTarget.files ?? [])];
+    if (!newFiles.length) return;
 
-    const currentValue = getValues(name);
+    if (!multiple) {
+      onFieldChange(newFiles[0]);
+      (onValueChange as ((value: File) => void) | undefined)?.(newFiles[0]);
+      return;
+    }
 
-    const newFiles = [...e.currentTarget.files];
-    const oldFiles = Array.isArray(currentValue)
-      ? [...currentValue]
-      : currentValue
+    const oldFiles: File[] = Array.isArray(currentValue)
+      ? currentValue
+      : currentValue instanceof File
         ? [currentValue]
         : [];
 
@@ -55,31 +72,25 @@ export default function FileInput<IsMultiple extends boolean | undefined>({
       oldFiles.some((oldFile) => oldFile.name === newFile.name),
     );
 
-    if (sameNameExists)
-      return toast({
+    if (sameNameExists) {
+      toast({
         variant: "destructive",
         title: "Error",
         description: "You have selected a file with the same name.",
       });
-
-    if (multiple) {
-      (onFieldChange as (value: File[]) => void)([
-        ...currentValue,
-        ...e.currentTarget.files,
-      ]);
-      if (onValueChange)
-        (onValueChange as (value: File[]) => void)([...e.currentTarget.files]);
-    } else {
-      (onFieldChange as (value: File) => void)(e.currentTarget.files[0]);
-      if (onValueChange)
-        (onValueChange as (value: File) => void)(e.currentTarget.files[0]);
+      return;
     }
+
+    const files = [...oldFiles, ...newFiles];
+    onFieldChange(files);
+    (onValueChange as ((value: File[]) => void) | undefined)?.(files);
   };
 
   const openFileBrowser = () => {
     if (!inputEl.current) return;
-    inputEl.current.click();
+    // Reset so selecting the same file again still fires a change event
     inputEl.current.value = "";
+    inputEl.current.click();
   };
 
   useImperativeHandle(ref, () => ({
@@ -101,7 +112,7 @@ export default function FileInput<IsMultiple extends boolean | undefined>({
           }}
           multiple={multiple}
           onBlur={field.onBlur}
-          onChange={(e) => handleChange(e, field.onChange)}
+          onChange={(e) => handleChange(e, field.value, field.onChange)}
         />
       )}
     />

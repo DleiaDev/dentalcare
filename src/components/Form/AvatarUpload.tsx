@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form";
 import Separator from "../ui/separator";
 import ErrorMessage from "./ErrorMessage";
 import { cn } from "@/lib/utils";
-import FileInput, { Ref } from "./FileInput";
+import FileInput, { type FileInputHandle } from "./FileInput";
 
 type Props = {
   name: string;
@@ -17,7 +17,7 @@ function getPreviewSrc(file: unknown) {
 }
 
 export default function AvatarUpload({ name, className }: Props) {
-  const FileInputRef = useRef<Ref>(null);
+  const FileInputRef = useRef<FileInputHandle>(null);
   const {
     resetField,
     getValues,

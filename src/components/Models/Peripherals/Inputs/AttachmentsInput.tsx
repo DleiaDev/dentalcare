@@ -3,7 +3,7 @@ import FilePreview, {
   Props as FilePreviewProps,
 } from "@/components/FilePreview";
 import ErrorMessage from "@/components/Form/ErrorMessage";
-import FileInput, { Ref } from "@/components/Form/FileInput";
+import FileInput, { type FileInputHandle } from "@/components/Form/FileInput";
 import Label from "@/components/Form/Label";
 import { PeripheralAttachment } from "@prisma/zod/modelSchema/PeripheralAttachmentSchema";
 import { PlusIcon, XIcon } from "lucide-react";
@@ -115,7 +115,7 @@ export default function AttachmentsInput({ attachmentsInDatabase }: Props) {
     formState: { errors },
   } = useFormContext();
   const errorMessage = errors.attachments?.message;
-  const ref = useRef<Ref>(null);
+  const ref = useRef<FileInputHandle>(null);
   const formAttachments = watch(name) as File[];
 
   const handleOnClick = () => {

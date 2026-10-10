@@ -1,9 +1,9 @@
 import Button from "@/components/Button";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import ErrorMessage from "@/components/Form/ErrorMessage";
 import { cn } from "@/lib/utils";
-import FileInput, { Ref } from "@/components/Form/FileInput";
+import FileInput, { type FileInputHandle } from "@/components/Form/FileInput";
 import Svg from "@/components/Svg";
 import { Peripheral } from "@prisma/client";
 import { getCldImageUrl } from "next-cloudinary";
@@ -16,37 +16,52 @@ export default function ImageInput({
   const name = "image";
   const imageWidth = 284;
 
-  const imageUrl = imageId
+  // Image already saved in Cloudinary (only exists when editing)
+  const savedImageUrl = imageId
     ? getCldImageUrl({
         width: imageWidth,
         height: imageWidth,
         src: imageId,
       })
     : undefined;
+  const [isSavedImageRemoved, setIsSavedImageRemoved] = useState(false);
 
-  const [previewSrc, setPreviewSrc] = useState<string | undefined>(imageUrl);
+  // Temporary URL for the file picked in this session
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string>();
+
+  useEffect(() => {
+    if (!selectedImageUrl) return;
+    return () => URL.revokeObjectURL(selectedImageUrl);
+  }, [selectedImageUrl]);
+
+  const previewSrc =
+    selectedImageUrl ?? (isSavedImageRemoved ? undefined : savedImageUrl);
 
   const {
     resetField,
     setValue,
+    trigger,
     formState: { errors },
   } = useFormContext();
 
   const errorMessage = errors[name]?.message;
 
-  const FileInputRef = useRef<Ref>(null);
+  const FileInputRef = useRef<FileInputHandle>(null);
   const handleClick = () => {
     FileInputRef.current?.openFileBrowser();
   };
 
   const handleReset = () => {
     resetField(name); // Reset error
-    setValue(name, null); // Set as empty
-    setPreviewSrc(undefined);
+    setValue(name, null, { shouldDirty: true }); // null marks the image for deletion
+    setSelectedImageUrl(undefined);
+    setIsSavedImageRemoved(true);
   };
 
   const handleValueChange = (value: File) => {
-    setPreviewSrc(URL.createObjectURL(value));
+    setSelectedImageUrl(URL.createObjectURL(value));
+    // Validate right away so an unsupported or oversized file shows its error
+    trigger(name);
   };
 
   return (
@@ -70,7 +85,7 @@ export default function ImageInput({
           <img
             src={previewSrc}
             className="w-full h-full object-cover rounded-xl border-4 border-gray-300 animate-in fade-in duration-500"
-            alt="Preview of employee's profile image"
+            alt="Preview of the peripheral's image"
           />
         ) : (
           // Trigger
