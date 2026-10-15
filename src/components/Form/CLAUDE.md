@@ -50,5 +50,5 @@ implementation.
 
 ## Known offenders
 
-`EmailInput.tsx`, `DateInput.tsx`, `NumberInput.tsx`, `TextArea.tsx`, `SingleSelect.tsx`, `Select.tsx`, `RadioGroup.tsx` and `PhoneInput.tsx` are fixed. Assume other
+`EmailInput.tsx`, `DateInput.tsx`, `NumberInput.tsx`, `TextArea.tsx`, `SingleSelect.tsx`, `Select.tsx`, `RadioGroup.tsx`, `PhoneInput.tsx` and `MultiSelect.tsx` are fixed. Assume other
 inputs in this folder (selects, etc.) have the same problems until they've been checked.
