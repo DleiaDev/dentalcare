@@ -55,66 +55,68 @@ function TimeSlots({
     if (messages.startTime) return messages.startTime.message;
     if (messages.endTime) return messages.endTime.message;
   };
-  const isInputInvalid = (
-    name: "startTime" | "endTime",
-    timeSlotIndex: number,
-  ) => {
-    if (!errorMessages || !errorMessages[timeSlotIndex]) return false;
-    const messages = errorMessages[timeSlotIndex];
-    return messages[name] !== undefined;
-  };
 
   return (
     <>
       {isWorkingDay ? (
-        field.TimeSlots.map((timeSlot, timeSlotIndex) => (
-          <div
-            key={timeSlot.id}
-            className={cn(
-              "flex items-start p-2 gap-4",
-              getError(timeSlotIndex) && "bg-input-invalid rounded-lg",
-            )}
-          >
-            {field.TimeSlots.length > 1 && (
-              <Button
-                variant="text"
-                color="destructive"
-                className="mt-2"
-                onClick={() => onDelete(fieldIndex, timeSlotIndex)}
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            )}
-            <div>
-              <div className="flex items-center gap-4">
-                <TimeInput
-                  name={`WorkingDays.${fieldIndex}.TimeSlots.${timeSlotIndex}.startTime`}
-                  deps={`WorkingDays.${fieldIndex}.TimeSlots.${timeSlotIndex}.endTime`}
-                  className={cn(
-                    isInputInvalid("startTime", timeSlotIndex)
-                      ? "border-error ring-error/20"
-                      : "focus:border-primary ring-primary/20 ",
-                  )}
-                />
-                <div className="text-gray-700">to</div>
-                <TimeInput
-                  name={`WorkingDays.${fieldIndex}.TimeSlots.${timeSlotIndex}.endTime`}
-                  deps={`WorkingDays.${fieldIndex}.TimeSlots.${timeSlotIndex}.endTime`}
-                  className={cn(
-                    isInputInvalid("endTime", timeSlotIndex)
-                      ? "border-error ring-error/20"
-                      : "focus:border-primary ring-primary/20 ",
-                  )}
-                />
-              </div>
-              {getError(timeSlotIndex) && (
-                <ErrorMessage className="text-center w-[37ch]">
-                  {getError(timeSlotIndex)}
-                </ErrorMessage>
+        field.TimeSlots.map((timeSlot, timeSlotIndex) => {
+          const slotPath = (index: number) =>
+            `WorkingDays.${fieldIndex}.TimeSlots.${index}` as const;
+          const isFirst = timeSlotIndex === 0;
+          const isLast = timeSlotIndex === field.TimeSlots.length - 1;
+
+          return (
+            <div
+              key={timeSlot.id}
+              className={cn(
+                "flex items-start p-2 gap-4",
+                getError(timeSlotIndex) && "bg-input-invalid rounded-lg",
               )}
+            >
+              {field.TimeSlots.length > 1 && (
+                <Button
+                  variant="text"
+                  color="destructive"
+                  className="mt-2"
+                  onClick={() => onDelete(fieldIndex, timeSlotIndex)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              )}
+              <div>
+                <div className="flex items-center gap-4">
+                  {/* Each time is checked against the other time in its slot and
+                      against the neighbouring slot, and the schema puts the error
+                      on both fields, so re-validate the other side too. */}
+                  <TimeInput
+                    name={`${slotPath(timeSlotIndex)}.startTime`}
+                    deps={[
+                      `${slotPath(timeSlotIndex)}.endTime`,
+                      ...(isFirst
+                        ? []
+                        : [`${slotPath(timeSlotIndex - 1)}.endTime`]),
+                    ]}
+                  />
+                  <div className="text-gray-700">to</div>
+                  <TimeInput
+                    name={`${slotPath(timeSlotIndex)}.endTime`}
+                    deps={[
+                      `${slotPath(timeSlotIndex)}.startTime`,
+                      ...(isLast
+                        ? []
+                        : [`${slotPath(timeSlotIndex + 1)}.startTime`]),
+                    ]}
+                  />
+                </div>
+                {getError(timeSlotIndex) && (
+                  <ErrorMessage className="text-center w-[37ch]">
+                    {getError(timeSlotIndex)}
+                  </ErrorMessage>
+                )}
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       ) : (
         <div className="text-gray-700">Not working on this day</div>
       )}
