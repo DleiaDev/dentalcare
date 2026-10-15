@@ -4,13 +4,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  type ButtonHTMLAttributes,
+  type ComponentProps,
   type ComponentType,
   type ReactNode,
-  type RefObject,
+  useId,
+  useRef,
   useState,
 } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import Button from "../Button";
 import {
   Command,
@@ -21,7 +22,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-import { cn } from "@/lib/utils";
+import { cn, mergeRefs } from "@/lib/utils";
 import { Checkbox } from "../ui/checkbox";
 import Label from "./Label";
 import Spinner from "@/icons/Spinner";
@@ -43,33 +44,56 @@ type Group = {
   options: Option[];
 };
 
-type Value = Option["value"] | undefined;
+// `null` means nothing is selected.
+type Value = Option["value"] | null;
 
-type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "value">;
-
-interface Props extends ButtonProps {
-  name?: string;
-  value?: Option["value"];
-  onValueChange?: (value: Value) => void;
-  ref?: RefObject<HTMLButtonElement>;
-  options?: Option[];
-  groups?: Group[];
+type BaseProps = Omit<
+  ComponentProps<"button">,
+  "name" | "value" | "defaultValue" | "onChange" | "children"
+> & {
   label?: string;
   labelDescription?: string;
   modal?: boolean;
-  triggerClassName?: string;
   placeholder?: string;
-  className?: string;
   containerClassName?: string;
   isFetching?: boolean;
   fetchingFailed?: boolean;
   onFirstOpen?: () => void;
   editLinkHref?: string;
   editLinkItemNamePlural?: string;
-  createButtonItemName?: string;
-  handleCreateClick?: (query: string) => void;
   // selectedValueFormat?: (selectedOption: O) => ReactNode;
-}
+};
+
+// Creating options isn't supported together with groups.
+type SourceProps =
+  | {
+      options: Option[];
+      groups?: undefined;
+      createButtonItemName?: string;
+      handleCreateClick?: (query: string) => void;
+    }
+  | {
+      options?: undefined;
+      groups: Group[];
+      createButtonItemName?: undefined;
+      handleCreateClick?: undefined;
+    };
+
+type FormProps = BaseProps &
+  SourceProps & {
+    name: string;
+    value?: undefined;
+    onValueChange?: (value: Value) => void;
+  };
+
+type ControlledProps = BaseProps &
+  SourceProps & {
+    name?: string;
+    value: Value;
+    onValueChange: (value: Value) => void;
+  };
+
+type Props = FormProps | ControlledProps;
 
 function getOptionByValue(
   value: Option["value"],
@@ -92,13 +116,13 @@ function SelectedValue({
   groups,
 }: {
   value: Value;
-  options: Props["options"];
-  groups: Props["groups"];
+  options?: Option[];
+  groups?: Group[];
 }) {
-  if (value === undefined) return;
+  if (value === null) return;
   const option = getOptionByValue(value, options, groups);
   if (!option) return;
-  const IconComponent = option?.icon;
+  const IconComponent = option.icon;
   return (
     <div className="flex items-center gap-2">
       {IconComponent && (
@@ -121,11 +145,12 @@ function Options({
   return (
     <>
       {options.map((option) => {
-        const IconComponent = option?.icon;
+        const IconComponent = option.icon;
         const isChecked = value === option.value;
         return (
           <CommandItem
             key={option.value}
+            disabled={option.disabled}
             onSelect={() => onSelect(option.value)}
             className="cursor-pointer justify-between"
           >
@@ -140,9 +165,14 @@ function Options({
                     {option.description}
                   </div>
                 )}
+                {option.disabled && option.disabledReason && (
+                  <div className="text-sm text-gray-600">
+                    {option.disabledReason}
+                  </div>
+                )}
               </div>
             </div>
-            <Checkbox checked={isChecked} tabIndex={-1} />
+            <Checkbox checked={isChecked} tabIndex={-1} aria-hidden />
           </CommandItem>
         );
       })}
@@ -150,19 +180,20 @@ function Options({
   );
 }
 
-type UIComponentProps = Props & {
-  value: Value;
+type UIComponentProps = ControlledProps & {
   errorMessage?: string;
-  onValueChange: (value: Value) => void;
+  // Called when the popover closes, so form mode can mark the field touched
+  // even when focus doesn't return to the trigger (e.g. click outside).
+  onClose?: () => void;
 };
 
 function UIComponent({
-  name,
+  id: idProp,
+  name: _name,
   value,
   errorMessage,
   label,
   labelDescription,
-  ref,
   modal,
   placeholder,
   groups,
@@ -171,8 +202,11 @@ function UIComponent({
   containerClassName,
   isFetching,
   fetchingFailed,
+  disabled,
+  onBlur,
   onValueChange,
   onFirstOpen,
+  onClose,
   createButtonItemName,
   editLinkHref,
   editLinkItemNamePlural,
@@ -180,62 +214,77 @@ function UIComponent({
   ...props
   // selectedValueFormat,
 }: UIComponentProps) {
+  const generatedId = useId();
+  const id = idProp ?? generatedId;
+  const errorId = `${id}-error`;
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [firstPopoverOpen, setIsFirstPopoverOpen] = useState(false);
+  const hasOpenedRef = useRef(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [newOptions, setNewOptions] = useState<Option[]>([]);
 
-  const allOptions = [...(options ?? []), ...newOptions];
+  const allOptions = options ? [...options, ...newOptions] : undefined;
 
-  const handleTogglePopover = () => {
-    setIsFirstPopoverOpen(true);
-    setIsPopoverOpen((prev) => !prev);
-    if (!firstPopoverOpen && onFirstOpen) onFirstOpen();
+  const handleOpenChange = (open: boolean) => {
+    setIsPopoverOpen(open);
+    if (open && !hasOpenedRef.current) {
+      hasOpenedRef.current = true;
+      onFirstOpen?.();
+    }
+    if (!open) {
+      setSearchQuery("");
+      onClose?.();
+    }
   };
 
   const handleCreateOption = () => {
     if (handleCreateClick) {
       handleCreateClick(searchQuery);
-      setSearchQuery("");
+      handleOpenChange(false);
       return;
     }
-    const alreadyExists = allOptions.some(
+    const alreadyExists = allOptions?.some(
       (option) => option.value === searchQuery,
     );
     if (alreadyExists) return;
     const newOption = {
       value: searchQuery,
       label: searchQuery,
-      icon: options ? options[0]?.icon : undefined,
+      icon: options?.[0]?.icon,
     };
-    setSearchQuery("");
     setNewOptions([...newOptions, newOption]);
     onValueChange(newOption.value);
+    handleOpenChange(false);
   };
 
   const handleOptionSelect = (optValue: Option["value"]) => {
-    onValueChange(optValue === value ? undefined : optValue);
+    onValueChange(optValue === value ? null : optValue);
+    handleOpenChange(false);
   };
 
   return (
     <div className={cn("mb-7", containerClassName)}>
       {label && (
-        <Label htmlFor={name} description={labelDescription}>
+        <Label htmlFor={id} description={labelDescription}>
           {label}
         </Label>
       )}
       <Popover
         open={isPopoverOpen}
-        onOpenChange={setIsPopoverOpen}
+        onOpenChange={handleOpenChange}
         modal={modal}
       >
         <PopoverTrigger asChild>
           <Button
             {...props}
+            id={id}
             variant="text"
             color="black"
-            ref={ref}
-            onClick={handleTogglePopover}
+            aria-invalid={errorMessage ? true : undefined}
+            aria-describedby={
+              cn(errorMessage && errorId, props["aria-describedby"]) ||
+              undefined
+            }
             className={cn(
               "flex flex-wrap justify-start gap-2 min-h-12 w-full rounded-md border border-border bg-transparent px-3 py-2 font-medium shadow-xs transition-colors select-none max-w-full",
               errorMessage
@@ -245,17 +294,17 @@ function UIComponent({
                   : "",
               className,
             )}
-            disabled={fetchingFailed}
+            disabled={disabled || fetchingFailed}
+            onBlur={(e) => {
+              // Focus moving into the open popover isn't leaving the field.
+              if (!isPopoverOpen) onBlur?.(e);
+            }}
           >
             {isFetching ? (
-              <div className="text-ellipsis text-muted-foreground">
-                Loading...
-              </div>
+              <div className="truncate text-muted-foreground">Loading...</div>
             ) : fetchingFailed ? (
-              <div className="text-ellipsis">
-                An error occurred during loading
-              </div>
-            ) : value === undefined && placeholder ? (
+              <div className="truncate">An error occurred during loading</div>
+            ) : value === null && placeholder ? (
               <span
                 className={cn(
                   "text-muted-foreground",
@@ -265,7 +314,11 @@ function UIComponent({
                 {placeholder}
               </span>
             ) : (
-              <SelectedValue value={value} options={options} groups={groups} />
+              <SelectedValue
+                value={value}
+                options={allOptions}
+                groups={groups}
+              />
             )}
           </Button>
         </PopoverTrigger>
@@ -299,7 +352,7 @@ function UIComponent({
                     </Button>
                   ) : null}
                 </CommandEmpty>
-                {options ? (
+                {allOptions ? (
                   <Options
                     value={value}
                     options={allOptions}
@@ -307,7 +360,7 @@ function UIComponent({
                   />
                 ) : groups ? (
                   groups.map((group) => (
-                    <CommandGroup key={group.label}>
+                    <CommandGroup key={group.label} heading={group.label}>
                       <Options
                         value={value}
                         options={group.options}
@@ -322,7 +375,7 @@ function UIComponent({
                   <CommandSeparator />
                   <NextLink
                     href={editLinkHref}
-                    className="text-gray-700 p-3 flex items-center bg-gray-200 hover:bg-gray-300 hover:text-800"
+                    className="text-gray-700 p-3 flex items-center bg-gray-200 hover:bg-gray-300 hover:text-gray-800"
                   >
                     <PencilIcon className="mr-2 min-h-5 min-w-5" />
                     Edit {editLinkItemNamePlural}
@@ -333,44 +386,38 @@ function UIComponent({
           )}
         </PopoverContent>
       </Popover>
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {errorMessage && <ErrorMessage id={errorId}>{errorMessage}</ErrorMessage>}
     </div>
   );
 }
 
 function FormWrapper({
   name,
+  ref,
+  onBlur,
   onValueChange,
   ...props
-}: Props & { name: string }) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext();
-
-  const errorMessage = errors[name]?.message;
-
-  const handleValueChange = (
-    value: Value,
-    onFieldChange: (value: Value) => void,
-  ) => {
-    onFieldChange(value);
-    if (onValueChange) onValueChange(value);
-  };
-
+}: FormProps) {
   return (
     <Controller
       name={name}
-      control={control}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <UIComponent
           {...props}
+          ref={mergeRefs(field.ref, ref)}
           name={name}
-          value={field.value}
-          onValueChange={(value) => handleValueChange(value, field.onChange)}
-          errorMessage={
-            typeof errorMessage === "string" ? errorMessage : undefined
-          }
+          value={field.value ?? null}
+          disabled={field.disabled ?? props.disabled}
+          onBlur={(e) => {
+            field.onBlur();
+            onBlur?.(e);
+          }}
+          onClose={field.onBlur}
+          onValueChange={(value) => {
+            field.onChange(value);
+            onValueChange?.(value);
+          }}
+          errorMessage={fieldState.error?.message}
         />
       )}
     />
@@ -378,24 +425,6 @@ function FormWrapper({
 }
 
 export default function SingleSelect(props: Props) {
-  if (props.groups && props.createButtonItemName)
-    throw new Error(
-      "Combination of 'groups' and 'createButtonItemName' props isn't yet supported",
-    );
-  const { name, value, onValueChange } = props;
-  if (name !== undefined && value === undefined) {
-    return <FormWrapper {...props} name={name} onValueChange={onValueChange} />;
-  } else if (
-    name === undefined &&
-    value !== undefined &&
-    onValueChange !== undefined
-  ) {
-    return (
-      <UIComponent {...props} value={value} onValueChange={onValueChange} />
-    );
-  } else {
-    throw new Error(
-      "Supply either a 'name' or ('value' and 'onValueChange') props to <MultiSelect />",
-    );
-  }
+  if (props.value !== undefined) return <UIComponent {...props} />;
+  return <FormWrapper {...props} />;
 }
