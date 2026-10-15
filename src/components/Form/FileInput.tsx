@@ -1,7 +1,8 @@
 import { useToast } from "@/hooks/useToast";
+import { mergeRefs } from "@/lib/utils";
 import {
   type ChangeEvent,
-  type InputHTMLAttributes,
+  type ComponentProps,
   type Ref,
   useImperativeHandle,
   useRef,
@@ -13,7 +14,9 @@ export type FileInputHandle = {
 };
 
 type Props = Omit<
-  InputHTMLAttributes<HTMLInputElement>,
+  ComponentProps<"input">,
+  | "ref"
+  | "name"
   | "type"
   | "value"
   | "defaultValue"
@@ -21,6 +24,7 @@ type Props = Omit<
   | "onChange"
   | "onBlur"
   | "multiple"
+  | "required"
 > & {
   ref?: Ref<FileInputHandle>;
   name: string;
@@ -54,6 +58,9 @@ export default function FileInput({
     onFieldChange: (value: File | File[]) => void,
   ) => {
     const newFiles = [...(e.currentTarget.files ?? [])];
+    // Reset so selecting the same file again still fires a change event,
+    // however the picker was opened
+    e.currentTarget.value = "";
     if (!newFiles.length) return;
 
     if (!multiple) {
@@ -87,9 +94,7 @@ export default function FileInput({
   };
 
   const openFileBrowser = () => {
-    if (!inputEl.current) return;
-    // Reset so selecting the same file again still fires a change event
-    inputEl.current.value = "";
+    if (!inputEl.current || inputEl.current.disabled) return;
     inputEl.current.click();
   };
 
@@ -106,11 +111,9 @@ export default function FileInput({
           {...props}
           type="file"
           className="hidden"
-          ref={(element) => {
-            field.ref(element);
-            inputEl.current = element;
-          }}
+          ref={mergeRefs(field.ref, inputEl)}
           multiple={multiple}
+          disabled={field.disabled ?? props.disabled}
           onBlur={field.onBlur}
           onChange={(e) => handleChange(e, field.value, field.onChange)}
         />
