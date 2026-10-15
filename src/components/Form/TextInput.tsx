@@ -1,62 +1,74 @@
-import { ChangeEvent, HTMLAttributes, type ReactNode } from "react";
-import { Controller, useFormContext } from "react-hook-form";
-import { cn } from "@/lib/utils";
+import { type ComponentProps, type ReactNode, useId } from "react";
+import { Controller } from "react-hook-form";
+import { cn, mergeRefs } from "@/lib/utils";
 import Label from "./Label";
 import ErrorMessage from "./ErrorMessage";
 
-type Props = HTMLAttributes<HTMLInputElement> & {
-  name?: string;
-  value?: string;
+type BaseProps = Omit<
+  ComponentProps<"input">,
+  "name" | "value" | "defaultValue" | "onChange"
+> & {
   label?: string;
   labelDescription?: string;
-  className?: string;
   containerClassName?: string;
-  autoFocus?: boolean;
   additionalElements?: ReactNode;
+};
+
+type FormProps = BaseProps & {
+  name: string;
+  value?: undefined;
   onValueChange?: (value: string) => void;
 };
 
+type ControlledProps = BaseProps & {
+  name?: string;
+  value: string;
+  onValueChange: (value: string) => void;
+};
+
+type Props = FormProps | ControlledProps;
+
 function UIComponent({
+  id: idProp,
+  type = "text",
   className,
-  name,
   label,
   labelDescription,
   containerClassName,
   errorMessage,
-  value,
   additionalElements,
   onValueChange,
   ...props
-}: Props & {
-  onValueChange: Exclude<Props["onValueChange"], undefined>;
-  errorMessage?: string;
-}) {
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onValueChange(e.target.value);
-  };
+}: ControlledProps & { errorMessage?: string }) {
+  const generatedId = useId();
+  const id = idProp ?? generatedId;
+  const errorId = `${id}-error`;
 
   return (
     <div className={cn("mb-7", containerClassName)}>
       {label && (
-        <Label htmlFor={name} description={labelDescription}>
+        <Label htmlFor={id} description={labelDescription}>
           {label}
         </Label>
       )}
       <input
         {...props}
-        value={value ?? ""}
-        id={name}
-        type="text"
+        id={id}
+        type={type}
+        aria-invalid={errorMessage ? true : undefined}
+        aria-describedby={
+          cn(errorMessage && errorId, props["aria-describedby"]) || undefined
+        }
         className={cn(
-          "flex h-12 w-full rounded-md border border-border bg-transparent px-3 py-1 font-medium shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "h-12 w-full rounded-md border border-border bg-transparent px-3 py-1 font-medium shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
           errorMessage
             ? "border-error ring-error/20"
-            : "focus:border-primary ring-primary/20 ",
+            : "focus-visible:border-primary ring-primary/20",
           className,
         )}
-        onChange={handleChange}
+        onChange={(e) => onValueChange(e.target.value)}
       />
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {errorMessage && <ErrorMessage id={errorId}>{errorMessage}</ErrorMessage>}
       {additionalElements}
     </div>
   );
@@ -64,56 +76,37 @@ function UIComponent({
 
 function FormWrapper({
   name,
+  ref,
+  onBlur,
   onValueChange,
   ...props
-}: Props & { name: string }) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext();
-  const errorMessage = errors[name]?.message;
-  const handleValueChange = (
-    value: string,
-    onFieldChange: Exclude<Props["onValueChange"], undefined>,
-  ) => {
-    onFieldChange(value);
-    if (onValueChange) onValueChange(value);
-  };
-
+}: FormProps) {
   return (
     <Controller
       name={name}
-      control={control}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <UIComponent
           {...props}
+          ref={mergeRefs(field.ref, ref)}
           name={name}
-          value={field.value}
-          onValueChange={(value) => handleValueChange(value, field.onChange)}
-          errorMessage={
-            typeof errorMessage === "string" ? errorMessage : undefined
-          }
+          value={field.value ?? ""}
+          disabled={field.disabled ?? props.disabled}
+          onBlur={(e) => {
+            field.onBlur();
+            onBlur?.(e);
+          }}
+          onValueChange={(value) => {
+            field.onChange(value);
+            onValueChange?.(value);
+          }}
+          errorMessage={fieldState.error?.message}
         />
       )}
     />
   );
 }
 
-export default function TextInput({
-  name,
-  value,
-  onValueChange,
-  ...props
-}: Props) {
-  if (name !== undefined && value === undefined)
-    return <FormWrapper {...props} name={name} onValueChange={onValueChange} />;
-  if (
-    name === undefined &&
-    typeof value === "string" &&
-    onValueChange !== undefined
-  )
-    return (
-      <UIComponent {...props} value={value} onValueChange={onValueChange} />
-    );
-  throw new Error("Provide either name or (value and onValueChange)");
+export default function TextInput(props: Props) {
+  if (props.value !== undefined) return <UIComponent {...props} />;
+  return <FormWrapper {...props} />;
 }

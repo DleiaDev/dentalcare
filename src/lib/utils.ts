@@ -1,8 +1,18 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { Ref } from "react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function mergeRefs<T>(...refs: (Ref<T> | undefined)[]) {
+  return (element: T | null) => {
+    for (const ref of refs) {
+      if (typeof ref === "function") ref(element);
+      else if (ref) ref.current = element;
+    }
+  };
 }
 
 export function getAmPmTime(date: Date) {
