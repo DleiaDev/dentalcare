@@ -1,84 +1,118 @@
-import { cn } from "@/lib/utils";
-import {
-  ChangeEvent,
-  InputHTMLAttributes,
-  MutableRefObject,
-  ReactNode,
-} from "react";
+import { type ComponentProps, type ReactNode, useId } from "react";
+import { Controller } from "react-hook-form";
+import { cn, mergeRefs } from "@/lib/utils";
 import Label from "./Label";
 import ErrorMessage from "./ErrorMessage";
-import { Controller, useFormContext } from "react-hook-form";
 
-type Props = InputHTMLAttributes<HTMLInputElement> & {
-  name: string;
+type BaseProps = Omit<
+  ComponentProps<"input">,
+  "name" | "value" | "defaultValue" | "onChange" | "type"
+> & {
   label?: string;
   labelDescription?: string;
   containerClassName?: string;
   additionalElements?: ReactNode;
-  ref?: MutableRefObject<HTMLInputElement | null>;
 };
 
-export default function NumberInput({
+type FormProps = BaseProps & {
+  name: string;
+  value?: undefined;
+  onValueChange?: (value: number | null) => void;
+};
+
+// `null` means the input is empty.
+type ControlledProps = BaseProps & {
+  name?: string;
+  value: number | null;
+  onValueChange: (value: number | null) => void;
+};
+
+type Props = FormProps | ControlledProps;
+
+function UIComponent({
+  id: idProp,
+  value,
   className,
-  name,
   label,
   labelDescription,
   containerClassName,
+  errorMessage,
   additionalElements,
-  ref,
+  onValueChange,
   ...props
-}: Props) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext();
-  const errorMessage = errors[name]?.message;
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement>,
-    onFieldChange: (value: number) => void,
-  ) => {
-    const value = Number(e.target.value);
-    if (Number.isNaN(value)) return;
-    onFieldChange(value);
-  };
+}: ControlledProps & { errorMessage?: string }) {
+  const generatedId = useId();
+  const id = idProp ?? generatedId;
+  const errorId = `${id}-error`;
 
   return (
     <div className={cn("mb-7", containerClassName)}>
       {label && (
-        <Label description={labelDescription} htmlFor={name}>
+        <Label htmlFor={id} description={labelDescription}>
           {label}
         </Label>
       )}
-      <Controller
-        name={name}
-        control={control}
-        render={({ field }) => (
-          <input
-            {...props}
-            value={field.value ? `${field.value}` : ""}
-            id={name}
-            type="number"
-            className={cn(
-              "flex h-12 w-full rounded-md border border-border bg-transparent px-3 py-1 font-medium shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
-              errorMessage
-                ? "border-error ring-error/20"
-                : "focus:border-primary ring-primary/20 ",
-              className,
-            )}
-            onChange={(e) => handleChange(e, field.onChange)}
-            ref={(element) => {
-              field.ref(element);
-              if (ref) ref.current = element;
-            }}
-          />
+      <input
+        {...props}
+        id={id}
+        type="number"
+        value={value ?? ""}
+        aria-invalid={errorMessage ? true : undefined}
+        aria-describedby={
+          cn(errorMessage && errorId, props["aria-describedby"]) || undefined
+        }
+        className={cn(
+          "h-12 w-full rounded-md border border-border bg-transparent px-3 py-1 font-medium shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+          errorMessage
+            ? "border-error ring-error/20"
+            : "focus-visible:border-primary ring-primary/20",
+          className,
         )}
+        onChange={(e) => {
+          // Empty or partial input ("-", "1e") reports NaN.
+          const number = e.target.valueAsNumber;
+          onValueChange(Number.isNaN(number) ? null : number);
+        }}
       />
-
-      {typeof errorMessage === "string" && (
-        <ErrorMessage>{errorMessage}</ErrorMessage>
-      )}
+      {errorMessage && <ErrorMessage id={errorId}>{errorMessage}</ErrorMessage>}
       {additionalElements}
     </div>
   );
+}
+
+function FormWrapper({
+  name,
+  ref,
+  onBlur,
+  onValueChange,
+  ...props
+}: FormProps) {
+  return (
+    <Controller
+      name={name}
+      render={({ field, fieldState }) => (
+        <UIComponent
+          {...props}
+          ref={mergeRefs(field.ref, ref)}
+          name={name}
+          value={field.value ?? null}
+          disabled={field.disabled ?? props.disabled}
+          onBlur={(e) => {
+            field.onBlur();
+            onBlur?.(e);
+          }}
+          onValueChange={(value) => {
+            field.onChange(value);
+            onValueChange?.(value);
+          }}
+          errorMessage={fieldState.error?.message}
+        />
+      )}
+    />
+  );
+}
+
+export default function NumberInput(props: Props) {
+  if (props.value !== undefined) return <UIComponent {...props} />;
+  return <FormWrapper {...props} />;
 }
