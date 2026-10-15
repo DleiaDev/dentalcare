@@ -50,6 +50,6 @@ implementation.
 
 ## Known offenders
 
-`EmailInput.tsx` still uses `errors[name]` and `id={name}`. Assume other
-inputs in this folder (`NumberInput`, `PhoneInput`, `DateInput`, `TextArea`,
+`EmailInput.tsx`, `DateInput.tsx` and `NumberInput.tsx` are fixed. Assume other
+inputs in this folder (`PhoneInput`, `TextArea`,
 selects, etc.) have the same problems until they've been checked.
