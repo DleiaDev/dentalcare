@@ -1,7 +1,7 @@
-import { ReactNode, useMemo, useState } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { type ComponentProps, type ReactNode, useId, useState } from "react";
+import { Controller } from "react-hook-form";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
-import { cn } from "@/lib/utils";
+import { cn, mergeRefs } from "@/lib/utils";
 import Button from "@/components/Button";
 import Label from "./Label";
 import ErrorMessage from "./ErrorMessage";
@@ -14,10 +14,14 @@ type Option = {
   value: string;
 };
 
-type Props = {
-  name?: string;
+// `null` means nothing is selected.
+type Value = Option["value"] | null;
+
+type BaseProps = Omit<
+  ComponentProps<typeof RadioGroupPrimitive.Root>,
+  "name" | "value" | "defaultValue" | "onValueChange" | "children" | "asChild"
+> & {
   label?: string;
-  value?: Option["value"];
   options: Option[];
   textClassName?: string;
   labelClassName?: string;
@@ -25,8 +29,21 @@ type Props = {
   allowCreate?: boolean;
   isFetching?: boolean;
   fetchingFailed?: boolean;
+};
+
+type FormProps = BaseProps & {
+  name: string;
+  value?: undefined;
   onValueChange?: (value: Option["value"]) => void;
 };
+
+type ControlledProps = BaseProps & {
+  name?: string;
+  value: Value;
+  onValueChange: (value: Option["value"]) => void;
+};
+
+type Props = FormProps | ControlledProps;
 
 function RadioSkeleton() {
   return (
@@ -38,26 +55,24 @@ function RadioSkeleton() {
   );
 }
 
+// Wraps the radio item, so the label is linked to it without an `id`.
 function RadioLabel({
-  option,
-  errorMessage,
-  value,
+  checked,
+  invalid,
   className,
   children,
 }: {
-  value: Props["value"];
-  option: Option;
-  errorMessage?: string;
+  checked: boolean;
+  invalid: boolean;
   className?: string;
   children: ReactNode;
 }) {
   return (
     <label
-      htmlFor={option.label}
       className={cn(
-        "h-12 flex items-center gap-3 border border-border rounded-lg px-3 min-w-40 flex-1 cursor-pointer transition-colors hover:border-primary",
-        errorMessage && "border-error",
-        value === option.value && "border-primary",
+        "h-12 flex items-center gap-3 border border-border rounded-lg px-3 min-w-40 flex-1 cursor-pointer transition-colors hover:border-primary has-disabled:cursor-not-allowed has-disabled:opacity-50",
+        checked && "border-primary",
+        invalid && "border-error",
         className,
       )}
     >
@@ -69,9 +84,8 @@ function RadioLabel({
 function RadioIndicator({ option }: { option: Option }) {
   return (
     <RadioGroupPrimitive.Item
-      className="w-5 h-5 rounded-full border border-border"
+      className="w-5 h-5 shrink-0 rounded-full border border-border"
       value={option.value}
-      id={option.label}
     >
       <RadioGroupPrimitive.Indicator className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
         <span className="w-1/2 h-1/2 rounded-full bg-white"></span>
@@ -84,47 +98,43 @@ function NewOption({
   value,
   labelClassName,
   errorMessage,
+  disabled,
   onValueChange,
 }: {
-  labelClassName: Props["labelClassName"];
-  value: Exclude<Props["value"], undefined>;
+  value: Value;
+  labelClassName?: string;
   errorMessage?: string;
-  onValueChange: (value: string) => void;
+  disabled?: boolean;
+  onValueChange: (value: Option["value"]) => void;
 }) {
   const [newOptionText, setNewOptionText] = useState("");
   const [isCreatingNewOption, setIsCreatingNewOption] = useState(false);
 
-  const newOption = useMemo(
-    () => ({
-      value: newOptionText,
-      label: newOptionText,
-    }),
-    [newOptionText],
-  );
+  const newOption = { value: newOptionText, label: newOptionText };
+  const checked = value === newOptionText;
 
   const handleAddNewClick = () => {
     setIsCreatingNewOption(true);
     onValueChange(newOptionText);
   };
 
+  // Typing a new option selects it, even if another option was selected.
   const handleChange = (newText: string) => {
     setNewOptionText(newText);
-    if (value === newOptionText) onValueChange(newText);
+    onValueChange(newText);
   };
 
   return isCreatingNewOption ? (
     <RadioLabel
-      value={value}
-      option={newOption}
-      errorMessage={errorMessage}
-      className={cn(
-        labelClassName,
-        errorMessage && value === newOptionText && "border-error!",
-      )}
+      checked={checked}
+      invalid={!!errorMessage && (checked || value === null)}
+      className={labelClassName}
     >
       <RadioIndicator option={newOption} />
       <TextInput
+        aria-label="New option"
         value={newOptionText}
+        disabled={disabled}
         onValueChange={handleChange}
         className="h-full p-0 border-none shadow-none focus-visible:ring-0"
         containerClassName="mb-0 h-full"
@@ -135,6 +145,7 @@ function NewOption({
     <Button
       variant="outline"
       className="not-only:flex-1 h-12 min-w-40 rounded-lg justify-start"
+      disabled={disabled}
       onClick={handleAddNewClick}
     >
       <PlusIcon className="mr-2 h-5 w-5" />
@@ -144,28 +155,31 @@ function NewOption({
 }
 
 function UIComponent({
+  id: idProp,
   value,
-  name,
   label,
   options,
   errorMessage,
+  className,
   textClassName,
   labelClassName,
   containerClassName,
   allowCreate,
   isFetching,
   fetchingFailed,
+  disabled,
   onBlur,
   onValueChange,
-}: Props & {
-  value: Exclude<Props["value"], undefined>;
-  errorMessage?: string;
-  onBlur?: () => void;
-  onValueChange: Exclude<Props["onValueChange"], undefined>;
-}) {
+  ...props
+}: ControlledProps & { errorMessage?: string }) {
+  const generatedId = useId();
+  const id = idProp ?? generatedId;
+  const labelId = `${id}-label`;
+  const errorId = `${id}-error`;
+
   return (
     <div className={cn("mb-7", containerClassName)}>
-      {label && <Label htmlFor={name}>{label}</Label>}
+      {label && <Label id={labelId}>{label}</Label>}
       {isFetching ? (
         <RadioSkeleton />
       ) : fetchingFailed ? (
@@ -174,21 +188,34 @@ function UIComponent({
         </div>
       ) : (
         <RadioGroupPrimitive.Root
-          aria-label={label}
+          {...props}
+          id={id}
+          aria-labelledby={
+            cn(label && labelId, props["aria-labelledby"]) || undefined
+          }
+          aria-invalid={errorMessage ? true : undefined}
+          aria-describedby={
+            cn(errorMessage && errorId, props["aria-describedby"]) || undefined
+          }
           className={cn(
             "flex gap-3 flex-wrap",
             isFetching === false && "animate-in fade-in duration-500",
+            className,
           )}
-          value={value}
-          onBlur={onBlur}
+          // Radix treats `undefined` as uncontrolled, so "" clears the selection.
+          value={value ?? ""}
+          disabled={disabled}
+          onBlur={(e) => {
+            // Moving focus between items isn't leaving the group.
+            if (!e.currentTarget.contains(e.relatedTarget)) onBlur?.(e);
+          }}
           onValueChange={onValueChange}
         >
           {options.map((option) => (
             <RadioLabel
               key={option.value}
-              value={value}
-              option={option}
-              errorMessage={value === undefined ? errorMessage : undefined}
+              checked={value === option.value}
+              invalid={!!errorMessage && value === null}
               className={labelClassName}
             >
               <RadioIndicator option={option} />
@@ -202,64 +229,51 @@ function UIComponent({
               labelClassName={labelClassName}
               value={value}
               errorMessage={errorMessage}
+              disabled={disabled}
               onValueChange={onValueChange}
             />
           )}
         </RadioGroupPrimitive.Root>
       )}
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {errorMessage && <ErrorMessage id={errorId}>{errorMessage}</ErrorMessage>}
     </div>
   );
 }
 
 function FormWrapper({
   name,
+  ref,
+  onBlur,
   onValueChange,
   ...props
-}: Props & { name: string }) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext();
-  const errorMessage = errors[name]?.message;
-  const handlePressedChange = (
-    value: Option["value"],
-    onFieldChange: Exclude<Props["onValueChange"], undefined>,
-  ) => {
-    onFieldChange(value);
-    if (onValueChange) onValueChange(value);
-  };
-
+}: FormProps) {
   return (
     <Controller
       name={name}
-      control={control}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <UIComponent
           {...props}
+          // Focusing the Radix root moves focus to the checked (or first) item.
+          ref={mergeRefs(field.ref, ref)}
           name={name}
-          value={field.value}
-          onBlur={field.onBlur}
-          onValueChange={(value) => handlePressedChange(value, field.onChange)}
-          errorMessage={
-            typeof errorMessage === "string" ? errorMessage : undefined
-          }
+          value={field.value ?? null}
+          disabled={field.disabled ?? props.disabled}
+          onBlur={(e) => {
+            field.onBlur();
+            onBlur?.(e);
+          }}
+          onValueChange={(value) => {
+            field.onChange(value);
+            onValueChange?.(value);
+          }}
+          errorMessage={fieldState.error?.message}
         />
       )}
     />
   );
 }
 
-export default function RadioGroup({
-  name,
-  value,
-  onValueChange,
-  ...props
-}: Props) {
-  if (name !== undefined && value === undefined)
-    return <FormWrapper {...props} name={name} onValueChange={onValueChange} />;
-  if (name === undefined && value !== undefined && onValueChange !== undefined)
-    return (
-      <UIComponent {...props} value={value} onValueChange={onValueChange} />
-    );
+export default function RadioGroup(props: Props) {
+  if (props.value !== undefined) return <UIComponent {...props} />;
+  return <FormWrapper {...props} />;
 }
