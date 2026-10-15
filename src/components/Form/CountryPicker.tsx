@@ -1,26 +1,17 @@
 import { trpc } from "@/trpc/client";
-import Select from "./Select";
+import Select, { type Option, type SelectProps } from "./Select";
 import Image from "next/image";
-import { ComponentProps } from "react";
 
-type Props = Pick<
-  ComponentProps<typeof Select>,
-  | "name"
-  | "value"
-  | "className"
-  | "containerClassName"
-  | "label"
-  | "placeholder"
-  | "onValueChange"
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;
+
+type Props = DistributiveOmit<
+  SelectProps<Option<string>>,
+  "options" | "groups" | "isFetching" | "fetchingFailed"
 >;
 
-export default function CountryPicker({
-  name,
-  value,
-  className,
-  containerClassName,
-  onValueChange,
-}: Props) {
+export default function CountryPicker(props: Props) {
   const {
     data: countries = [],
     isFetching,
@@ -31,13 +22,9 @@ export default function CountryPicker({
 
   return (
     <Select
-      name={name}
-      value={value}
-      className={className}
-      containerClassName={containerClassName}
+      {...props}
       isFetching={isFetching}
       fetchingFailed={!!error?.message}
-      onValueChange={onValueChange}
       options={countries.map((country) => ({
         value: country.code,
         label: (
