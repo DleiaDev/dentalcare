@@ -1,42 +1,117 @@
-import PhoneInputBase from "react-phone-number-input/input";
-import { Controller, useFormContext } from "react-hook-form";
-import { cn } from "@/lib/utils";
+import { type ComponentProps, type ReactNode, useId } from "react";
+import PhoneInputBase, { type Country } from "react-phone-number-input/input";
+import { Controller } from "react-hook-form";
+import { cn, mergeRefs } from "@/lib/utils";
 import Label from "./Label";
 import ErrorMessage from "./ErrorMessage";
 
-type Props = {
-  name: string;
-  label: string;
+type BaseProps = Omit<
+  ComponentProps<"input">,
+  "name" | "value" | "defaultValue" | "onChange" | "type"
+> & {
+  label?: string;
+  labelDescription?: string;
+  containerClassName?: string;
+  additionalElements?: ReactNode;
+  country?: Country;
 };
 
-export default function PhoneInput({ name, label }: Props) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext();
-  const errorMessage = errors[name]?.message;
+type FormProps = BaseProps & {
+  name: string;
+  value?: undefined;
+  onValueChange?: (value: string) => void;
+};
+
+type ControlledProps = BaseProps & {
+  name?: string;
+  value: string;
+  onValueChange: (value: string) => void;
+};
+
+type Props = FormProps | ControlledProps;
+
+function UIComponent({
+  id: idProp,
+  country = "US",
+  className,
+  label,
+  labelDescription,
+  containerClassName,
+  errorMessage,
+  additionalElements,
+  value,
+  onValueChange,
+  ...props
+}: ControlledProps & { errorMessage?: string }) {
+  const generatedId = useId();
+  const id = idProp ?? generatedId;
+  const errorId = `${id}-error`;
+
   return (
-    <div className="mb-7">
-      <Label>{label}</Label>
-      <Controller
-        name={name}
-        control={control}
-        render={({ field }) => (
-          <PhoneInputBase
-            country="US"
-            className={cn(
-              "flex h-12 w-full rounded-md border border-border bg-transparent px-3 py-1 font-medium shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
-              errorMessage
-                ? "border-error ring-error/20"
-                : "focus:border-primary ring-primary/20 ",
-            )}
-            {...field}
-          />
-        )}
-      />
-      {typeof errorMessage === "string" && (
-        <ErrorMessage>{errorMessage}</ErrorMessage>
+    <div className={cn("mb-7", containerClassName)}>
+      {label && (
+        <Label htmlFor={id} description={labelDescription}>
+          {label}
+        </Label>
       )}
+      <PhoneInputBase
+        {...props}
+        id={id}
+        country={country}
+        aria-invalid={errorMessage ? true : undefined}
+        aria-describedby={
+          cn(errorMessage && errorId, props["aria-describedby"]) || undefined
+        }
+        className={cn(
+          "h-12 w-full rounded-md border border-border bg-transparent px-3 py-1 font-medium shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+          errorMessage
+            ? "border-error ring-error/20"
+            : "focus-visible:border-primary ring-primary/20",
+          className,
+        )}
+        value={value || undefined}
+        // The library reports `undefined` for an empty input; keep it a string.
+        onChange={(value) => onValueChange(value ?? "")}
+      />
+      {errorMessage && <ErrorMessage id={errorId}>{errorMessage}</ErrorMessage>}
+      {additionalElements}
     </div>
   );
+}
+
+function FormWrapper({
+  name,
+  ref,
+  onBlur,
+  onValueChange,
+  ...props
+}: FormProps) {
+  return (
+    <Controller
+      name={name}
+      render={({ field, fieldState }) => (
+        <UIComponent
+          {...props}
+          ref={mergeRefs(field.ref, ref)}
+          name={name}
+          value={field.value ?? ""}
+          disabled={field.disabled ?? props.disabled}
+          onBlur={(e) => {
+            field.onBlur();
+            onBlur?.(e);
+          }}
+          onValueChange={(value) => {
+            field.onChange(value);
+            onValueChange?.(value);
+          }}
+          errorMessage={fieldState.error?.message}
+        />
+      )}
+    />
+  );
+}
+
+export default function PhoneInput(props: Props) {
+  if (props.value !== undefined) return <UIComponent {...props} />;
+  return <FormWrapper {...props} />;
 }
