@@ -1,107 +1,131 @@
+import { type ComponentProps, useId } from "react";
+import { Controller } from "react-hook-form";
 import { Switch as SwitchUI } from "@/components/ui/switch";
 import { Checkbox as CheckboxUI } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
-import {
-  Controller,
-  ControllerRenderProps,
-  FieldValues,
-  useFormContext,
-} from "react-hook-form";
-import { forwardRef, InputHTMLAttributes } from "react";
+import { cn, mergeRefs } from "@/lib/utils";
+import ErrorMessage from "./ErrorMessage";
 
-type Props = {
-  name?: string;
-  checked?: boolean;
+type BaseProps = Omit<
+  ComponentProps<typeof SwitchUI>,
+  | "name"
+  | "value"
+  | "checked"
+  | "defaultChecked"
+  | "onCheckedChange"
+  | "type"
+  | "asChild"
+  | "children"
+> & {
   label: string;
-  value?: any;
-  className?: string;
   type?: "checkbox" | "switch";
+  containerClassName?: string;
+};
+
+type FormProps = BaseProps & {
+  name: string;
+  // Set: the field is an array and this checkbox toggles `value` in it.
+  // Unset: the field is a boolean.
+  value?: string | number;
+  checked?: undefined;
   onCheckedChange?: (checked: boolean) => void;
-} & InputHTMLAttributes<HTMLInputElement>;
+};
 
-const UIComponent = forwardRef<
-  HTMLLabelElement,
-  Pick<Props, "type" | "label" | "className" | "checked" | "onCheckedChange">
->(({ type, label, className, checked, onCheckedChange, ...props }, ref) => {
+type ControlledProps = BaseProps & {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+};
+
+type Props = FormProps | ControlledProps;
+
+function UIComponent({
+  type = "checkbox",
+  label,
+  className,
+  containerClassName,
+  errorMessage,
+  invalid,
+  onCheckedChange,
+  ...props
+}: ControlledProps & { errorMessage?: string; invalid?: boolean }) {
+  const generatedId = useId();
+  const errorId = `${props.id ?? generatedId}-error`;
+  const Control = type === "switch" ? SwitchUI : CheckboxUI;
+
   return (
-    <label
-      ref={ref}
-      className={cn(
-        "flex items-center gap-3 group cursor-pointer group-has-disabled:cursor-not-allowed group-has=[:disabled]:opacity-50",
-        className,
-      )}
-    >
-      {type === "checkbox" ? (
-        <CheckboxUI
+    <div className={containerClassName}>
+      {/* Wrapping the control links the label to it without an `id`. */}
+      <label
+        className={cn(
+          "flex items-center gap-3 cursor-pointer has-disabled:cursor-not-allowed has-disabled:opacity-50",
+          className,
+        )}
+      >
+        <Control
           {...props}
-          checked={checked}
-          onCheckedChange={onCheckedChange}
+          aria-invalid={invalid || errorMessage ? true : undefined}
+          aria-describedby={
+            cn(errorMessage && errorId, props["aria-describedby"]) || undefined
+          }
+          // Radix checkboxes can report "indeterminate"; this component never sets it.
+          onCheckedChange={(checked) => onCheckedChange(checked === true)}
         />
-      ) : type === "switch" ? (
-        <SwitchUI
-          {...props}
-          checked={checked}
-          onCheckedChange={onCheckedChange}
-        />
-      ) : null}
-      <div className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-        {label}
-      </div>
-    </label>
+        <span className="font-medium leading-none">{label}</span>
+      </label>
+      {errorMessage && <ErrorMessage id={errorId}>{errorMessage}</ErrorMessage>}
+    </div>
   );
-});
-UIComponent.displayName = "UIComponent";
+}
 
-const FormInput = forwardRef<HTMLLabelElement, Props & { name: string }>(
-  ({ name, value, ...props }, ref) => {
-    const { control } = useFormContext();
+function FormWrapper({
+  name,
+  value,
+  ref,
+  onBlur,
+  onCheckedChange,
+  ...props
+}: FormProps) {
+  return (
+    <Controller
+      name={name}
+      render={({ field, fieldState }) => {
+        const isArrayField = value !== undefined;
+        const selected: unknown[] = Array.isArray(field.value)
+          ? field.value
+          : [];
+        const checked = isArrayField
+          ? selected.includes(value)
+          : field.value === true;
 
-    const handleCheckedChange = (
-      checked: boolean,
-      field: ControllerRenderProps<FieldValues, string>,
-    ) => {
-      if (checked === true && value !== undefined)
-        field.onChange([...field.value, value]);
-      else if (checked === false && value !== undefined)
-        field.onChange(
-          field.value.filter((val: Props["value"]) => val !== value),
-        );
-      else if (value === undefined) field.onChange(checked);
-    };
-
-    const isChecked = (fieldValue: any[] | boolean) => {
-      if (value !== undefined && Array.isArray(fieldValue))
-        return fieldValue.includes(value);
-      if (value === undefined && typeof fieldValue === "boolean")
-        return fieldValue;
-    };
-
-    return (
-      <Controller
-        name={name}
-        control={control}
-        render={({ field }) => (
+        return (
           <UIComponent
             {...props}
-            ref={ref}
-            checked={isChecked(field.value)}
-            onCheckedChange={(checked) => handleCheckedChange(checked, field)}
+            ref={mergeRefs(field.ref, ref)}
+            checked={checked}
+            disabled={field.disabled ?? props.disabled}
+            onBlur={(e) => {
+              field.onBlur();
+              onBlur?.(e);
+            }}
+            onCheckedChange={(newChecked) => {
+              if (!isArrayField) field.onChange(newChecked);
+              else if (newChecked && !checked)
+                field.onChange([...selected, value]);
+              else if (!newChecked)
+                field.onChange(selected.filter((v) => v !== value));
+              onCheckedChange?.(newChecked);
+            }}
+            // An array field's error belongs to the whole group, so the
+            // caller renders it once instead of under every checkbox.
+            invalid={!!fieldState.error}
+            errorMessage={isArrayField ? undefined : fieldState.error?.message}
           />
-        )}
-      />
-    );
-  },
-);
-FormInput.displayName = "FormInput";
-
-const BooleanInput = forwardRef<HTMLLabelElement, Props>((props, ref) => {
-  props = { ...props, type: props.type || "checkbox" };
-  return props.name ? (
-    <FormInput {...props} name={props.name} ref={ref} />
-  ) : (
-    <UIComponent {...props} ref={ref} />
+        );
+      }}
+    />
   );
-});
-BooleanInput.displayName = "BooleanInput";
+}
 
-export default BooleanInput;
+export default function BooleanInput(props: Props) {
+  if (props.checked !== undefined) return <UIComponent {...props} />;
+  return <FormWrapper {...props} />;
+}

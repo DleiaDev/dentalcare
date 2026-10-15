@@ -154,7 +154,7 @@ export function Switch({
       label={day}
       checked={checked}
       onCheckedChange={(checked) => onCheckedChange(checked, day)}
-      className={cn("mt-4", checked && "self-start")}
+      containerClassName={cn("mt-4", checked && "self-start")}
       disabled={disabled}
     />
   );
